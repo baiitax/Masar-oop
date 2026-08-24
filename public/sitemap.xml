@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <!-- Main Landing Page -->
+  <url>
+    <loc>https://masar.sa</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://masar.sa/ar" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://masar.sa/en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://masar.sa" />
+  </url>
+  
+  <!-- Arabic Version -->
+  <url>
+    <loc>https://masar.sa/ar</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://masar.sa/ar" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://masar.sa/en" />
+  </url>
+  
+  <!-- English Version -->
+  <url>
+    <loc>https://masar.sa/en</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://masar.sa/ar" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://masar.sa/en" />
+  </url>
+  
+  <!-- How It Works Section -->
+  <url>
+    <loc>https://masar.sa#how-it-works</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- For Buyers Section -->
+  <url>
+    <loc>https://masar.sa#for-buyers</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- For Exporters Section -->
+  <url>
+    <loc>https://masar.sa#for-exporters</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Compliance Section -->
+  <url>
+    <loc>https://masar.sa#compliance</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- About Section -->
+  <url>
+    <loc>https://masar.sa#about</loc>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+</urlset>

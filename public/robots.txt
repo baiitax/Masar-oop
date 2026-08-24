@@ -1,0 +1,25 @@
+# MASAR — مسار Trade Corridor Operating System
+# https://masar.sa
+
+User-agent: *
+Allow: /
+Disallow: /dashboard/
+Disallow: /api/
+
+# Sitemaps
+Sitemap: https://masar.sa/sitemap.xml
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1
+
+# Google specific
+User-agent: Googlebot
+Allow: /
+Disallow: /dashboard/
+Disallow: /api/
+
+# Bing specific
+User-agent: Bingbot
+Allow: /
+Disallow: /dashboard/
+Disallow: /api/
