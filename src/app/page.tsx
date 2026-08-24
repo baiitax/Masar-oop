@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { 
   Globe, Shield, Search, DollarSign, Users, Truck, ArrowLeft, ArrowRight,
   CheckCircle, Star, Ship, FileText, Lock, Zap, BarChart3, ChevronDown,
-  Menu, X, MapPin, Mail, Building2, Award, TrendingUp, Languages, Leaf
+  Menu, X, MapPin, Mail, Building2, Award, TrendingUp, Languages
 } from 'lucide-react';
 
 const content = {
@@ -116,6 +116,72 @@ const content = {
   },
 };
 
+// Glass style objects
+const glassStyle = {
+  background: 'rgba(255, 255, 255, 0.1)',
+  backdropFilter: 'blur(20px)',
+  WebkitBackdropFilter: 'blur(20px)',
+  border: '1px solid rgba(255, 255, 255, 0.18)',
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+};
+
+const glassLightStyle = {
+  background: 'rgba(255, 255, 255, 0.85)',
+  backdropFilter: 'blur(20px)',
+  WebkitBackdropFilter: 'blur(20px)',
+  border: '1px solid rgba(255, 255, 255, 0.9)',
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
+};
+
+const glassDarkStyle = {
+  background: 'rgba(10, 22, 40, 0.75)',
+  backdropFilter: 'blur(20px)',
+  WebkitBackdropFilter: 'blur(20px)',
+  border: '1px solid rgba(200, 169, 81, 0.2)',
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+};
+
+const glassCardStyle = {
+  background: 'rgba(255, 255, 255, 0.7)',
+  backdropFilter: 'blur(16px)',
+  WebkitBackdropFilter: 'blur(16px)',
+  border: '1px solid rgba(255, 255, 255, 0.5)',
+  boxShadow: '0 4px 24px rgba(0, 0, 0, 0.06)',
+  transition: 'all 0.3s ease',
+};
+
+const glassBtnStyle = {
+  background: 'linear-gradient(135deg, #C8A951 0%, #E8D48B 100%)',
+  border: '1px solid rgba(200, 169, 81, 0.5)',
+  transition: 'all 0.3s ease',
+  boxShadow: '0 4px 20px rgba(200, 169, 81, 0.3)',
+};
+
+const meshGradientStyle = {
+  background: `
+    radial-gradient(at 20% 20%, rgba(200,169,81,0.15) 0px, transparent 50%),
+    radial-gradient(at 80% 80%, rgba(0,108,53,0.1) 0px, transparent 50%),
+    radial-gradient(at 50% 50%, rgba(30,77,140,0.1) 0px, transparent 50%),
+    linear-gradient(135deg, #0A1628 0%, #0F2847 100%)
+  `,
+};
+
+const islamicPatternStyle = {
+  backgroundImage: `
+    linear-gradient(30deg, rgba(200,169,81,0.06) 12%, transparent 12.5%, transparent 87%, rgba(200,169,81,0.06) 87.5%),
+    linear-gradient(150deg, rgba(200,169,81,0.06) 12%, transparent 12.5%, transparent 87%, rgba(200,169,81,0.06) 87.5%),
+    linear-gradient(30deg, rgba(200,169,81,0.06) 12%, transparent 12.5%, transparent 87%, rgba(200,169,81,0.06) 87.5%),
+    linear-gradient(150deg, rgba(200,169,81,0.06) 12%, transparent 12.5%, transparent 87%, rgba(200,169,81,0.06) 87.5%),
+    linear-gradient(60deg, rgba(0,108,53,0.04) 25%, transparent 25.5%, transparent 75%, rgba(0,108,53,0.04) 75%),
+    linear-gradient(60deg, rgba(0,108,53,0.04) 25%, transparent 25.5%, transparent 75%, rgba(0,108,53,0.04) 75%)
+  `,
+  backgroundSize: '80px 140px',
+};
+
+const arabesquePatternStyle = {
+  backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c8a951' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+};
+
 export default function LandingPage() {
   const [lang, setLang] = useState<'ar' | 'en'>('ar');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -139,124 +205,260 @@ export default function LandingPage() {
   return (
     <div className={`min-h-screen ${isRTL ? 'font-arabic' : 'font-sans'}`}>
       {/* Navigation */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'py-2' : 'py-4'}`}>
-        <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-500 ${scrolled ? 'glass rounded-2xl px-6 py-3' : ''}`}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-masar-gold to-masar-gold-light flex items-center justify-center shadow-lg">
-                <Globe className="w-6 h-6 text-masar-navy" />
+      <nav style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 50,
+        transition: 'all 0.5s ease',
+        padding: scrolled ? '8px 0' : '16px 0',
+      }}>
+        <div style={{
+          maxWidth: '80rem',
+          margin: '0 auto',
+          padding: '0 1rem',
+        }}>
+          <div style={{
+            ...(scrolled ? glassStyle : {}),
+            borderRadius: scrolled ? '1rem' : '0',
+            padding: scrolled ? '12px 24px' : '0',
+            transition: 'all 0.5s ease',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              {/* Logo */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '12px',
+                  background: 'linear-gradient(135deg, #C8A951 0%, #E8D48B 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 4px 12px rgba(200,169,81,0.3)',
+                }}>
+                  <Globe size={24} color="#0A1628" />
+                </div>
+                <div>
+                  <h1 style={{
+                    fontSize: '1.25rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.05em',
+                    color: scrolled ? '#0A1628' : 'white',
+                    transition: 'color 0.3s ease',
+                    margin: 0,
+                    lineHeight: 1.2,
+                  }}>{isRTL ? 'مسار' : 'MASAR'}</h1>
+                  <p style={{
+                    fontSize: '9px',
+                    letterSpacing: '0.2em',
+                    textTransform: 'uppercase',
+                    color: scrolled ? '#C8A951' : 'rgba(232,212,139,0.9)',
+                    margin: 0,
+                  }}>{isRTL ? 'نظام تشغيل الممر' : 'Corridor OS'}</p>
+                </div>
               </div>
-              <div>
-                <h1 className={`text-xl font-bold tracking-wider transition-colors ${scrolled ? 'text-masar-navy' : 'text-white'}`}>
-                  {isRTL ? 'مسار' : 'MASAR'}
-                </h1>
-                <p className={`text-[9px] tracking-[0.2em] uppercase transition-colors ${scrolled ? 'text-masar-gold' : 'text-masar-gold-light'}`}>
-                  {isRTL ? 'نظام تشغيل الممر' : 'Corridor OS'}
-                </p>
+              
+              {/* Desktop Nav */}
+              <div className="hidden lg:flex" style={{ alignItems: 'center', gap: '24px' }}>
+                {['howItWorks', 'forBuyers', 'forExporters', 'compliance', 'about'].map((item) => (
+                  <a key={item} href={`#${item === 'howItWorks' ? 'how-it-works' : item}`} style={{
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    color: scrolled ? '#374151' : 'rgba(255,255,255,0.8)',
+                    textDecoration: 'none',
+                    transition: 'color 0.3s ease',
+                  }}>
+                    {t.nav[item as keyof typeof t.nav]}
+                  </a>
+                ))}
+                <button onClick={toggleLang} style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '8px 12px',
+                  borderRadius: '12px',
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  ...(scrolled ? { background: '#f3f4f6', color: '#374151' } : { ...glassStyle, color: 'white' }),
+                  border: 'none',
+                  cursor: 'pointer',
+                }}>
+                  <Languages size={16} />
+                  {isRTL ? 'EN' : 'عربي'}
+                </button>
+                <Link href="/auth" style={{
+                  padding: '10px 20px',
+                  borderRadius: '12px',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                  ...(scrolled ? { background: '#0A1628', color: 'white' } : { ...glassStyle, color: 'white' }),
+                }}>
+                  {t.nav.login}
+                </Link>
+                <Link href="/dashboard" style={{
+                  padding: '10px 20px',
+                  borderRadius: '12px',
+                  fontSize: '0.875rem',
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                  ...glassBtnStyle,
+                  color: '#0A1628',
+                }}>
+                  {t.nav.operationsCenter}
+                </Link>
               </div>
-            </div>
-            
-            <div className="hidden lg:flex items-center gap-6">
-              {['howItWorks', 'forBuyers', 'forExporters', 'compliance', 'about'].map((item) => (
-                <a key={item} href={`#${item === 'howItWorks' ? 'how-it-works' : item}`} className={`text-sm font-medium transition-colors ${scrolled ? 'text-gray-700 hover:text-masar-navy' : 'text-white/80 hover:text-white'}`}>
-                  {t.nav[item as keyof typeof t.nav]}
-                </a>
-              ))}
-              <button onClick={toggleLang} className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all ${scrolled ? 'bg-gray-100 text-gray-700' : 'glass text-white'}`}>
-                <Languages size={16} />
-                {isRTL ? 'EN' : 'عربي'}
-              </button>
-              <Link href="/auth" className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${scrolled ? 'bg-masar-navy text-white hover:bg-masar-dark' : 'glass-btn text-masar-navy'}`}>
-                {t.nav.login}
-              </Link>
-              <Link href="/dashboard" className="px-5 py-2.5 bg-masar-gold text-masar-navy rounded-xl text-sm font-bold hover:bg-masar-gold-light transition-all shadow-lg">
-                {t.nav.operationsCenter}
-              </Link>
-            </div>
 
-            <button className="lg:hidden p-2" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-              {mobileMenuOpen ? <X size={24} className={scrolled ? 'text-gray-700' : 'text-white'} /> : <Menu size={24} className={scrolled ? 'text-gray-700' : 'text-white'} />}
-            </button>
+              {/* Mobile Menu Button */}
+              <button className="lg:hidden" style={{ padding: '8px', background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                {mobileMenuOpen ? <X size={24} color={scrolled ? '#374151' : 'white'} /> : <Menu size={24} color={scrolled ? '#374151' : 'white'} />}
+              </button>
+            </div>
           </div>
         </div>
 
+        {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden mt-2 mx-4 glass-light rounded-2xl p-6 shadow-xl">
-            <div className="space-y-4">
+          <div className="lg:hidden" style={{ marginTop: '8px', margin: '8px 16px 0', ...glassLightStyle, borderRadius: '16px', padding: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {['howItWorks', 'forBuyers', 'forExporters', 'compliance', 'about'].map((item) => (
-                <a key={item} href={`#${item === 'howItWorks' ? 'how-it-works' : item}`} className="block text-base text-gray-700 font-medium" onClick={() => setMobileMenuOpen(false)}>
+                <a key={item} href={`#${item === 'howItWorks' ? 'how-it-works' : item}`} style={{ fontSize: '1rem', color: '#374151', fontWeight: 500, textDecoration: 'none' }} onClick={() => setMobileMenuOpen(false)}>
                   {t.nav[item as keyof typeof t.nav]}
                 </a>
               ))}
-              <div className="pt-4 border-t border-gray-200 space-y-3">
-                <Link href="/auth" className="block w-full py-3 glass-input rounded-xl text-center font-medium">{t.nav.login}</Link>
-                <Link href="/dashboard" className="block w-full py-3 bg-masar-gold text-masar-navy rounded-xl text-center font-bold">{t.nav.operationsCenter}</Link>
+              <div style={{ paddingTop: '16px', borderTop: '1px solid #e5e7eb', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <Link href="/auth" style={{ display: 'block', padding: '12px', borderRadius: '12px', textAlign: 'center', fontWeight: 500, textDecoration: 'none', color: '#374151', ...glassCardStyle }}>{t.nav.login}</Link>
+                <Link href="/dashboard" style={{ display: 'block', padding: '12px', borderRadius: '12px', textAlign: 'center', fontWeight: 700, textDecoration: 'none', color: '#0A1628', ...glassBtnStyle }}>{t.nav.operationsCenter}</Link>
               </div>
             </div>
           </div>
         )}
       </nav>
 
-      {/* Hero */}
-      <section className="relative min-h-screen flex items-center overflow-hidden mesh-gradient">
-        <div className="absolute inset-0 islamic-pattern opacity-20" />
-        <div className="absolute top-20 right-20 w-96 h-96 bg-masar-gold/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 left-20 w-80 h-80 bg-saudi-green/10 rounded-full blur-3xl" />
+      {/* Hero Section */}
+      <section style={{
+        position: 'relative',
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        overflow: 'hidden',
+        ...meshGradientStyle,
+      }}>
+        {/* Islamic Pattern Overlay */}
+        <div style={{ position: 'absolute', inset: 0, opacity: 0.2, ...islamicPatternStyle }} />
+        
+        {/* Decorative Blurs */}
+        <div style={{ position: 'absolute', top: '5rem', right: '5rem', width: '24rem', height: '24rem', background: 'rgba(200,169,81,0.1)', borderRadius: '50%', filter: 'blur(80px)' }} />
+        <div style={{ position: 'absolute', bottom: '5rem', left: '5rem', width: '20rem', height: '20rem', background: 'rgba(0,108,53,0.1)', borderRadius: '50%', filter: 'blur(80px)' }} />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-32 pb-20">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <div style={{ maxWidth: '80rem', margin: '0 auto', padding: '8rem 1rem 5rem', position: 'relative', zIndex: 10 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: '4rem', alignItems: 'center' }} className="lg:grid-cols-2">
+            {/* Left Content */}
             <div className="animate-fade-in">
-              <div className="inline-flex items-center gap-2 px-4 py-2 glass rounded-full mb-8">
-                <div className="w-2.5 h-2.5 bg-masar-gold rounded-full animate-pulse-slow" />
-                <span className="text-sm text-masar-gold-light font-medium">{t.hero.badge}</span>
+              {/* Badge */}
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '8px 16px',
+                ...glassStyle,
+                borderRadius: '9999px',
+                marginBottom: '2rem',
+              }}>
+                <div style={{ width: '10px', height: '10px', background: '#C8A951', borderRadius: '50%' }} className="animate-pulse-slow" />
+                <span style={{ fontSize: '0.875rem', color: 'rgba(232,212,139,0.9)', fontWeight: 500 }}>{t.hero.badge}</span>
               </div>
               
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight font-display">
+              {/* Title */}
+              <h1 style={{
+                fontSize: 'clamp(2rem, 5vw, 3.75rem)',
+                fontWeight: 700,
+                color: 'white',
+                lineHeight: 1.1,
+                margin: 0,
+              }} className="font-display">
                 {t.hero.title}
-                <span className="block mt-2 gradient-text-gold">{t.hero.titleHighlight}</span>
+                <span style={{ display: 'block', marginTop: '8px' }} className="gradient-text-gold">{t.hero.titleHighlight}</span>
               </h1>
               
-              <p className="text-lg text-gray-300 mt-8 max-w-xl leading-relaxed">{t.hero.subtitle}</p>
+              {/* Subtitle */}
+              <p style={{ fontSize: '1.125rem', color: '#d1d5db', marginTop: '2rem', maxWidth: '36rem', lineHeight: 1.7 }}>
+                {t.hero.subtitle}
+              </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 mt-10">
-                <Link href="/auth" className="px-8 py-4 glass-btn rounded-xl text-lg font-bold text-masar-navy flex items-center justify-center gap-3 group shadow-xl">
+              {/* CTAs */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginTop: '2.5rem' }}>
+                <Link href="/auth" style={{
+                  padding: '16px 32px',
+                  borderRadius: '12px',
+                  fontSize: '1.125rem',
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  ...glassBtnStyle,
+                  color: '#0A1628',
+                }}>
                   {t.hero.ctaPrimary}
-                  {isRTL ? <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" /> : <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />}
+                  {isRTL ? <ArrowLeft size={20} /> : <ArrowRight size={20} />}
                 </Link>
-                <a href="#about" className="px-8 py-4 glass rounded-xl text-lg font-semibold text-white flex items-center justify-center gap-2">
+                <a href="#about" style={{
+                  padding: '16px 32px',
+                  borderRadius: '12px',
+                  fontSize: '1.125rem',
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  color: 'white',
+                  ...glassStyle,
+                }}>
                   {t.hero.ctaSecondary}
                 </a>
               </div>
 
-              <div className="grid grid-cols-3 gap-6 mt-14 pt-10 border-t border-white/10">
+              {/* Stats */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', marginTop: '3.5rem', paddingTop: '2.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
                 {[{ v: t.hero.stat1, l: t.hero.stat1Label }, { v: t.hero.stat2, l: t.hero.stat2Label }, { v: t.hero.stat3, l: t.hero.stat3Label }].map((s, i) => (
-                  <div key={i} className="text-center">
-                    <p className="text-2xl md:text-3xl font-bold text-white">{s.v}</p>
-                    <p className="text-xs text-gray-400 mt-1">{s.l}</p>
+                  <div key={i} style={{ textAlign: 'center' }}>
+                    <p style={{ fontSize: 'clamp(1.25rem, 3vw, 1.75rem)', fontWeight: 700, color: 'white', margin: 0 }}>{s.v}</p>
+                    <p style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '4px', margin: '4px 0 0' }}>{s.l}</p>
                   </div>
                 ))}
               </div>
             </div>
 
+            {/* Right Visual - Corridor Card */}
             <div className="hidden lg:block animate-slide-up" style={{ animationDelay: '0.3s' }}>
-              <div className="glass-dark rounded-3xl p-8 relative">
-                <div className="flex items-center justify-between mb-10">
-                  <div className="text-center">
-                    <div className="w-20 h-20 glass rounded-2xl flex items-center justify-center mx-auto mb-3"><span className="text-4xl">🇳🇬</span></div>
-                    <p className="text-sm font-semibold text-white">{isRTL ? 'نيجيريا' : 'Nigeria'}</p>
+              <div style={{ ...glassDarkStyle, borderRadius: '24px', padding: '2rem', position: 'relative' }}>
+                {/* Corridor Visualization */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2.5rem' }}>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ width: '5rem', height: '5rem', ...glassStyle, borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                      <span style={{ fontSize: '2.5rem' }}>🇳🇬</span>
+                    </div>
+                    <p style={{ fontSize: '0.875rem', fontWeight: 600, color: 'white', margin: 0 }}>{isRTL ? 'نيجيريا' : 'Nigeria'}</p>
                   </div>
-                  <div className="flex-1 mx-6 relative">
-                    <div className="h-1.5 bg-gradient-to-r from-green-400 via-masar-gold to-yellow-400 rounded-full" />
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-masar-gold rounded-2xl flex items-center justify-center shadow-xl animate-float">
-                      <Ship size={20} className="text-masar-navy" />
+                  <div style={{ flex: 1, margin: '0 24px', position: 'relative' }}>
+                    <div style={{ height: '6px', background: 'linear-gradient(to right, #4ade80, #C8A951, #facc15)', borderRadius: '9999px' }} />
+                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '48px', height: '48px', background: '#C8A951', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 24px rgba(200,169,81,0.4)' }} className="animate-float">
+                      <Ship size={20} color="#0A1628" />
                     </div>
                   </div>
-                  <div className="text-center">
-                    <div className="w-20 h-20 glass rounded-2xl flex items-center justify-center mx-auto mb-3"><span className="text-4xl">🇸🇦</span></div>
-                    <p className="text-sm font-semibold text-white">{isRTL ? 'السعودية' : 'Saudi Arabia'}</p>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ width: '5rem', height: '5rem', ...glassStyle, borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                      <span style={{ fontSize: '2.5rem' }}>🇸🇦</span>
+                    </div>
+                    <p style={{ fontSize: '0.875rem', fontWeight: 600, color: 'white', margin: 0 }}>{isRTL ? 'السعودية' : 'Saudi Arabia'}</p>
                   </div>
                 </div>
-                <div className="space-y-3">
+
+                {/* Transaction Steps */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {[
                     { icon: Users, label: isRTL ? 'أطراف موثوقة' : 'Verified Counterparties', s: 'complete' },
                     { icon: Shield, label: isRTL ? 'تنسيق الامتثال' : 'Compliance', s: 'complete' },
@@ -264,51 +466,71 @@ export default function LandingPage() {
                     { icon: FileText, label: isRTL ? 'إدارة الوثائق' : 'Documents', s: 'complete' },
                     { icon: Lock, label: isRTL ? 'تسوية الضمان' : 'Settlement', s: 'pending' },
                   ].map((step, idx) => (
-                    <div key={idx} className="flex items-center gap-3 p-3 glass rounded-xl">
-                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${step.s === 'complete' ? 'bg-green-500/20' : step.s === 'active' ? 'bg-masar-gold/20' : 'bg-white/10'}`}>
-                        <step.icon size={16} className={step.s === 'complete' ? 'text-green-400' : step.s === 'active' ? 'text-masar-gold' : 'text-gray-400'} />
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', ...glassStyle, borderRadius: '12px' }}>
+                      <div style={{
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: step.s === 'complete' ? 'rgba(74,222,128,0.2)' : step.s === 'active' ? 'rgba(200,169,81,0.2)' : 'rgba(255,255,255,0.1)',
+                      }}>
+                        <step.icon size={16} color={step.s === 'complete' ? '#4ade80' : step.s === 'active' ? '#C8A951' : '#9ca3af'} />
                       </div>
-                      <span className="text-sm text-white flex-1">{step.label}</span>
-                      {step.s === 'complete' && <CheckCircle size={14} className="text-green-400" />}
-                      {step.s === 'active' && <div className="w-2 h-2 bg-masar-gold rounded-full animate-pulse-slow" />}
+                      <span style={{ fontSize: '0.875rem', color: 'white', flex: 1 }}>{step.label}</span>
+                      {step.s === 'complete' && <CheckCircle size={14} color="#4ade80" />}
+                      {step.s === 'active' && <div style={{ width: '8px', height: '8px', background: '#C8A951', borderRadius: '50%' }} className="animate-pulse-slow" />}
                     </div>
                   ))}
                 </div>
-                <div className="absolute -top-4 -left-4 glass-light rounded-xl p-3 shadow-xl animate-float">
-                  <div className="flex items-center gap-2"><CheckCircle size={16} className="text-green-500" /><span className="text-xs font-semibold text-gray-900">{isRTL ? 'معاملة مكتملة' : 'Transaction Complete'}</span></div>
+
+                {/* Floating Badges */}
+                <div style={{ position: 'absolute', top: '-16px', left: '-16px', ...glassLightStyle, borderRadius: '12px', padding: '12px', boxShadow: '0 8px 24px rgba(0,0,0,0.1)' }} className="animate-float">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <CheckCircle size={16} color="#22c55e" />
+                    <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#111827' }}>{isRTL ? 'معاملة مكتملة' : 'Transaction Complete'}</span>
+                  </div>
                 </div>
-                <div className="absolute -bottom-4 -right-4 bg-masar-gold rounded-xl p-3 shadow-xl animate-float" style={{ animationDelay: '1.5s' }}>
-                  <div className="flex items-center gap-2"><Star size={16} className="text-masar-navy" /><span className="text-xs font-bold text-masar-navy">{isRTL ? 'ثقة: ٩٤' : 'Trust: 94'}</span></div>
+                <div style={{ position: 'absolute', bottom: '-16px', right: '-16px', background: '#C8A951', borderRadius: '12px', padding: '12px', boxShadow: '0 8px 24px rgba(200,169,81,0.4)' }} className="animate-float">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Star size={16} color="#0A1628" fill="#0A1628" />
+                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0A1628' }}>{isRTL ? 'ثقة: ٩٤' : 'Trust: 94'}</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce"><ChevronDown size={24} className="text-white/50" /></div>
+
+        {/* Scroll Indicator */}
+        <div style={{ position: 'absolute', bottom: '2rem', left: '50%', transform: 'translateX(-50%)' }} className="animate-bounce">
+          <ChevronDown size={24} color="rgba(255,255,255,0.5)" />
+        </div>
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="section-padding bg-gray-50 arabesque-pattern">
-        <div className="container-masar">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-masar-navy font-display">{t.howItWorks.title}</h2>
-            <p className="text-lg text-gray-500 mt-4 max-w-2xl mx-auto">{t.howItWorks.subtitle}</p>
+      <section id="how-it-works" style={{ padding: '5rem 1rem', background: '#f9fafb', ...arabesquePatternStyle }}>
+        <div style={{ maxWidth: '80rem', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+            <h2 style={{ fontSize: 'clamp(1.875rem, 4vw, 3rem)', fontWeight: 700, color: '#0A1628', margin: 0 }} className="font-display">{t.howItWorks.title}</h2>
+            <p style={{ fontSize: '1.125rem', color: '#6b7280', marginTop: '1rem', maxWidth: '40rem', margin: '1rem auto 0' }}>{t.howItWorks.subtitle}</p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
             {t.howItWorks.steps.map((step, idx) => {
               const icons = [Users, FileText, Shield, Search, Lock, Ship];
-              const colors = ['from-blue-500/20 to-blue-600/10', 'from-purple-500/20 to-purple-600/10', 'from-green-500/20 to-green-600/10', 'from-yellow-500/20 to-yellow-600/10', 'from-masar-gold/20 to-masar-gold/10', 'from-red-500/20 to-red-600/10'];
+              const bgColors = ['rgba(59,130,246,0.1)', 'rgba(168,85,247,0.1)', 'rgba(34,197,94,0.1)', 'rgba(234,179,8,0.1)', 'rgba(200,169,81,0.1)', 'rgba(239,68,68,0.1)'];
               const Icon = icons[idx];
               return (
-                <div key={idx} className="glass-card rounded-2xl p-6">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${colors[idx]} flex items-center justify-center`}>
-                      <Icon size={24} className="text-masar-navy" />
+                <div key={idx} style={{ ...glassCardStyle, borderRadius: '16px', padding: '24px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
+                    <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: bgColors[idx], display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Icon size={24} color="#0A1628" />
                     </div>
-                    <span className="text-3xl font-bold text-gray-200">{String(idx + 1).padStart(2, '0')}</span>
+                    <span style={{ fontSize: '1.875rem', fontWeight: 700, color: '#e5e7eb' }}>{String(idx + 1).padStart(2, '0')}</span>
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">{step.title}</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">{step.desc}</p>
+                  <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#111827', marginBottom: '8px', margin: '0 0 8px' }}>{step.title}</h3>
+                  <p style={{ color: '#6b7280', fontSize: '0.875rem', lineHeight: 1.7, margin: 0 }}>{step.desc}</p>
                 </div>
               );
             })}
@@ -317,34 +539,39 @@ export default function LandingPage() {
       </section>
 
       {/* For Buyers */}
-      <section id="for-buyers" className="section-padding">
-        <div className="container-masar">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <section id="for-buyers" style={{ padding: '5rem 1rem' }}>
+        <div style={{ maxWidth: '80rem', margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '4rem', alignItems: 'center' }} className="lg:grid-cols-2">
             <div>
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 rounded-full mb-6">
-                <span className="text-xl">🇸🇦</span>
-                <span className="text-sm text-green-700 font-semibold">{t.forBuyers.badge}</span>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(34,197,94,0.1)', borderRadius: '9999px', marginBottom: '24px' }}>
+                <span style={{ fontSize: '1.25rem' }}>🇸🇦</span>
+                <span style={{ fontSize: '0.875rem', color: '#15803d', fontWeight: 600 }}>{t.forBuyers.badge}</span>
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold text-masar-navy font-display">{t.forBuyers.title}</h2>
-              <p className="text-lg text-gray-500 mt-4">{t.forBuyers.subtitle}</p>
-              <div className="mt-8 space-y-3">
+              <h2 style={{ fontSize: 'clamp(1.5rem, 4vw, 2.25rem)', fontWeight: 700, color: '#0A1628', margin: 0 }} className="font-display">{t.forBuyers.title}</h2>
+              <p style={{ fontSize: '1.125rem', color: '#6b7280', marginTop: '16px' }}>{t.forBuyers.subtitle}</p>
+              <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {t.forBuyers.benefits.map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-3 p-3 glass-card rounded-xl">
-                    <CheckCircle size={18} className="text-green-500 flex-shrink-0" />
-                    <span className="text-gray-700">{item}</span>
+                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', ...glassCardStyle, borderRadius: '12px' }}>
+                    <CheckCircle size={18} color="#22c55e" />
+                    <span style={{ color: '#374151' }}>{item}</span>
                   </div>
                 ))}
               </div>
-              <Link href="/auth" className="inline-flex items-center gap-2 mt-8 px-8 py-4 bg-masar-navy text-white rounded-xl font-semibold hover:bg-masar-dark transition-all shadow-lg group">
+              <Link href="/auth" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginTop: '2rem', padding: '16px 32px', background: '#0A1628', color: 'white', borderRadius: '12px', fontWeight: 600, textDecoration: 'none', boxShadow: '0 4px 12px rgba(10,22,40,0.3)' }}>
                 {t.forBuyers.cta} {isRTL ? <ArrowLeft size={18} /> : <ArrowRight size={18} />}
               </Link>
             </div>
-            <div className="glass-card rounded-3xl p-8 arabesque-pattern">
-              {[{ i: Building2, t: isRTL ? 'مصانع الأغذية' : 'Food Processors', d: isRTL ? 'سمسم فاخر' : 'Premium sesame', c: 'text-blue-600' }, { i: Truck, t: isRTL ? 'مستوردو السلع' : 'Commodity Importers', d: isRTL ? 'سمسم بالجملة' : 'Bulk sesame', c: 'text-green-600' }, { i: Building2, t: isRTL ? 'مصانع الأغذية' : 'Food Manufacturers', d: isRTL ? 'إمدادات ثابتة' : 'Consistent supply', c: 'text-purple-600' }, { i: Users, t: isRTL ? 'الموزعون' : 'Distributors', d: isRTL ? 'سلسلة إمداد موثوقة' : 'Verified supply chain', c: 'text-masar-gold' }].map((p, idx) => (
-                <div key={idx} className="glass-card rounded-xl p-4 mb-3 last:mb-0">
-                  <div className="flex items-center gap-4">
-                    <div className="w-11 h-11 bg-gray-50 rounded-xl flex items-center justify-center"><p.i size={22} className={p.c} /></div>
-                    <div><p className="font-semibold text-gray-900">{p.t}</p><p className="text-xs text-gray-500">{p.d}</p></div>
+            <div style={{ ...glassCardStyle, borderRadius: '24px', padding: '32px', ...arabesquePatternStyle }}>
+              {[{ i: Building2, t: isRTL ? 'مصانع الأغذية' : 'Food Processors', d: isRTL ? 'سمسم فاخر' : 'Premium sesame', c: '#2563eb' }, { i: Truck, t: isRTL ? 'مستوردو السلع' : 'Commodity Importers', d: isRTL ? 'سمسم بالجملة' : 'Bulk sesame', c: '#16a34a' }, { i: Building2, t: isRTL ? 'مصانع الأغذية' : 'Food Manufacturers', d: isRTL ? 'إمدادات ثابتة' : 'Consistent supply', c: '#9333ea' }, { i: Users, t: isRTL ? 'الموزعون' : 'Distributors', d: isRTL ? 'سلسلة إمداد موثوقة' : 'Verified supply chain', c: '#C8A951' }].map((p, idx) => (
+                <div key={idx} style={{ ...glassCardStyle, borderRadius: '12px', padding: '16px', marginBottom: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <div style={{ width: '44px', height: '44px', background: '#f9fafb', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <p.i size={22} color={p.c} />
+                    </div>
+                    <div>
+                      <p style={{ fontWeight: 600, color: '#111827', margin: 0 }}>{p.t}</p>
+                      <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: '2px 0 0' }}>{p.d}</p>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -354,35 +581,40 @@ export default function LandingPage() {
       </section>
 
       {/* For Exporters */}
-      <section id="for-exporters" className="section-padding bg-gray-50 arabesque-pattern">
-        <div className="container-masar">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="order-2 lg:order-1 glass-card rounded-3xl p-8 arabesque-pattern">
-              {[{ i: Award, t: isRTL ? 'درجة ثقة مسار' : 'MASAR Trust Score', d: isRTL ? 'بناء السمعة' : 'Build reputation', c: 'text-masar-gold' }, { i: Users, t: isRTL ? 'مشترين موثقين' : 'Verified Buyers', d: isRTL ? 'وصول مباشر' : 'Direct access', c: 'text-blue-600' }, { i: Shield, t: isRTL ? 'دعم الامتثال' : 'Compliance Support', d: isRTL ? 'تنسيق كامل' : 'Full coordination', c: 'text-green-600' }, { i: DollarSign, t: isRTL ? 'مسارات التمويل' : 'Financing', d: isRTL ? 'شركاء رأس المال' : 'Capital partners', c: 'text-purple-600' }].map((p, idx) => (
-                <div key={idx} className="glass-card rounded-xl p-4 mb-3 last:mb-0">
-                  <div className="flex items-center gap-4">
-                    <div className="w-11 h-11 bg-gray-50 rounded-xl flex items-center justify-center"><p.i size={22} className={p.c} /></div>
-                    <div><p className="font-semibold text-gray-900">{p.t}</p><p className="text-xs text-gray-500">{p.d}</p></div>
+      <section id="for-exporters" style={{ padding: '5rem 1rem', background: '#f9fafb', ...arabesquePatternStyle }}>
+        <div style={{ maxWidth: '80rem', margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '4rem', alignItems: 'center' }} className="lg:grid-cols-2">
+            <div className="order-2 lg:order-1" style={{ ...glassCardStyle, borderRadius: '24px', padding: '32px', ...arabesquePatternStyle }}>
+              {[{ i: Award, t: isRTL ? 'درجة ثقة مسار' : 'MASAR Trust Score', d: isRTL ? 'بناء السمعة' : 'Build reputation', c: '#C8A951' }, { i: Users, t: isRTL ? 'مشترين موثقين' : 'Verified Buyers', d: isRTL ? 'وصول مباشر' : 'Direct access', c: '#2563eb' }, { i: Shield, t: isRTL ? 'دعم الامتثال' : 'Compliance Support', d: isRTL ? 'تنسيق كامل' : 'Full coordination', c: '#16a34a' }, { i: DollarSign, t: isRTL ? 'مسارات التمويل' : 'Financing', d: isRTL ? 'شركاء رأس المال' : 'Capital partners', c: '#9333ea' }].map((p, idx) => (
+                <div key={idx} style={{ ...glassCardStyle, borderRadius: '12px', padding: '16px', marginBottom: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <div style={{ width: '44px', height: '44px', background: '#f9fafb', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <p.i size={22} color={p.c} />
+                    </div>
+                    <div>
+                      <p style={{ fontWeight: 600, color: '#111827', margin: 0 }}>{p.t}</p>
+                      <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: '2px 0 0' }}>{p.d}</p>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
             <div className="order-1 lg:order-2">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 rounded-full mb-6">
-                <span className="text-xl">🇳🇬</span>
-                <span className="text-sm text-green-700 font-semibold">{t.forExporters.badge}</span>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(34,197,94,0.1)', borderRadius: '9999px', marginBottom: '24px' }}>
+                <span style={{ fontSize: '1.25rem' }}>🇳🇬</span>
+                <span style={{ fontSize: '0.875rem', color: '#15803d', fontWeight: 600 }}>{t.forExporters.badge}</span>
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold text-masar-navy font-display">{t.forExporters.title}</h2>
-              <p className="text-lg text-gray-500 mt-4">{t.forExporters.subtitle}</p>
-              <div className="mt-8 space-y-3">
+              <h2 style={{ fontSize: 'clamp(1.5rem, 4vw, 2.25rem)', fontWeight: 700, color: '#0A1628', margin: 0 }} className="font-display">{t.forExporters.title}</h2>
+              <p style={{ fontSize: '1.125rem', color: '#6b7280', marginTop: '16px' }}>{t.forExporters.subtitle}</p>
+              <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {t.forExporters.benefits.map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-3 p-3 glass-card rounded-xl">
-                    <CheckCircle size={18} className="text-green-500 flex-shrink-0" />
-                    <span className="text-gray-700">{item}</span>
+                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', ...glassCardStyle, borderRadius: '12px' }}>
+                    <CheckCircle size={18} color="#22c55e" />
+                    <span style={{ color: '#374151' }}>{item}</span>
                   </div>
                 ))}
               </div>
-              <Link href="/auth" className="inline-flex items-center gap-2 mt-8 px-8 py-4 bg-green-700 text-white rounded-xl font-semibold hover:bg-green-800 transition-all shadow-lg group">
+              <Link href="/auth" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginTop: '2rem', padding: '16px 32px', background: '#15803d', color: 'white', borderRadius: '12px', fontWeight: 600, textDecoration: 'none', boxShadow: '0 4px 12px rgba(21,128,61,0.3)' }}>
                 {t.forExporters.cta} {isRTL ? <ArrowLeft size={18} /> : <ArrowRight size={18} />}
               </Link>
             </div>
@@ -391,27 +623,43 @@ export default function LandingPage() {
       </section>
 
       {/* Compliance */}
-      <section id="compliance" className="section-padding">
-        <div className="container-masar">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-masar-navy font-display">{t.compliance.title}</h2>
-            <p className="text-lg text-gray-500 mt-4 max-w-2xl mx-auto">{t.compliance.subtitle}</p>
+      <section id="compliance" style={{ padding: '5rem 1rem' }}>
+        <div style={{ maxWidth: '80rem', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+            <h2 style={{ fontSize: 'clamp(1.875rem, 4vw, 3rem)', fontWeight: 700, color: '#0A1628', margin: 0 }} className="font-display">{t.compliance.title}</h2>
+            <p style={{ fontSize: '1.125rem', color: '#6b7280', marginTop: '1rem', maxWidth: '40rem', margin: '1rem auto 0' }}>{t.compliance.subtitle}</p>
           </div>
-          <div className="glass-dark rounded-3xl p-10 relative overflow-hidden">
-            <div className="absolute inset-0 islamic-pattern opacity-10" />
-            <div className="grid lg:grid-cols-2 gap-12 items-center relative z-10">
+          <div style={{ ...glassDarkStyle, borderRadius: '24px', padding: '2.5rem', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', inset: 0, opacity: 0.1, ...islamicPatternStyle }} />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '3rem', alignItems: 'center', position: 'relative', zIndex: 10 }} className="lg:grid-cols-2">
               <div>
-                <h3 className="text-3xl font-bold text-white mb-6 font-display">{t.compliance.clearanceTitle}</h3>
-                <p className="text-lg text-gray-300">{t.compliance.clearanceDesc}</p>
-                <div className="mt-8 grid grid-cols-2 gap-4">
-                  {[{ s: '90–100', l: isRTL ? 'جاهز' : 'Ready', c: 'text-green-400' }, { s: '75–89', l: isRTL ? 'مشروط' : 'Conditional', c: 'text-yellow-400' }, { s: '50–74', l: isRTL ? 'في خطر' : 'At Risk', c: 'text-orange-400' }, { s: '<50', l: isRTL ? 'غير جاهز' : 'Not Ready', c: 'text-red-400' }].map((item, idx) => (
-                    <div key={idx} className="glass rounded-xl p-4"><p className={`text-2xl font-bold ${item.c}`}>{item.s}</p><p className="text-sm text-gray-300 mt-1">{item.l}</p></div>
+                <h3 style={{ fontSize: '1.875rem', fontWeight: 700, color: 'white', marginBottom: '1.5rem', margin: '0 0 1.5rem' }} className="font-display">{t.compliance.clearanceTitle}</h3>
+                <p style={{ fontSize: '1.125rem', color: '#d1d5db' }}>{t.compliance.clearanceDesc}</p>
+                <div style={{ marginTop: '2rem', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
+                  {[{ s: '90–100', l: isRTL ? 'جاهز' : 'Ready', c: '#4ade80' }, { s: '75–89', l: isRTL ? 'مشروط' : 'Conditional', c: '#facc15' }, { s: '50–74', l: isRTL ? 'في خطر' : 'At Risk', c: '#fb923c' }, { s: '<50', l: isRTL ? 'غير جاهز' : 'Not Ready', c: '#f87171' }].map((item, idx) => (
+                    <div key={idx} style={{ ...glassStyle, borderRadius: '12px', padding: '16px' }}>
+                      <p style={{ fontSize: '1.5rem', fontWeight: 700, color: item.c, margin: 0 }}>{item.s}</p>
+                      <p style={{ fontSize: '0.875rem', color: '#d1d5db', marginTop: '4px', margin: '4px 0 0' }}>{item.l}</p>
+                    </div>
                   ))}
                 </div>
               </div>
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-36 h-36 rounded-full bg-green-500/20 border-4 border-green-400 shadow-2xl animate-glow">
-                  <div><p className="text-5xl font-bold text-green-400">94</p><p className="text-xs text-green-300 font-semibold">{isRTL ? 'درجة' : 'SCORE'}</p></div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{
+                  width: '144px',
+                  height: '144px',
+                  borderRadius: '50%',
+                  background: 'rgba(74,222,128,0.2)',
+                  border: '4px solid #4ade80',
+                  boxShadow: '0 0 40px rgba(74,222,128,0.3)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }} className="animate-glow">
+                  <div>
+                    <p style={{ fontSize: '3rem', fontWeight: 700, color: '#4ade80', margin: 0 }}>94</p>
+                    <p style={{ fontSize: '0.75rem', color: '#86efac', fontWeight: 600, margin: 0 }}>{isRTL ? 'درجة' : 'SCORE'}</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -420,29 +668,39 @@ export default function LandingPage() {
       </section>
 
       {/* About */}
-      <section id="about" className="section-padding bg-gray-50 arabesque-pattern">
-        <div className="container-masar">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <section id="about" style={{ padding: '5rem 1rem', background: '#f9fafb', ...arabesquePatternStyle }}>
+        <div style={{ maxWidth: '80rem', margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '4rem', alignItems: 'center' }} className="lg:grid-cols-2">
             <div>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-masar-navy font-display">{t.about.title}</h2>
-              <p className="text-lg text-gray-500 mt-6">{t.about.subtitle}</p>
-              <div className="mt-10 space-y-6">
-                {[{ i: Globe, t: isRTL ? 'نظام تشغيل الممر' : 'Corridor OS', d: isRTL ? 'مبني خصيصاً لممر نيجيريا ← السعودية' : 'Purpose-built for Nigeria → Saudi corridor', c: 'bg-blue-100 text-blue-600' }, { i: Shield, t: isRTL ? 'الثقة بالتصميم' : 'Trust by Design', d: isRTL ? 'أطراف موثوقة وفحص مستقل' : 'Verified counterparties, independent inspection', c: 'bg-green-100 text-green-600' }, { i: Zap, t: isRTL ? 'أثبت أولاً' : 'Prove First', d: isRTL ? 'أثبت يدوياً ثم أتمت' : 'Prove manually, then automate', c: 'bg-masar-gold/20 text-masar-gold' }].map((f, idx) => (
-                  <div key={idx} className="flex items-start gap-4">
-                    <div className={`w-12 h-12 rounded-xl ${f.c} flex items-center justify-center flex-shrink-0`}><f.i size={24} /></div>
-                    <div><h4 className="text-lg font-bold text-gray-900">{f.t}</h4><p className="text-gray-500 mt-1">{f.d}</p></div>
+              <h2 style={{ fontSize: 'clamp(1.875rem, 4vw, 3rem)', fontWeight: 700, color: '#0A1628', margin: 0 }} className="font-display">{t.about.title}</h2>
+              <p style={{ fontSize: '1.125rem', color: '#6b7280', marginTop: '1.5rem' }}>{t.about.subtitle}</p>
+              <div style={{ marginTop: '2.5rem', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                {[{ i: Globe, t: isRTL ? 'نظام تشغيل الممر' : 'Corridor OS', d: isRTL ? 'مبني خصيصاً لممر نيجيريا ← السعودية' : 'Purpose-built for Nigeria → Saudi corridor', bg: 'rgba(59,130,246,0.1)', c: '#2563eb' }, { i: Shield, t: isRTL ? 'الثقة بالتصميم' : 'Trust by Design', d: isRTL ? 'أطراف موثوقة وفحص مستقل' : 'Verified counterparties, independent inspection', bg: 'rgba(34,197,94,0.1)', c: '#16a34a' }, { i: Zap, t: isRTL ? 'أثبت أولاً' : 'Prove First', d: isRTL ? 'أثبت يدوياً ثم أتمت' : 'Prove manually, then automate', bg: 'rgba(200,169,81,0.1)', c: '#C8A951' }].map((f, idx) => (
+                  <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                    <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: f.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <f.i size={24} color={f.c} />
+                    </div>
+                    <div>
+                      <h4 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#111827', margin: 0 }}>{f.t}</h4>
+                      <p style={{ color: '#6b7280', marginTop: '4px', margin: '4px 0 0' }}>{f.d}</p>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="glass-dark rounded-3xl p-10 relative overflow-hidden">
-              <div className="absolute inset-0 islamic-pattern opacity-10" />
-              <div className="relative z-10">
-                <h3 className="text-xl font-bold text-white mb-6 font-display">{isRTL ? 'مبدأ البناء' : 'The Build Principle'}</h3>
-                <blockquote className="text-lg text-gray-300 italic border-r-4 border-masar-gold pr-6 leading-relaxed">{t.about.quote}</blockquote>
-                <div className="mt-8 space-y-3">
+            <div style={{ ...glassDarkStyle, borderRadius: '24px', padding: '2.5rem', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', inset: 0, opacity: 0.1, ...islamicPatternStyle }} />
+              <div style={{ position: 'relative', zIndex: 10 }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'white', marginBottom: '1.5rem', margin: '0 0 1.5rem' }} className="font-display">{isRTL ? 'مبدأ البناء' : 'The Build Principle'}</h3>
+                <blockquote style={{ fontSize: '1.125rem', color: '#d1d5db', fontStyle: 'italic', borderRight: isRTL ? '4px solid #C8A951' : 'none', borderLeft: isRTL ? 'none' : '4px solid #C8A951', paddingRight: isRTL ? '24px' : 0, paddingLeft: isRTL ? 0 : '24px', lineHeight: 1.7, margin: 0 }}>
+                  {t.about.quote}
+                </blockquote>
+                <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {[isRTL ? 'أولى معاملات نيجيريا ← السعودية' : 'First Nigeria → Saudi transactions', isRTL ? 'بروتوكول كامل تم التقاطه' : 'Complete protocol captured', isRTL ? 'الاقتصاديات تم التحقق منها' : 'Economics validated', isRTL ? 'أساس لأتمتة مسار' : 'Foundation for MASAR automation'].map((item, idx) => (
-                    <div key={idx} className="flex items-center gap-3"><CheckCircle size={16} className="text-green-400" /><span className="text-gray-300 text-sm">{item}</span></div>
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <CheckCircle size={16} color="#4ade80" />
+                      <span style={{ color: '#d1d5db', fontSize: '0.875rem' }}>{item}</span>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -452,16 +710,16 @@ export default function LandingPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 mesh-gradient relative overflow-hidden">
-        <div className="absolute inset-0 islamic-pattern opacity-20" />
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white font-display">{t.cta.title}</h2>
-          <p className="text-xl text-gray-300 mt-6">{t.cta.subtitle}</p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-12">
-            <Link href="/auth" className="px-10 py-5 glass-btn rounded-xl text-lg font-bold text-masar-navy flex items-center justify-center gap-3 shadow-xl">
+      <section style={{ padding: '6rem 1rem', ...meshGradientStyle, position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, opacity: 0.2, ...islamicPatternStyle }} />
+        <div style={{ maxWidth: '56rem', margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 10 }}>
+          <h2 style={{ fontSize: 'clamp(1.875rem, 4vw, 3rem)', fontWeight: 700, color: 'white', margin: 0 }} className="font-display">{t.cta.title}</h2>
+          <p style={{ fontSize: '1.25rem', color: '#d1d5db', marginTop: '1.5rem' }}>{t.cta.subtitle}</p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'center', marginTop: '3rem' }}>
+            <Link href="/auth" style={{ padding: '20px 40px', borderRadius: '12px', fontSize: '1.25rem', fontWeight: 700, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '12px', ...glassBtnStyle, color: '#0A1628', boxShadow: '0 8px 24px rgba(200,169,81,0.4)' }}>
               {t.cta.primary} {isRTL ? <ArrowLeft size={22} /> : <ArrowRight size={22} />}
             </Link>
-            <a href="mailto:info@masar.sa" className="px-10 py-5 glass rounded-xl text-lg font-semibold text-white flex items-center justify-center gap-2">
+            <a href="mailto:info@masar.sa" style={{ padding: '20px 40px', borderRadius: '12px', fontSize: '1.25rem', fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', color: 'white', ...glassStyle }}>
               {t.cta.secondary}
             </a>
           </div>
@@ -469,44 +727,49 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-masar-navy py-16 px-4 sm:px-6 lg:px-8 border-t border-white/10">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-10">
+      <footer style={{ background: '#0A1628', padding: '4rem 1rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+        <div style={{ maxWidth: '80rem', margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2.5rem' }}>
             <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-masar-gold to-masar-gold-light flex items-center justify-center"><Globe className="w-6 h-6 text-masar-navy" /></div>
-                <div><h3 className="text-lg font-bold text-white">{isRTL ? 'مسار' : 'MASAR'}</h3><p className="text-[9px] text-masar-gold tracking-widest uppercase">{isRTL ? 'نظام تشغيل الممر' : 'Corridor OS'}</p></div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'linear-gradient(135deg, #C8A951 0%, #E8D48B 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Globe size={24} color="#0A1628" />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'white', margin: 0 }}>{isRTL ? 'مسار' : 'MASAR'}</h3>
+                  <p style={{ fontSize: '9px', color: '#C8A951', letterSpacing: '0.2em', textTransform: 'uppercase', margin: 0 }}>{isRTL ? 'نظام تشغيل الممر' : 'Corridor OS'}</p>
+                </div>
               </div>
-              <p className="text-sm text-gray-400">{t.footer.description}</p>
+              <p style={{ fontSize: '0.875rem', color: '#9ca3af' }}>{t.footer.description}</p>
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-white mb-4">{isRTL ? 'المنصة' : 'Platform'}</h4>
-              <div className="space-y-2">
+              <h4 style={{ fontSize: '0.875rem', fontWeight: 600, color: 'white', marginBottom: '16px', margin: '0 0 16px' }}>{isRTL ? 'المنصة' : 'Platform'}</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {['howItWorks', 'forBuyers', 'forExporters', 'compliance'].map((item) => (
-                  <a key={item} href={`#${item === 'howItWorks' ? 'how-it-works' : item}`} className="block text-sm text-gray-400 hover:text-white">{t.nav[item as keyof typeof t.nav]}</a>
+                  <a key={item} href={`#${item === 'howItWorks' ? 'how-it-works' : item}`} style={{ fontSize: '0.875rem', color: '#9ca3af', textDecoration: 'none' }}>{t.nav[item as keyof typeof t.nav]}</a>
                 ))}
               </div>
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-white mb-4">{isRTL ? 'ممرات التجارة' : 'Corridors'}</h4>
-              <p className="text-sm text-gray-400">🇳🇬 {isRTL ? 'نيجيريا' : 'Nigeria'} → 🇸🇦 {isRTL ? 'السعودية' : 'Saudi Arabia'}</p>
-              <p className="text-xs text-gray-500 mt-2">{isRTL ? 'ممرات أخرى قريباً' : 'More corridors coming'}</p>
+              <h4 style={{ fontSize: '0.875rem', fontWeight: 600, color: 'white', marginBottom: '16px', margin: '0 0 16px' }}>{isRTL ? 'ممرات التجارة' : 'Corridors'}</h4>
+              <p style={{ fontSize: '0.875rem', color: '#9ca3af', margin: 0 }}>🇳🇬 {isRTL ? 'نيجيريا' : 'Nigeria'} → 🇸🇦 {isRTL ? 'السعودية' : 'Saudi Arabia'}</p>
+              <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '8px', margin: '8px 0 0' }}>{isRTL ? 'ممرات أخرى قريباً' : 'More corridors coming'}</p>
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-white mb-4">{isRTL ? 'اتصل بنا' : 'Contact'}</h4>
-              <div className="space-y-2">
-                <a href="mailto:info@masar.sa" className="flex items-center gap-2 text-sm text-gray-400 hover:text-white"><Mail size={14} /> info@masar.sa</a>
-                <p className="flex items-center gap-2 text-sm text-gray-400"><MapPin size={14} /> {isRTL ? 'الرياض' : 'Riyadh'}, {isRTL ? 'السعودية' : 'Saudi Arabia'}</p>
-                <p className="flex items-center gap-2 text-sm text-gray-400"><MapPin size={14} /> {isRTL ? 'لاغوس' : 'Lagos'}, {isRTL ? 'نيجيريا' : 'Nigeria'}</p>
+              <h4 style={{ fontSize: '0.875rem', fontWeight: 600, color: 'white', marginBottom: '16px', margin: '0 0 16px' }}>{isRTL ? 'اتصل بنا' : 'Contact'}</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <a href="mailto:info@masar.sa" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.875rem', color: '#9ca3af', textDecoration: 'none' }}><Mail size={14} /> info@masar.sa</a>
+                <p style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.875rem', color: '#9ca3af', margin: 0 }}><MapPin size={14} /> {isRTL ? 'الرياض' : 'Riyadh'}, {isRTL ? 'السعودية' : 'Saudi Arabia'}</p>
+                <p style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.875rem', color: '#9ca3af', margin: 0 }}><MapPin size={14} /> {isRTL ? 'لاغوس' : 'Lagos'}, {isRTL ? 'نيجيريا' : 'Nigeria'}</p>
               </div>
             </div>
           </div>
-          <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-xs text-gray-500">{t.footer.copyright}</p>
-            <div className="flex items-center gap-6">
-              <a href="#" className="text-xs text-gray-500 hover:text-white">{isRTL ? 'سياسة الخصوصية' : 'Privacy'}</a>
-              <a href="#" className="text-xs text-gray-500 hover:text-white">{isRTL ? 'شروط الخدمة' : 'Terms'}</a>
-              <a href="#" className="text-xs text-gray-500 hover:text-white">{isRTL ? 'الامتثال' : 'PDPL'}</a>
+          <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
+            <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: 0 }}>{t.footer.copyright}</p>
+            <div style={{ display: 'flex', gap: '24px' }}>
+              <a href="#" style={{ fontSize: '0.75rem', color: '#6b7280', textDecoration: 'none' }}>{isRTL ? 'سياسة الخصوصية' : 'Privacy'}</a>
+              <a href="#" style={{ fontSize: '0.75rem', color: '#6b7280', textDecoration: 'none' }}>{isRTL ? 'شروط الخدمة' : 'Terms'}</a>
+              <a href="#" style={{ fontSize: '0.75rem', color: '#6b7280', textDecoration: 'none' }}>{isRTL ? 'الامتثال' : 'PDPL'}</a>
             </div>
           </div>
         </div>
