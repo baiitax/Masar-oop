@@ -1,5 +1,12 @@
 import { createClient } from '@/lib/supabase/client';
 
+// Check if Supabase is configured
+const isConfigured = () => {
+  return process.env.NEXT_PUBLIC_SUPABASE_URL && 
+         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
+         process.env.NEXT_PUBLIC_SUPABASE_URL !== 'https://placeholder.supabase.co';
+};
+
 const supabase = createClient();
 
 // ============================================================
@@ -12,6 +19,10 @@ export async function signUp(email: string, password: string, metadata: {
   phone?: string;
   role?: string;
 }) {
+  if (!isConfigured()) {
+    return { data: null, error: { message: 'Supabase not configured' } };
+  }
+  
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -24,6 +35,10 @@ export async function signUp(email: string, password: string, metadata: {
 }
 
 export async function signIn(email: string, password: string) {
+  if (!isConfigured()) {
+    return { data: null, error: { message: 'Supabase not configured' } };
+  }
+  
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -32,16 +47,28 @@ export async function signIn(email: string, password: string) {
 }
 
 export async function signOut() {
+  if (!isConfigured()) {
+    return { error: null };
+  }
+  
   const { error } = await supabase.auth.signOut();
   return { error };
 }
 
 export async function getCurrentUser() {
+  if (!isConfigured()) {
+    return null;
+  }
+  
   const { data: { user } } = await supabase.auth.getUser();
   return user;
 }
 
 export async function getProfile(userId: string) {
+  if (!isConfigured()) {
+    return { data: null, error: { message: 'Supabase not configured' } };
+  }
+  
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
@@ -51,6 +78,10 @@ export async function getProfile(userId: string) {
 }
 
 export async function updateProfile(userId: string, updates: Record<string, any>) {
+  if (!isConfigured()) {
+    return { data: null, error: { message: 'Supabase not configured' } };
+  }
+  
   const { data, error } = await supabase
     .from('profiles')
     .update(updates)
@@ -71,6 +102,10 @@ export async function getTransactions(filters?: {
   limit?: number;
   offset?: number;
 }) {
+  if (!isConfigured()) {
+    return { data: [], error: null };
+  }
+  
   let query = supabase
     .from('transactions')
     .select(`
@@ -92,6 +127,10 @@ export async function getTransactions(filters?: {
 }
 
 export async function getTransaction(id: string) {
+  if (!isConfigured()) {
+    return { data: null, error: { message: 'Supabase not configured' } };
+  }
+  
   const { data, error } = await supabase
     .from('transactions')
     .select(`
@@ -122,6 +161,10 @@ export async function createTransaction(transaction: {
   destination: string;
   origin: string;
 }) {
+  if (!isConfigured()) {
+    return { data: null, error: { message: 'Supabase not configured' } };
+  }
+  
   const masarId = `MASAR-SES-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 999999)).padStart(6, '0')}`;
   
   const { data, error } = await supabase
@@ -138,29 +181,13 @@ export async function createTransaction(transaction: {
 }
 
 export async function updateTransactionStatus(id: string, status: string) {
+  if (!isConfigured()) {
+    return { data: null, error: { message: 'Supabase not configured' } };
+  }
+  
   const { data, error } = await supabase
     .from('transactions')
     .update({ status })
-    .eq('id', id)
-    .select()
-    .single();
-  return { data, error };
-}
-
-export async function updateClearanceScore(id: string, scores: Record<string, number>) {
-  const { data, error } = await supabase
-    .from('transactions')
-    .update({
-      clearance_exporter_verification: scores.exporter_verification || 0,
-      clearance_buyer_verification: scores.buyer_verification || 0,
-      clearance_commodity_documentation: scores.commodity_documentation || 0,
-      clearance_lab_coa: scores.lab_coa || 0,
-      clearance_phytosanitary: scores.phytosanitary || 0,
-      clearance_origin_documentation: scores.origin_documentation || 0,
-      clearance_saudi_import_readiness: scores.saudi_import_readiness || 0,
-      clearance_contract_completeness: scores.contract_completeness || 0,
-      clearance_inspection_readiness: scores.inspection_readiness || 0,
-    })
     .eq('id', id)
     .select()
     .single();
@@ -175,6 +202,10 @@ export async function getBuyers(filters?: {
   verification_status?: string;
   limit?: number;
 }) {
+  if (!isConfigured()) {
+    return { data: [], error: null };
+  }
+  
   let query = supabase
     .from('buyers')
     .select('*, organization:organizations(*)')
@@ -184,15 +215,6 @@ export async function getBuyers(filters?: {
   if (filters?.limit) query = query.limit(filters.limit);
 
   const { data, error } = await query;
-  return { data, error };
-}
-
-export async function getBuyer(id: string) {
-  const { data, error } = await supabase
-    .from('buyers')
-    .select('*, organization:organizations(*, members:organization_members(*))')
-    .eq('id', id)
-    .single();
   return { data, error };
 }
 
@@ -209,22 +231,13 @@ export async function createBuyer(buyer: {
   payment_terms?: string;
   bank_references?: string[];
 }) {
+  if (!isConfigured()) {
+    return { data: null, error: { message: 'Supabase not configured' } };
+  }
+  
   const { data, error } = await supabase
     .from('buyers')
     .insert(buyer)
-    .select()
-    .single();
-  return { data, error };
-}
-
-export async function updateBuyerVerification(id: string, status: string) {
-  const { data, error } = await supabase
-    .from('buyers')
-    .update({ 
-      verification_status: status,
-      verified_at: status === 'APPROVED' ? new Date().toISOString() : null,
-    })
-    .eq('id', id)
     .select()
     .single();
   return { data, error };
@@ -238,6 +251,10 @@ export async function getExporters(filters?: {
   verification_status?: string;
   limit?: number;
 }) {
+  if (!isConfigured()) {
+    return { data: [], error: null };
+  }
+  
   let query = supabase
     .from('exporters')
     .select('*, organization:organizations(*)')
@@ -247,15 +264,6 @@ export async function getExporters(filters?: {
   if (filters?.limit) query = query.limit(filters.limit);
 
   const { data, error } = await query;
-  return { data, error };
-}
-
-export async function getExporter(id: string) {
-  const { data, error } = await supabase
-    .from('exporters')
-    .select('*, organization:organizations(*, members:organization_members(*))')
-    .eq('id', id)
-    .single();
   return { data, error };
 }
 
@@ -273,19 +281,13 @@ export async function createExporter(exporter: {
   foreign_matter?: string;
   aflatoxin_status?: string;
 }) {
+  if (!isConfigured()) {
+    return { data: null, error: { message: 'Supabase not configured' } };
+  }
+  
   const { data, error } = await supabase
     .from('exporters')
     .insert(exporter)
-    .select()
-    .single();
-  return { data, error };
-}
-
-export async function updateExporterTrustScore(id: string, score: number) {
-  const { data, error } = await supabase
-    .from('exporters')
-    .update({ trust_score: score })
-    .eq('id', id)
     .select()
     .single();
   return { data, error };
@@ -296,6 +298,10 @@ export async function updateExporterTrustScore(id: string, score: number) {
 // ============================================================
 
 export async function getDocuments(transactionId: string) {
+  if (!isConfigured()) {
+    return { data: [], error: null };
+  }
+  
   const { data, error } = await supabase
     .from('documents')
     .select('*')
@@ -314,23 +320,13 @@ export async function uploadDocument(doc: {
   file_url?: string;
   hash?: string;
 }) {
+  if (!isConfigured()) {
+    return { data: null, error: { message: 'Supabase not configured' } };
+  }
+  
   const { data, error } = await supabase
     .from('documents')
     .insert(doc)
-    .select()
-    .single();
-  return { data, error };
-}
-
-export async function verifyDocument(id: string, verifierId: string) {
-  const { data, error } = await supabase
-    .from('documents')
-    .update({
-      verification_status: 'VERIFIED',
-      verified_by: verifierId,
-      verified_at: new Date().toISOString(),
-    })
-    .eq('id', id)
     .select()
     .single();
   return { data, error };
@@ -341,6 +337,10 @@ export async function verifyDocument(id: string, verifierId: string) {
 // ============================================================
 
 export async function getInspections(transactionId?: string) {
+  if (!isConfigured()) {
+    return { data: [], error: null };
+  }
+  
   let query = supabase
     .from('inspections')
     .select('*, results:inspection_results(*), transaction:transactions(masar_id)')
@@ -352,39 +352,15 @@ export async function getInspections(transactionId?: string) {
   return { data, error };
 }
 
-export async function createInspection(inspection: {
-  transaction_id: string;
-  inspector_org_id: string;
-  scheduled_date: string;
-}) {
-  const { data, error } = await supabase
-    .from('inspections')
-    .insert(inspection)
-    .select()
-    .single();
-  return { data, error };
-}
-
-export async function updateInspectionResult(id: string, result: string, notes?: string) {
-  const { data, error } = await supabase
-    .from('inspections')
-    .update({
-      result,
-      status: 'COMPLETED',
-      completed_date: new Date().toISOString().split('T')[0],
-      notes,
-    })
-    .eq('id', id)
-    .select()
-    .single();
-  return { data, error };
-}
-
 // ============================================================
 // SHIPMENT FUNCTIONS
 // ============================================================
 
 export async function getShipments(transactionId?: string) {
+  if (!isConfigured()) {
+    return { data: [], error: null };
+  }
+  
   let query = supabase
     .from('shipments')
     .select('*, transaction:transactions(masar_id)')
@@ -396,39 +372,15 @@ export async function getShipments(transactionId?: string) {
   return { data, error };
 }
 
-export async function createShipment(shipment: {
-  transaction_id: string;
-  container_number: string;
-  vessel: string;
-  booking: string;
-  port_of_origin: string;
-  destination_port: string;
-  etd: string;
-  eta: string;
-}) {
-  const { data, error } = await supabase
-    .from('shipments')
-    .insert(shipment)
-    .select()
-    .single();
-  return { data, error };
-}
-
-export async function updateShipmentStatus(id: string, status: string) {
-  const { data, error } = await supabase
-    .from('shipments')
-    .update({ status })
-    .eq('id', id)
-    .select()
-    .single();
-  return { data, error };
-}
-
 // ============================================================
 // FINANCE FUNCTIONS
 // ============================================================
 
 export async function getFinanceRequests(transactionId?: string) {
+  if (!isConfigured()) {
+    return { data: [], error: null };
+  }
+  
   let query = supabase
     .from('finance_requests')
     .select('*, transaction:transactions(masar_id), capital_partner:organizations(*)')
@@ -440,40 +392,9 @@ export async function getFinanceRequests(transactionId?: string) {
   return { data, error };
 }
 
-export async function createFinanceRequest(request: {
-  transaction_id: string;
-  invoice_value: number;
-  requested_advance_pct: number;
-  requested_amount: number;
-  capital_partner_org_id: string;
-}) {
-  const { data, error } = await supabase
-    .from('finance_requests')
-    .insert(request)
-    .select()
-    .single();
-  return { data, error };
-}
-
 // ============================================================
 // AUDIT FUNCTIONS
 // ============================================================
-
-export async function logAuditEvent(event: {
-  user_id: string;
-  action: string;
-  entity_type: string;
-  entity_id: string;
-  details?: Record<string, any>;
-  ip_address?: string;
-}) {
-  const { data, error } = await supabase
-    .from('audit_events')
-    .insert(event)
-    .select()
-    .single();
-  return { data, error };
-}
 
 export async function getAuditEvents(filters?: {
   entity_type?: string;
@@ -481,6 +402,10 @@ export async function getAuditEvents(filters?: {
   user_id?: string;
   limit?: number;
 }) {
+  if (!isConfigured()) {
+    return { data: [], error: null };
+  }
+  
   let query = supabase
     .from('audit_events')
     .select('*, user:profiles(full_name, email, role)')
@@ -500,6 +425,10 @@ export async function getAuditEvents(filters?: {
 // ============================================================
 
 export async function getNotifications(userId: string, unreadOnly = false) {
+  if (!isConfigured()) {
+    return { data: [], error: null };
+  }
+  
   let query = supabase
     .from('notifications')
     .select('*')
@@ -512,21 +441,23 @@ export async function getNotifications(userId: string, unreadOnly = false) {
   return { data, error };
 }
 
-export async function markNotificationRead(id: string) {
-  const { data, error } = await supabase
-    .from('notifications')
-    .update({ read: true, read_at: new Date().toISOString() })
-    .eq('id', id)
-    .select()
-    .single();
-  return { data, error };
-}
-
 // ============================================================
 // DASHBOARD STATS
 // ============================================================
 
 export async function getDashboardStats() {
+  if (!isConfigured()) {
+    return {
+      active_transactions: 0,
+      completed_transactions: 0,
+      total_gmv: 0,
+      completed_gmv: 0,
+      verified_buyers: 0,
+      verified_exporters: 0,
+      at_risk_transactions: 0,
+    };
+  }
+  
   const [transactions, buyers, exporters] = await Promise.all([
     supabase.from('transactions').select('status, contract_value, risk_level'),
     supabase.from('buyers').select('id, verification_status'),
