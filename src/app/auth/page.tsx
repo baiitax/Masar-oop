@@ -2,136 +2,18 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { 
-  Globe, Mail, Lock, Eye, EyeOff, User, Building2, Phone, 
-  ArrowRight, ArrowLeft, Shield, CheckCircle, AlertTriangle,
-  Fingerprint, KeyRound, Smartphone, Clock, Languages, Loader2
-} from 'lucide-react';
-
-const content = {
-  ar: {
-    login: 'تسجيل الدخول',
-    register: 'إنشاء حساب',
-    email: 'البريد الإلكتروني',
-    password: 'كلمة المرور',
-    confirmPassword: 'تأكيد كلمة المرور',
-    fullName: 'الاسم الكامل',
-    company: 'اسم الشركة',
-    phone: 'رقم الهاتف',
-    role: 'الدور',
-    forgotPassword: 'نسيت كلمة المرور؟',
-    rememberMe: 'تذكرني',
-    noAccount: 'ليس لديك حساب؟',
-    hasAccount: 'لديك حساب بالفعل؟',
-    signUp: 'سجل الآن',
-    signIn: 'تسجيل الدخول',
-    orContinueWith: 'أو تابع بـ',
-    secureLogin: 'تسجيل دخول آمن',
-    mfaTitle: 'المصادقة الثنائية',
-    mfaDesc: 'أدخل رمز التحقق من تطبيق المصادقة',
-    verifyCode: 'تحقق من الرمز',
-    resendCode: 'إعادة إرسال الرمز',
-    passwordStrength: 'قوة كلمة المرور',
-    weak: 'ضعيفة',
-    medium: 'متوسطة',
-    strong: 'قوية',
-    veryStrong: 'قوية جداً',
-    requirements: 'متطلبات كلمة المرور',
-    reqLength: '٨ أحرف على الأقل',
-    reqUpper: 'حرف كبير واحد على الأقل',
-    reqLower: 'حرف صغير واحد على الأقل',
-    reqNumber: 'رقم واحد على الأقل',
-    reqSpecial: 'رمز خاص واحد على الأقل',
-    roles: {
-      buyer: 'مشتري',
-      exporter: 'مصدر',
-      inspector: 'مفتش',
-      partner: 'شريك رأس مال',
-    },
-    welcomeBack: 'مرحباً بعودتك',
-    loginSubtitle: 'سجل دخولك للوصول إلى منصة مسار',
-    createAccount: 'أنشئ حسابك',
-    registerSubtitle: 'انضم إلى منصة مسار للتجارة الموثوقة',
-    termsAgree: 'بإنشاء حساب، أنت توافق على',
-    termsOfService: 'شروط الخدمة',
-    and: 'و',
-    privacyPolicy: 'سياسة الخصوصية',
-    securityBadge: 'محمي بتشفير ٢٥٦-بت SSL',
-    sessionTimeout: 'انتهاء الجلسة بعد ٣٠ دقيقة من عدم النشاط',
-    rateLimiting: 'حماية من هجمات القوة الغاشمة',
-    captcha: 'تحقق CAPTCHA بعد ٣ محاولات فاشلة',
-  },
-  en: {
-    login: 'Sign In',
-    register: 'Create Account',
-    email: 'Email Address',
-    password: 'Password',
-    confirmPassword: 'Confirm Password',
-    fullName: 'Full Name',
-    company: 'Company Name',
-    phone: 'Phone Number',
-    role: 'Role',
-    forgotPassword: 'Forgot Password?',
-    rememberMe: 'Remember me',
-    noAccount: "Don't have an account?",
-    hasAccount: 'Already have an account?',
-    signUp: 'Sign Up',
-    signIn: 'Sign In',
-    orContinueWith: 'Or continue with',
-    secureLogin: 'Secure Login',
-    mfaTitle: 'Two-Factor Authentication',
-    mfaDesc: 'Enter the verification code from your authenticator app',
-    verifyCode: 'Verify Code',
-    resendCode: 'Resend Code',
-    passwordStrength: 'Password Strength',
-    weak: 'Weak',
-    medium: 'Medium',
-    strong: 'Strong',
-    veryStrong: 'Very Strong',
-    requirements: 'Password Requirements',
-    reqLength: 'At least 8 characters',
-    reqUpper: 'At least one uppercase letter',
-    reqLower: 'At least one lowercase letter',
-    reqNumber: 'At least one number',
-    reqSpecial: 'At least one special character',
-    roles: {
-      buyer: 'Buyer',
-      exporter: 'Exporter',
-      inspector: 'Inspector',
-      partner: 'Capital Partner',
-    },
-    welcomeBack: 'Welcome Back',
-    loginSubtitle: 'Sign in to access the MASAR platform',
-    createAccount: 'Create Your Account',
-    registerSubtitle: 'Join the MASAR trusted trade platform',
-    termsAgree: 'By creating an account, you agree to our',
-    termsOfService: 'Terms of Service',
-    and: 'and',
-    privacyPolicy: 'Privacy Policy',
-    securityBadge: 'Protected with 256-bit SSL encryption',
-    sessionTimeout: 'Session timeout after 30 minutes of inactivity',
-    rateLimiting: 'Brute force protection enabled',
-    captcha: 'CAPTCHA verification after 3 failed attempts',
-  },
-};
+import { Mail, Lock, Eye, EyeOff, User, Building2, Phone, ArrowRight, ArrowLeft, Shield, CheckCircle, Smartphone, Languages, Loader2, Globe } from 'lucide-react';
 
 export default function AuthPage() {
-  const [lang, setLang] = useState<'ar' | 'en'>('ar');
+  const [lang, setLang] = useState<'en' | 'ar'>('en');
   const [mode, setMode] = useState<'login' | 'register' | 'mfa'>('login');
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [mfaCode, setMfaCode] = useState(['', '', '', '', '', '']);
-  const [formData, setFormData] = useState({
-    email: '', password: '', confirmPassword: '', fullName: '', company: '', phone: '', role: 'buyer',
-  });
+  const [formData, setFormData] = useState({ email: '', password: '', confirmPassword: '', fullName: '', company: '', phone: '', role: 'buyer' });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [passwordChecks, setPasswordChecks] = useState({
-    length: false, upper: false, lower: false, number: false, special: false,
-  });
-
-  const t = content[lang];
+  const [passwordChecks, setPasswordChecks] = useState({ length: false, upper: false, lower: false, number: false, special: false });
   const isRTL = lang === 'ar';
 
   useEffect(() => {
@@ -141,44 +23,25 @@ export default function AuthPage() {
 
   useEffect(() => {
     const p = formData.password;
-    setPasswordChecks({
-      length: p.length >= 8,
-      upper: /[A-Z]/.test(p),
-      lower: /[a-z]/.test(p),
-      number: /[0-9]/.test(p),
-      special: /[!@#$%^&*(),.?":{}|<>]/.test(p),
-    });
-    const score = [p.length >= 8, /[A-Z]/.test(p), /[a-z]/.test(p), /[0-9]/.test(p), /[!@#$%^&*(),.?":{}|<>]/.test(p)].filter(Boolean).length;
-    setPasswordStrength(score);
+    setPasswordChecks({ length: p.length >= 8, upper: /[A-Z]/.test(p), lower: /[a-z]/.test(p), number: /[0-9]/.test(p), special: /[!@#$%^&*(),.?":{}|<>]/.test(p) });
+    setPasswordStrength([p.length >= 8, /[A-Z]/.test(p), /[a-z]/.test(p), /[0-9]/.test(p), /[!@#$%^&*(),.?":{}|<>]/.test(p)].filter(Boolean).length);
   }, [formData.password]);
 
-  const getStrengthColor = () => {
-    if (passwordStrength <= 1) return 'bg-red-500';
-    if (passwordStrength <= 2) return 'bg-orange-500';
-    if (passwordStrength <= 3) return 'bg-yellow-500';
-    if (passwordStrength <= 4) return 'bg-green-500';
-    return 'bg-emerald-500';
-  };
-
-  const getStrengthLabel = () => {
-    if (passwordStrength <= 1) return t.weak;
-    if (passwordStrength <= 2) return t.medium;
-    if (passwordStrength <= 3) return t.strong;
-    return t.veryStrong;
-  };
+  const getStrengthColor = () => passwordStrength <= 1 ? '#EF4444' : passwordStrength <= 2 ? '#F97316' : passwordStrength <= 3 ? '#EAB308' : '#22C55E';
+  const getStrengthLabel = () => passwordStrength <= 1 ? (isRTL ? 'ضعيفة' : 'Weak') : passwordStrength <= 2 ? (isRTL ? 'متوسطة' : 'Fair') : passwordStrength <= 3 ? (isRTL ? 'جيدة' : 'Good') : (isRTL ? 'قوية' : 'Strong');
 
   const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-    if (!formData.email) newErrors.email = 'Required';
-    if (!formData.password) newErrors.password = 'Required';
+    const e: Record<string, string> = {};
+    if (!formData.email) e.email = 'Required';
+    if (!formData.password) e.password = 'Required';
     if (mode === 'register') {
-      if (!formData.fullName) newErrors.fullName = 'Required';
-      if (!formData.company) newErrors.company = 'Required';
-      if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
-      if (passwordStrength < 3) newErrors.password = 'Password too weak';
+      if (!formData.fullName) e.fullName = 'Required';
+      if (!formData.company) e.company = 'Required';
+      if (formData.password !== formData.confirmPassword) e.confirmPassword = 'Passwords do not match';
+      if (passwordStrength < 3) e.password = 'Password too weak';
     }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setErrors(e);
+    return Object.keys(e).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -186,11 +49,8 @@ export default function AuthPage() {
     if (!validateForm()) return;
     setLoading(true);
     await new Promise(r => setTimeout(r, 1500));
-    if (mode === 'login') {
-      setMode('mfa');
-    } else {
-      window.location.href = '/dashboard';
-    }
+    if (mode === 'login') setMode('mfa');
+    else window.location.href = '/dashboard';
     setLoading(false);
   };
 
@@ -198,453 +58,279 @@ export default function AuthPage() {
     setLoading(true);
     await new Promise(r => setTimeout(r, 1000));
     window.location.href = '/dashboard';
-    setLoading(false);
   };
 
-  const handleMfaInput = (index: number, value: string) => {
-    if (value.length > 1) return;
-    const newCode = [...mfaCode];
-    newCode[index] = value;
-    setMfaCode(newCode);
-    if (value && index < 5) {
-      const next = document.getElementById(`mfa-${index + 1}`);
-      next?.focus();
-    }
+  const s = {
+    navy: '#0B1F3A', gold: '#C9A24A', goldLight: '#E3C875', bg: '#F7F9FC', text: '#122033', textSec: '#5B6778',
+    glassInput: { width: '100%', padding: '12px 14px', background: 'rgba(255,255,255,0.7)', border: '1px solid #E5E9F0', borderRadius: '10px', fontSize: '14px', color: '#122033', outline: 'none', transition: 'all 0.2s', backdropFilter: 'blur(10px)' },
+    btnPrimary: { width: '100%', padding: '14px', background: `linear-gradient(135deg, #C9A24A 0%, #E3C875 100%)`, color: '#0B1F3A', borderRadius: '10px', fontSize: '15px', fontWeight: 700, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'all 0.3s', boxShadow: '0 4px 16px rgba(201,162,74,0.25)' },
   };
 
   return (
-    <div className="min-h-screen login-bg flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background Decorations */}
-      <div className="absolute inset-0 islamic-pattern opacity-30" />
-      <div className="absolute top-20 left-20 w-96 h-96 bg-masar-gold/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 right-20 w-80 h-80 bg-saudi-green/10 rounded-full blur-3xl" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-masar-blue/5 rounded-full blur-3xl" />
-
-      {/* Language Switcher */}
-      <button 
-        onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
-        className="absolute top-6 right-6 z-50 flex items-center gap-2 px-4 py-2 glass rounded-xl text-white/80 hover:text-white transition-colors"
-      >
-        <Languages size={18} />
-        <span className="text-sm font-medium">{lang === 'ar' ? 'English' : 'العربية'}</span>
-      </button>
-
-      {/* Main Container */}
-      <div className="w-full max-w-5xl relative z-10">
-        <div className="grid lg:grid-cols-5 gap-0">
-          
-          {/* Left Panel - Branding */}
-          <div className="lg:col-span-2 hidden lg:flex flex-col justify-between p-10 glass-dark rounded-l-3xl">
+    <div style={{ minHeight: '100vh', display: 'flex', fontFamily: "'Inter', 'IBM Plex Sans Arabic', system-ui, sans-serif" }}>
+      {/* Left Panel - Branding */}
+      <div className="hidden lg:flex" style={{ width: '45%', background: `linear-gradient(135deg, ${s.navy} 0%, #102A4C 100%)`, padding: '3rem', flexDirection: 'column', justifyContent: 'space-between', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, opacity: 0.05, backgroundImage: `linear-gradient(30deg, rgba(201,162,74,0.1) 12%, transparent 12.5%, transparent 87%, rgba(201,162,74,0.1) 87.5%)`, backgroundSize: '60px 100px' }} />
+        <div style={{ position: 'relative', zIndex: 10 }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none', marginBottom: '3rem' }}>
+            <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: s.navy, border: `2px solid ${s.gold}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="22" height="22" viewBox="0 0 48 48" fill="none"><path d="M8 40V12L24 28L40 12V40" stroke="#C9A24A" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /><circle cx="24" cy="36" r="2" fill="#C9A24A" /></svg>
+            </div>
             <div>
-              <div className="flex items-center gap-3 mb-10">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-masar-gold to-masar-gold-light flex items-center justify-center shadow-lg">
-                  <Globe className="w-8 h-8 text-masar-navy" />
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold text-white tracking-wider">{isRTL ? 'مسار' : 'MASAR'}</h1>
-                  <p className="text-[10px] text-masar-gold tracking-[0.2em] uppercase">
-                    {isRTL ? 'نظام تشغيل الممر التجاري' : 'Trade Corridor OS'}
-                  </p>
-                </div>
-              </div>
-
-              <h2 className="text-3xl font-bold text-white mb-4 font-display leading-tight">
-                {isRTL ? 'البنية التحتية الموثوقة للتجارة بين أفريقيا والمملكة العربية السعودية' : 'The Trusted Trade Infrastructure for Africa–Saudi Commerce'}
-              </h2>
-              <p className="text-gray-400 leading-relaxed">
-                {isRTL ? 'أطراف موثوقة. تنسيق امتثال. فحص مستقل. تسوية آمنة. تمويل تجاري.' : 'Verified counterparties. Compliance orchestration. Independent inspection. Secure settlement. Trade finance.'}
-              </p>
+              <span style={{ fontSize: '20px', fontWeight: 800, color: 'white', letterSpacing: '0.08em' }}>MASAR</span>
+              <span style={{ display: 'block', fontSize: '10px', color: 'rgba(201,162,74,0.7)', letterSpacing: '0.15em' }}>مسار — THE PATH</span>
             </div>
-
-            {/* Security Features */}
-            <div className="space-y-4 mt-10">
-              <h3 className="text-xs font-semibold text-masar-gold uppercase tracking-wider mb-4">
-                {isRTL ? 'مزايا الأمان' : 'Security Features'}
-              </h3>
-              {[
-                { icon: Shield, label: t.securityBadge },
-                { icon: Clock, label: t.sessionTimeout },
-                { icon: KeyRound, label: t.rateLimiting },
-                { icon: Fingerprint, label: t.captcha },
-              ].map((item, idx) => (
-                <div key={idx} className="flex items-center gap-3 text-gray-400">
-                  <item.icon size={16} className="text-masar-gold" />
-                  <span className="text-sm">{item.label}</span>
-                </div>
-              ))}
+          </Link>
+          <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'white', lineHeight: 1.3, marginBottom: '1rem' }}>The trusted path between African supply and Saudi demand.</h2>
+          <p style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.7 }}>MASAR connects verified exporters and Saudi buyers through one transaction rail for compliance, inspection, settlement and trade finance.</p>
+        </div>
+        <div style={{ position: 'relative', zIndex: 10 }}>
+          <h3 style={{ fontSize: '11px', fontWeight: 700, color: s.gold, letterSpacing: '0.1em', marginBottom: '1rem' }}>SECURITY FEATURES</h3>
+          {['256-bit SSL encryption', 'Two-factor authentication', 'Session timeout after 30 minutes', 'Brute force protection'].map((item, idx) => (
+            <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+              <Shield size={14} color={s.gold} />
+              <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)' }}>{item}</span>
             </div>
-
-            {/* Corridor Visual */}
-            <div className="mt-10 pt-8 border-t border-white/10">
-              <div className="flex items-center justify-between">
-                <div className="text-center">
-                  <span className="text-3xl">🇳🇬</span>
-                  <p className="text-xs text-gray-400 mt-1">{isRTL ? 'نيجيريا' : 'Nigeria'}</p>
-                </div>
-                <div className="flex-1 mx-4 h-0.5 bg-gradient-to-r from-green-500 via-masar-gold to-yellow-500 rounded-full relative">
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-masar-gold rounded-full flex items-center justify-center">
-                    <Globe size={14} className="text-masar-navy" />
-                  </div>
-                </div>
-                <div className="text-center">
-                  <span className="text-3xl">🇸🇦</span>
-                  <p className="text-xs text-gray-400 mt-1">{isRTL ? 'السعودية' : 'Saudi Arabia'}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Panel - Form */}
-          <div className="lg:col-span-3">
-            <div className="glass-light rounded-3xl lg:rounded-l-none p-8 lg:p-12">
-              
-              {/* Mobile Logo */}
-              <div className="lg:hidden flex items-center gap-3 mb-8">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-masar-gold to-masar-gold-light flex items-center justify-center">
-                  <Globe className="w-7 h-7 text-masar-navy" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-masar-navy">{isRTL ? 'مسار' : 'MASAR'}</h1>
-                  <p className="text-[9px] text-masar-gold tracking-widest uppercase">{isRTL ? 'نظام تشغيل الممر التجاري' : 'Trade Corridor OS'}</p>
-                </div>
-              </div>
-
-              {/* Mode Tabs */}
-              {mode !== 'mfa' && (
-                <div className="flex gap-2 mb-8 p-1 bg-gray-100 rounded-xl">
-                  <button
-                    onClick={() => { setMode('login'); setErrors({}); }}
-                    className={`flex-1 py-3 rounded-lg text-sm font-semibold transition-all ${
-                      mode === 'login' ? 'bg-white text-masar-navy shadow-sm' : 'text-gray-500 hover:text-gray-700'
-                    }`}
-                  >
-                    {t.login}
-                  </button>
-                  <button
-                    onClick={() => { setMode('register'); setErrors({}); }}
-                    className={`flex-1 py-3 rounded-lg text-sm font-semibold transition-all ${
-                      mode === 'register' ? 'bg-white text-masar-navy shadow-sm' : 'text-gray-500 hover:text-gray-700'
-                    }`}
-                  >
-                    {t.register}
-                  </button>
-                </div>
-              )}
-
-              {/* MFA View */}
-              {mode === 'mfa' ? (
-                <div className="animate-fade-in">
-                  <div className="text-center mb-8">
-                    <div className="w-20 h-20 bg-masar-gold/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                      <Smartphone size={36} className="text-masar-gold" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-gray-900 font-display">{t.mfaTitle}</h2>
-                    <p className="text-gray-500 mt-2">{t.mfaDesc}</p>
-                  </div>
-
-                  <div className="flex justify-center gap-3 mb-8" dir="ltr">
-                    {mfaCode.map((digit, idx) => (
-                      <input
-                        key={idx}
-                        id={`mfa-${idx}`}
-                        type="text"
-                        maxLength={1}
-                        value={digit}
-                        onChange={(e) => handleMfaInput(idx, e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Backspace' && !mfaCode[idx] && idx > 0) {
-                            const prev = document.getElementById(`mfa-${idx - 1}`);
-                            prev?.focus();
-                          }
-                        }}
-                        className="w-14 h-16 text-center text-2xl font-bold glass-input rounded-xl focus:ring-2 focus:ring-masar-gold"
-                      />
-                    ))}
-                  </div>
-
-                  <button
-                    onClick={handleMfaSubmit}
-                    disabled={loading || mfaCode.some(d => !d)}
-                    className="w-full py-4 glass-btn rounded-xl text-masar-navy font-bold text-base disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    {loading ? <Loader2 size={20} className="animate-spin" /> : <>{t.verifyCode} <ArrowRight size={18} /></>}
-                  </button>
-
-                  <button 
-                    onClick={() => setMode('login')}
-                    className="w-full mt-4 py-3 text-sm text-gray-500 hover:text-gray-700"
-                  >
-                    {isRTL ? 'العودة لتسجيل الدخول' : 'Back to login'}
-                  </button>
-                </div>
-              ) : (
-                /* Login / Register Form */
-                <form onSubmit={handleSubmit} className="space-y-5">
-                  <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-gray-900 font-display">
-                      {mode === 'login' ? t.welcomeBack : t.createAccount}
-                    </h2>
-                    <p className="text-gray-500 mt-1">
-                      {mode === 'login' ? t.loginSubtitle : t.registerSubtitle}
-                    </p>
-                  </div>
-
-                  {/* Register Fields */}
-                  {mode === 'register' && (
-                    <>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">{t.fullName}</label>
-                          <div className="relative">
-                            <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                            <input
-                              type="text"
-                              value={formData.fullName}
-                              onChange={(e) => setFormData({...formData, fullName: e.target.value})}
-                              className={`w-full pl-11 pr-4 py-3.5 glass-input rounded-xl text-sm ${errors.fullName ? 'border-red-500' : ''}`}
-                              placeholder={isRTL ? 'أحمد محمد' : 'Ahmed Mohammed'}
-                            />
-                          </div>
-                          {errors.fullName && <p className="text-xs text-red-500 mt-1">{errors.fullName}</p>}
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">{t.company}</label>
-                          <div className="relative">
-                            <Building2 size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                            <input
-                              type="text"
-                              value={formData.company}
-                              onChange={(e) => setFormData({...formData, company: e.target.value})}
-                              className={`w-full pl-11 pr-4 py-3.5 glass-input rounded-xl text-sm ${errors.company ? 'border-red-500' : ''}`}
-                              placeholder={isRTL ? 'اسم الشركة' : 'Company Name'}
-                            />
-                          </div>
-                          {errors.company && <p className="text-xs text-red-500 mt-1">{errors.company}</p>}
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">{t.phone}</label>
-                          <div className="relative">
-                            <Phone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                            <input
-                              type="tel"
-                              value={formData.phone}
-                              onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                              className="w-full pl-11 pr-4 py-3.5 glass-input rounded-xl text-sm"
-                              placeholder="+966 5XX XXX XXXX"
-                              dir="ltr"
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">{t.role}</label>
-                          <select
-                            value={formData.role}
-                            onChange={(e) => setFormData({...formData, role: e.target.value})}
-                            className="w-full px-4 py-3.5 glass-input rounded-xl text-sm"
-                          >
-                            <option value="buyer">{t.roles.buyer}</option>
-                            <option value="exporter">{t.roles.exporter}</option>
-                            <option value="inspector">{t.roles.inspector}</option>
-                            <option value="partner">{t.roles.partner}</option>
-                          </select>
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  {/* Email */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">{t.email}</label>
-                    <div className="relative">
-                      <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                      <input
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => setFormData({...formData, email: e.target.value})}
-                        className={`w-full pl-11 pr-4 py-3.5 glass-input rounded-xl text-sm ${errors.email ? 'border-red-500' : ''}`}
-                        placeholder={isRTL ? 'name@example.com' : 'name@example.com'}
-                        dir="ltr"
-                        autoComplete="email"
-                      />
-                    </div>
-                    {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
-                  </div>
-
-                  {/* Password */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">{t.password}</label>
-                    <div className="relative">
-                      <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                      <input
-                        type={showPassword ? 'text' : 'password'}
-                        value={formData.password}
-                        onChange={(e) => setFormData({...formData, password: e.target.value})}
-                        className={`w-full pl-11 pr-12 py-3.5 glass-input rounded-xl text-sm ${errors.password ? 'border-red-500' : ''}`}
-                        placeholder="••••••••"
-                        dir="ltr"
-                        autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                      >
-                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                      </button>
-                    </div>
-                    {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password}</p>}
-
-                    {/* Password Strength (Register only) */}
-                    {mode === 'register' && formData.password && (
-                      <div className="mt-3 space-y-3">
-                        <div>
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-xs text-gray-500">{t.passwordStrength}</span>
-                            <span className={`text-xs font-medium ${
-                              passwordStrength <= 1 ? 'text-red-500' :
-                              passwordStrength <= 2 ? 'text-orange-500' :
-                              passwordStrength <= 3 ? 'text-yellow-600' : 'text-green-600'
-                            }`}>{getStrengthLabel()}</span>
-                          </div>
-                          <div className="flex gap-1">
-                            {[1,2,3,4,5].map(i => (
-                              <div key={i} className={`h-1.5 flex-1 rounded-full transition-all ${
-                                i <= passwordStrength ? getStrengthColor() : 'bg-gray-200'
-                              }`} />
-                            ))}
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                          {[
-                            { key: 'length', label: t.reqLength },
-                            { key: 'upper', label: t.reqUpper },
-                            { key: 'lower', label: t.reqLower },
-                            { key: 'number', label: t.reqNumber },
-                            { key: 'special', label: t.reqSpecial },
-                          ].map(req => (
-                            <div key={req.key} className="flex items-center gap-2">
-                              <CheckCircle size={14} className={passwordChecks[req.key as keyof typeof passwordChecks] ? 'text-green-500' : 'text-gray-300'} />
-                              <span className={`text-xs ${passwordChecks[req.key as keyof typeof passwordChecks] ? 'text-green-700' : 'text-gray-400'}`}>{req.label}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Confirm Password (Register) */}
-                  {mode === 'register' && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">{t.confirmPassword}</label>
-                      <div className="relative">
-                        <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                        <input
-                          type={showConfirmPassword ? 'text' : 'password'}
-                          value={formData.confirmPassword}
-                          onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
-                          className={`w-full pl-11 pr-12 py-3.5 glass-input rounded-xl text-sm ${errors.confirmPassword ? 'border-red-500' : ''}`}
-                          placeholder="••••••••"
-                          dir="ltr"
-                          autoComplete="new-password"
-                        />
-                        <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                          {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                        </button>
-                      </div>
-                      {errors.confirmPassword && <p className="text-xs text-red-500 mt-1">{errors.confirmPassword}</p>}
-                    </div>
-                  )}
-
-                  {/* Remember / Forgot */}
-                  {mode === 'login' && (
-                    <div className="flex items-center justify-between">
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-masar-gold focus:ring-masar-gold" />
-                        <span className="text-sm text-gray-600">{t.rememberMe}</span>
-                      </label>
-                      <a href="#" className="text-sm text-masar-gold hover:text-masar-gold-light font-medium">{t.forgotPassword}</a>
-                    </div>
-                  )}
-
-                  {/* Terms (Register) */}
-                  {mode === 'register' && (
-                    <div className="flex items-start gap-2">
-                      <input type="checkbox" className="w-4 h-4 mt-0.5 rounded border-gray-300 text-masar-gold focus:ring-masar-gold" />
-                      <span className="text-xs text-gray-500">
-                        {t.termsAgree} <a href="#" className="text-masar-gold hover:underline">{t.termsOfService}</a> {t.and} <a href="#" className="text-masar-gold hover:underline">{t.privacyPolicy}</a>
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Submit Button */}
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full py-4 glass-btn rounded-xl text-masar-navy font-bold text-base disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    {loading ? (
-                      <Loader2 size={20} className="animate-spin" />
-                    ) : (
-                      <>
-                        {mode === 'login' ? t.login : t.register}
-                        {isRTL ? <ArrowLeft size={18} /> : <ArrowRight size={18} />}
-                      </>
-                    )}
-                  </button>
-
-                  {/* Divider */}
-                  <div className="relative my-6">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-gray-200" />
-                    </div>
-                    <div className="relative flex justify-center">
-                      <span className="px-4 bg-white text-sm text-gray-400">{t.orContinueWith}</span>
-                    </div>
-                  </div>
-
-                  {/* Social Login */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <button type="button" className="flex items-center justify-center gap-2 py-3 glass-input rounded-xl hover:bg-gray-50 transition-colors">
-                      <svg className="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                      <span className="text-sm font-medium text-gray-700">Google</span>
-                    </button>
-                    <button type="button" className="flex items-center justify-center gap-2 py-3 glass-input rounded-xl hover:bg-gray-50 transition-colors">
-                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-                      <span className="text-sm font-medium text-gray-700">GitHub</span>
-                    </button>
-                  </div>
-
-                  {/* Switch Mode */}
-                  <p className="text-center text-sm text-gray-500 mt-6">
-                    {mode === 'login' ? t.noAccount : t.hasAccount}{' '}
-                    <button
-                      type="button"
-                      onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setErrors({}); }}
-                      className="text-masar-gold hover:text-masar-gold-light font-semibold"
-                    >
-                      {mode === 'login' ? t.signUp : t.signIn}
-                    </button>
-                  </p>
-                </form>
-              )}
-
-              {/* Footer */}
-              <div className="mt-8 pt-6 border-t border-gray-200 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-xs text-gray-400">
-                  <Lock size={12} />
-                  <span>{isRTL ? 'محمي بتشفير SSL' : 'SSL Encrypted'}</span>
-                </div>
-                <Link href="/" className="text-xs text-gray-400 hover:text-gray-600">
-                  {isRTL ? 'العودة للرئيسية' : 'Back to Home'}
-                </Link>
-              </div>
-            </div>
+          ))}
+          <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ textAlign: 'center' }}><span style={{ fontSize: '1.5rem' }}>🇳🇬</span><p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', margin: '2px 0 0' }}>Nigeria</p></div>
+            <div style={{ flex: 1, height: '2px', background: 'linear-gradient(90deg, rgba(201,162,74,0.3), rgba(201,162,74,0.6), rgba(201,162,74,0.3))', borderRadius: '1px' }} />
+            <div style={{ textAlign: 'center' }}><span style={{ fontSize: '1.5rem' }}>🇸🇦</span><p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', margin: '2px 0 0' }}>Saudi Arabia</p></div>
           </div>
         </div>
       </div>
+
+      {/* Right Panel - Form */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', background: s.bg }}>
+        <div style={{ width: '100%', maxWidth: '440px' }}>
+          {/* Mobile Logo */}
+          <div className="lg:hidden" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '2rem' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: s.navy, border: `2px solid ${s.gold}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="18" height="18" viewBox="0 0 48 48" fill="none"><path d="M8 40V12L24 28L40 12V40" stroke="#C9A24A" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /><circle cx="24" cy="36" r="2" fill="#C9A24A" /></svg>
+            </div>
+            <span style={{ fontSize: '17px', fontWeight: 800, color: s.navy }}>MASAR</span>
+          </div>
+
+          {/* Language Toggle */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+            <button onClick={() => { const n = lang === 'en' ? 'ar' : 'en'; setLang(n); localStorage.setItem('masar-lang', n); }} style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '5px 10px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, border: '1px solid #E5E9F0', background: 'white', color: '#5B6778', cursor: 'pointer' }}>
+              <Languages size={13} /> {lang === 'en' ? 'العربية' : 'English'}
+            </button>
+          </div>
+
+          {/* Mode Tabs */}
+          {mode !== 'mfa' && (
+            <div style={{ display: 'flex', gap: '4px', padding: '4px', background: '#E5E9F0', borderRadius: '10px', marginBottom: '1.5rem' }}>
+              {['login', 'register'].map((m) => (
+                <button key={m} onClick={() => { setMode(m as any); setErrors({}); }} style={{ flex: 1, padding: '10px', borderRadius: '8px', fontSize: '14px', fontWeight: 600, border: 'none', cursor: 'pointer', transition: 'all 0.2s', ...(mode === m ? { background: 'white', color: s.navy, boxShadow: '0 1px 3px rgba(0,0,0,0.08)' } : { background: 'transparent', color: '#9BA3AE' }) }}>
+                  {m === 'login' ? (isRTL ? 'تسجيل الدخول' : 'Sign In') : (isRTL ? 'إنشاء حساب' : 'Create Account')}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* MFA View */}
+          {mode === 'mfa' ? (
+            <div>
+              <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                <div style={{ width: '64px', height: '64px', borderRadius: '16px', background: 'rgba(201,162,74,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+                  <Smartphone size={28} color={s.gold} />
+                </div>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: s.text, marginBottom: '0.5rem' }}>{isRTL ? 'المصادقة الثنائية' : 'Two-Factor Authentication'}</h2>
+                <p style={{ fontSize: '14px', color: '#9BA3AE' }}>{isRTL ? 'أدخل رمز التحقق من تطبيق المصادقة' : 'Enter the verification code from your authenticator app'}</p>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '2rem', direction: 'ltr' }}>
+                {mfaCode.map((digit, idx) => (
+                  <input key={idx} type="text" maxLength={1} value={digit} onChange={(e) => { const n = [...mfaCode]; n[idx] = e.target.value; setMfaCode(n); if (e.target.value && idx < 5) document.getElementById(`mfa-${idx+1}`)?.focus(); }}
+                    id={`mfa-${idx}`} style={{ width: '48px', height: '56px', textAlign: 'center', fontSize: '1.25rem', fontWeight: 700, ...s.glassInput, borderRadius: '12px' }} />
+                ))}
+              </div>
+              <button onClick={handleMfaSubmit} disabled={loading || mfaCode.some(d => !d)} style={{ ...s.btnPrimary, opacity: loading || mfaCode.some(d => !d) ? 0.5 : 1 }}>
+                {loading ? <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} /> : <>{isRTL ? 'تحقق من الرمز' : 'Verify Code'} <ArrowRight size={16} /></>}
+              </button>
+              <button onClick={() => setMode('login')} style={{ display: 'block', width: '100%', marginTop: '1rem', padding: '10px', background: 'none', border: 'none', fontSize: '13px', color: '#9BA3AE', cursor: 'pointer', textAlign: 'center' }}>
+                {isRTL ? 'العودة لتسجيل الدخول' : 'Back to login'}
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: s.text, marginBottom: '0.5rem' }}>
+                {mode === 'login' ? (isRTL ? 'مرحباً بعودتك' : 'Welcome Back') : (isRTL ? 'أنشئ حسابك' : 'Create Your Account')}
+              </h2>
+              <p style={{ fontSize: '14px', color: '#9BA3AE', marginBottom: '1.5rem' }}>
+                {mode === 'login' ? (isRTL ? 'سجل دخولك للوصول إلى منصة مسار' : 'Sign in to access the MASAR platform') : (isRTL ? 'انضم إلى منصة مسار للتجارة الموثوقة' : 'Join the MASAR trusted trade platform')}
+              </p>
+
+              {/* Register Fields */}
+              {mode === 'register' && (
+                <>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#5B6778', marginBottom: '6px' }}>{isRTL ? 'الاسم الكامل' : 'Full Name'}</label>
+                      <div style={{ position: 'relative' }}>
+                        <User size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9BA3AE' }} />
+                        <input type="text" value={formData.fullName} onChange={(e) => setFormData({...formData, fullName: e.target.value})} style={{ ...s.glassInput, paddingLeft: '36px', borderColor: errors.fullName ? '#EF4444' : '#E5E9F0' }} placeholder={isRTL ? 'أحمد محمد' : 'Ahmed Mohammed'} />
+                      </div>
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#5B6778', marginBottom: '6px' }}>{isRTL ? 'اسم الشركة' : 'Company'}</label>
+                      <div style={{ position: 'relative' }}>
+                        <Building2 size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9BA3AE' }} />
+                        <input type="text" value={formData.company} onChange={(e) => setFormData({...formData, company: e.target.value})} style={{ ...s.glassInput, paddingLeft: '36px', borderColor: errors.company ? '#EF4444' : '#E5E9F0' }} placeholder={isRTL ? 'اسم الشركة' : 'Company Name'} />
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#5B6778', marginBottom: '6px' }}>{isRTL ? 'رقم الهاتف' : 'Phone'}</label>
+                      <div style={{ position: 'relative' }}>
+                        <Phone size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9BA3AE' }} />
+                        <input type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} style={{ ...s.glassInput, paddingLeft: '36px', direction: 'ltr' }} placeholder="+966 5XX XXX XXXX" />
+                      </div>
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#5B6778', marginBottom: '6px' }}>{isRTL ? 'الدور' : 'Role'}</label>
+                      <select value={formData.role} onChange={(e) => setFormData({...formData, role: e.target.value})} style={{ ...s.glassInput, cursor: 'pointer' }}>
+                        <option value="buyer">{isRTL ? 'مشتري' : 'Buyer'}</option>
+                        <option value="exporter">{isRTL ? 'مصدر' : 'Exporter'}</option>
+                        <option value="partner">{isRTL ? 'شريك رأس مال' : 'Capital Partner'}</option>
+                      </select>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Email */}
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#5B6778', marginBottom: '6px' }}>{isRTL ? 'البريد الإلكتروني' : 'Email Address'}</label>
+                <div style={{ position: 'relative' }}>
+                  <Mail size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9BA3AE' }} />
+                  <input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} style={{ ...s.glassInput, paddingLeft: '36px', direction: 'ltr', borderColor: errors.email ? '#EF4444' : '#E5E9F0' }} placeholder="name@example.com" autoComplete="email" />
+                </div>
+                {errors.email && <p style={{ fontSize: '12px', color: '#EF4444', marginTop: '4px' }}>{errors.email}</p>}
+              </div>
+
+              {/* Password */}
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#5B6778', marginBottom: '6px' }}>{isRTL ? 'كلمة المرور' : 'Password'}</label>
+                <div style={{ position: 'relative' }}>
+                  <Lock size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9BA3AE' }} />
+                  <input type={showPassword ? 'text' : 'password'} value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} style={{ ...s.glassInput, paddingLeft: '36px', paddingRight: '40px', direction: 'ltr', borderColor: errors.password ? '#EF4444' : '#E5E9F0' }} placeholder="••••••••" autoComplete={mode === 'login' ? 'current-password' : 'new-password'} />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#9BA3AE', padding: 0 }}>
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+                {errors.password && <p style={{ fontSize: '12px', color: '#EF4444', marginTop: '4px' }}>{errors.password}</p>}
+                {mode === 'register' && formData.password && (
+                  <div style={{ marginTop: '10px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                      <span style={{ fontSize: '12px', color: '#9BA3AE' }}>{isRTL ? 'قوة كلمة المرور' : 'Password Strength'}</span>
+                      <span style={{ fontSize: '12px', fontWeight: 600, color: getStrengthColor() }}>{getStrengthLabel()}</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                      {[1,2,3,4,5].map(i => <div key={i} style={{ flex: 1, height: '4px', borderRadius: '2px', background: i <= passwordStrength ? getStrengthColor() : '#E5E9F0', transition: 'all 0.3s' }} />)}
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px', marginTop: '8px' }}>
+                      {[
+                        { key: 'length', label: isRTL ? '٨ أحرف' : '8+ chars' },
+                        { key: 'upper', label: isRTL ? 'حرف كبير' : 'Uppercase' },
+                        { key: 'lower', label: isRTL ? 'حرف صغير' : 'Lowercase' },
+                        { key: 'number', label: isRTL ? 'رقم' : 'Number' },
+                      ].map(req => (
+                        <div key={req.key} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <CheckCircle size={12} color={passwordChecks[req.key as keyof typeof passwordChecks] ? '#22C55E' : '#E5E9F0'} />
+                          <span style={{ fontSize: '11px', color: passwordChecks[req.key as keyof typeof passwordChecks] ? '#16A34A' : '#9BA3AE' }}>{req.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Confirm Password */}
+              {mode === 'register' && (
+                <div style={{ marginBottom: '12px' }}>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#5B6778', marginBottom: '6px' }}>{isRTL ? 'تأكيد كلمة المرور' : 'Confirm Password'}</label>
+                  <div style={{ position: 'relative' }}>
+                    <Lock size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9BA3AE' }} />
+                    <input type="password" value={formData.confirmPassword} onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})} style={{ ...s.glassInput, paddingLeft: '36px', direction: 'ltr', borderColor: errors.confirmPassword ? '#EF4444' : '#E5E9F0' }} placeholder="••••••••" autoComplete="new-password" />
+                  </div>
+                  {errors.confirmPassword && <p style={{ fontSize: '12px', color: '#EF4444', marginTop: '4px' }}>{errors.confirmPassword}</p>}
+                </div>
+              )}
+
+              {/* Remember / Forgot */}
+              {mode === 'login' && (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                    <input type="checkbox" style={{ width: '16px', height: '16px', accentColor: s.gold }} />
+                    <span style={{ fontSize: '13px', color: '#5B6778' }}>{isRTL ? 'تذكرني' : 'Remember me'}</span>
+                  </label>
+                  <a href="#" style={{ fontSize: '13px', color: s.gold, textDecoration: 'none', fontWeight: 500 }}>{isRTL ? 'نسيت كلمة المرور؟' : 'Forgot Password?'}</a>
+                </div>
+              )}
+
+              {/* Terms */}
+              {mode === 'register' && (
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '1.5rem' }}>
+                  <input type="checkbox" style={{ width: '16px', height: '16px', accentColor: s.gold, marginTop: '2px' }} />
+                  <span style={{ fontSize: '12px', color: '#9BA3AE', lineHeight: 1.5 }}>
+                    {isRTL ? 'بإنشاء حساب، أنت توافق على' : 'By creating an account, you agree to our'}{' '}
+                    <a href="#" style={{ color: s.gold, textDecoration: 'none' }}>{isRTL ? 'شروط الخدمة' : 'Terms of Service'}</a>{' '}
+                    {isRTL ? 'و' : 'and'}{' '}
+                    <a href="#" style={{ color: s.gold, textDecoration: 'none' }}>{isRTL ? 'سياسة الخصوصية' : 'Privacy Policy'}</a>
+                  </span>
+                </div>
+              )}
+
+              {/* Submit */}
+              <button type="submit" disabled={loading} style={{ ...s.btnPrimary, opacity: loading ? 0.6 : 1 }}>
+                {loading ? <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} /> : <>{mode === 'login' ? (isRTL ? 'تسجيل الدخول' : 'Sign In') : (isRTL ? 'إنشاء حساب' : 'Create Account')} <ArrowRight size={16} /></>}
+              </button>
+
+              {/* Divider */}
+              <div style={{ position: 'relative', margin: '1.5rem 0' }}>
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center' }}><div style={{ width: '100%', borderTop: '1px solid #E5E9F0' }} /></div>
+                <div style={{ position: 'relative', display: 'flex', justifyContent: 'center' }}><span style={{ padding: '0 12px', background: s.bg, fontSize: '12px', color: '#9BA3AE' }}>{isRTL ? 'أو تابع بـ' : 'Or continue with'}</span></div>
+              </div>
+
+              {/* Social Login */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '1.5rem' }}>
+                <button type="button" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '11px', background: 'white', border: '1px solid #E5E9F0', borderRadius: '10px', fontSize: '13px', fontWeight: 500, color: '#5B6778', cursor: 'pointer', transition: 'all 0.2s' }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                  Google
+                </button>
+                <button type="button" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '11px', background: 'white', border: '1px solid #E5E9F0', borderRadius: '10px', fontSize: '13px', fontWeight: 500, color: '#5B6778', cursor: 'pointer', transition: 'all 0.2s' }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#122033"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                  GitHub
+                </button>
+              </div>
+
+              {/* Switch Mode */}
+              <p style={{ textAlign: 'center', fontSize: '13px', color: '#9BA3AE' }}>
+                {mode === 'login' ? (isRTL ? 'ليس لديك حساب؟' : "Don't have an account?") : (isRTL ? 'لديك حساب بالفعل؟' : 'Already have an account?')}{' '}
+                <button type="button" onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setErrors({}); }} style={{ background: 'none', border: 'none', color: s.gold, fontWeight: 600, cursor: 'pointer', fontSize: '13px' }}>
+                  {mode === 'login' ? (isRTL ? 'سجل الآن' : 'Sign Up') : (isRTL ? 'تسجيل الدخول' : 'Sign In')}
+                </button>
+              </p>
+            </form>
+          )}
+
+          {/* Footer */}
+          <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid #E5E9F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: '#9BA3AE' }}><Lock size={11} /> SSL Encrypted</div>
+            <Link href="/" style={{ fontSize: '11px', color: '#9BA3AE', textDecoration: 'none' }}>{isRTL ? 'العودة للرئيسية' : 'Back to Home'}</Link>
+          </div>
+        </div>
+      </div>
+
+      <style jsx>{`
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @media (min-width: 1024px) { .hidden.lg\\:flex { display: flex !important; } }
+        @media (max-width: 1023px) { .hidden.lg\\:flex { display: none !important; } }
+        @media (min-width: 1024px) { .lg\\:hidden { display: none !important; } }
+        input:focus, select:focus { border-color: #C9A24A !important; box-shadow: 0 0 0 3px rgba(201,162,74,0.1) !important; }
+      `}</style>
     </div>
   );
 }
