@@ -1,218 +1,85 @@
 'use client';
+import React from 'react';
+import DashboardPage from '@/components/dashboard/DashboardPage';
+import { Shield, CheckCircle, Clock, AlertTriangle, FileCheck, Eye, Target, TrendingUp } from 'lucide-react';
 
-import React, { useState } from 'react';
-import { 
-  Shield, 
-  CheckCircle, 
-  Clock, 
-  AlertTriangle, 
-  FileText, 
-  XCircle,
-  ChevronRight,
-  Download,
-  Upload,
-  Eye
-} from 'lucide-react';
-import Card from '@/components/shared/Card';
-import StatusBadge from '@/components/shared/StatusBadge';
-import ProgressBar from '@/components/shared/ProgressBar';
-import { transactions, documents, getBuyerById, getExporterById, formatCurrency, getClearanceScoreLabel, getClearanceScoreColor } from '@/lib/data';
+export default function ComplianceCenterPage() {
+  const s = { navy: '#0B1F3A', gold: '#C9A24A', text: '#142235', textSec: '#667085', border: '#E4E7EC', green: '#16A34A', red: '#EF4444', amber: '#F59E0B' };
 
-interface ComplianceItem {
-  id: string;
-  name: string;
-  category: 'export' | 'saudi';
-  status: 'complete' | 'pending' | 'missing' | 'expired';
-  required: boolean;
-  documentId?: string;
-  dueDate?: string;
-}
-
-export default function CompliancePage() {
-  const [selectedTxn, setSelectedTxn] = useState(transactions[0]);
-
-  const complianceItems: ComplianceItem[] = [
-    // Export-side
-    { id: 'co', name: 'Certificate of Origin', category: 'export', status: 'complete', required: true, documentId: 'doc-001' },
-    { id: 'phyto', name: 'Phytosanitary Certificate', category: 'export', status: selectedTxn.id === 'txn-002' ? 'expired' : 'complete', required: true, dueDate: selectedTxn.id === 'txn-002' ? '2026-08-27' : undefined },
-    { id: 'export-doc', name: 'Export Documentation', category: 'export', status: 'complete', required: true },
-    { id: 'ci', name: 'Commercial Invoice', category: 'export', status: 'complete', required: true, documentId: 'doc-003' },
-    { id: 'pl', name: 'Packing List', category: 'export', status: 'complete', required: true, documentId: 'doc-005' },
-    { id: 'ic', name: 'Inspection Certificate', category: 'export', status: selectedTxn.status === 'INSPECTION_PENDING' ? 'pending' : 'complete', required: true },
-    { id: 'coa', name: 'Laboratory COA', category: 'export', status: selectedTxn.id === 'txn-003' ? 'missing' : 'complete', required: true },
-    // Saudi-side
-    { id: 'sfda', name: 'SFDA Requirements', category: 'saudi', status: selectedTxn.id === 'txn-003' ? 'pending' : 'complete', required: true },
-    { id: 'reg', name: 'Product Registration', category: 'saudi', status: 'pending', required: true },
-    { id: 'label', name: 'Arabic Labelling', category: 'saudi', status: 'complete', required: true },
-    { id: 'halal', name: 'Halal Documentation', category: 'saudi', status: 'complete', required: false },
-    { id: 'customs', name: 'Customs Documentation', category: 'saudi', status: 'pending', required: true },
-    { id: 'zatca', name: 'ZATCA Invoice', category: 'saudi', status: 'pending', required: true },
-    { id: 'importer', name: 'Importer Documentation', category: 'saudi', status: 'complete', required: true },
+  const metrics = [
+    { label: 'UNDER REVIEW', value: '3', icon: Clock, color: s.amber },
+    { label: 'DOCS PENDING', value: '5', icon: FileCheck, color: '#3B82F6' },
+    { label: 'DOCS EXPIRING', value: '2', icon: AlertTriangle, color: s.red },
+    { label: 'EXCEPTIONS', value: '2', icon: AlertTriangle, color: s.red },
+    { label: 'CLEARANCE READY', value: '4', icon: CheckCircle, color: s.green },
   ];
 
-  const exportItems = complianceItems.filter(i => i.category === 'export');
-  const saudiItems = complianceItems.filter(i => i.category === 'saudi');
-  const completeCount = complianceItems.filter(i => i.status === 'complete').length;
-  const pendingCount = complianceItems.filter(i => i.status === 'pending').length;
-  const missingCount = complianceItems.filter(i => i.status === 'missing' || i.status === 'expired').length;
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'complete': return <CheckCircle size={16} className="text-green-500" />;
-      case 'pending': return <Clock size={16} className="text-yellow-500" />;
-      case 'missing': return <XCircle size={16} className="text-red-500" />;
-      case 'expired': return <AlertTriangle size={16} className="text-orange-500" />;
-      default: return <Clock size={16} className="text-gray-400" />;
-    }
-  };
-
-  const getStatusStyle = (status: string) => {
-    switch (status) {
-      case 'complete': return 'bg-green-50 border-green-200';
-      case 'pending': return 'bg-yellow-50 border-yellow-200';
-      case 'missing': return 'bg-red-50 border-red-200';
-      case 'expired': return 'bg-orange-50 border-orange-200';
-      default: return 'bg-gray-50 border-gray-200';
-    }
-  };
+  const exceptions = [
+    { priority: 'Critical', txn: 'SES-002', issue: 'Missing phytosanitary certificate', owner: 'Compliance Officer', deadline: 'Today', status: 'Open', color: s.red },
+    { priority: 'High', txn: 'SES-004', issue: 'Certificate of Origin expires in 5 days', owner: 'Operations', deadline: '2 days', status: 'Open', color: s.amber },
+    { priority: 'Medium', txn: 'CAS-003', issue: 'Arabic labelling review required', owner: 'KSA Compliance', deadline: '4 days', status: 'Pending', color: '#3B82F6' },
+  ];
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Compliance OS</h1>
-          <p className="text-gray-500 mt-1">Transaction compliance management</p>
-        </div>
-      </div>
-
-      {/* Transaction Selector */}
-      <div className="flex items-center gap-3 overflow-x-auto pb-2">
-        {transactions.filter(t => t.status !== 'COMPLETED' && t.status !== 'CANCELLED').map((txn) => (
-          <button
-            key={txn.id}
-            onClick={() => setSelectedTxn(txn)}
-            className={`flex-shrink-0 px-4 py-3 rounded-xl border text-left transition-all ${
-              selectedTxn.id === txn.id 
-                ? 'bg-masar-navy text-white border-masar-navy' 
-                : 'bg-white text-gray-700 border-gray-200 hover:border-masar-gold'
-            }`}
-          >
-            <p className="text-sm font-semibold">{txn.masarId}</p>
-            <p className={`text-xs mt-0.5 ${selectedTxn.id === txn.id ? 'text-gray-300' : 'text-gray-400'}`}>
-              {txn.commodity} • {txn.quantity}
-            </p>
-          </button>
-        ))}
-      </div>
-
+    <DashboardPage title="MASAR Compliance Control Center" subtitle="Centralized compliance management for all corridor transactions." breadcrumbs={[{ label: 'Compliance' }]} metrics={metrics}>
       {/* Clearance Score */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card title="MASAR Clearance Score" className="lg:col-span-1">
-          <div className="text-center">
-            <div className={`inline-flex items-center justify-center w-24 h-24 rounded-full text-4xl font-bold ${getClearanceScoreColor(selectedTxn.clearanceScore.total)}`}>
-              {selectedTxn.clearanceScore.total}
-            </div>
-            <p className="text-lg font-semibold mt-3">{getClearanceScoreLabel(selectedTxn.clearanceScore.total)}</p>
-            <p className="text-sm text-gray-500 mt-1">{selectedTxn.masarId}</p>
-          </div>
-          <div className="mt-6 space-y-3">
-            {[
-              { label: 'Exporter Verification', value: selectedTxn.clearanceScore.exporterVerification, max: 15 },
-              { label: 'Buyer Verification', value: selectedTxn.clearanceScore.buyerVerification, max: 10 },
-              { label: 'Commodity Documentation', value: selectedTxn.clearanceScore.commodityDocumentation, max: 15 },
-              { label: 'Lab/COA', value: selectedTxn.clearanceScore.labCOA, max: 15 },
-              { label: 'Phytosanitary', value: selectedTxn.clearanceScore.phytosanitary, max: 10 },
-              { label: 'Origin Documentation', value: selectedTxn.clearanceScore.originDocumentation, max: 10 },
-              { label: 'Saudi Import Readiness', value: selectedTxn.clearanceScore.saudiImportReadiness, max: 15 },
-              { label: 'Contract Completeness', value: selectedTxn.clearanceScore.contractCompleteness, max: 5 },
-              { label: 'Inspection Readiness', value: selectedTxn.clearanceScore.inspectionReadiness, max: 5 },
-            ].map((item) => (
-              <div key={item.label}>
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-xs text-gray-500">{item.label}</span>
-                  <span className="text-xs font-medium">{item.value}/{item.max}</span>
-                </div>
-                <ProgressBar 
-                  value={item.value} 
-                  max={item.max} 
-                  size="sm" 
-                  color={item.value === item.max ? 'bg-green-500' : item.value > item.max * 0.5 ? 'bg-yellow-500' : item.value > 0 ? 'bg-orange-500' : 'bg-gray-300'} 
-                />
+      <div style={{ background: 'white', borderRadius: '12px', border: `1px solid ${s.border}`, padding: '24px', marginBottom: '16px' }}>
+        <h3 style={{ fontSize: '14px', fontWeight: 700, color: s.text, marginBottom: '16px' }}>Clearance Readiness Overview</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+          <div style={{ textAlign: 'center', padding: '20px', background: '#F9FAFB', borderRadius: '10px' }}>
+            <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: 'conic-gradient(#16A34A 0deg, #16A34A 338deg, #E5E7EB 338deg)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 8px' }}>
+              <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontSize: '28px', fontWeight: 800, color: s.text }}>94</span>
+                <span style={{ fontSize: '8px', fontWeight: 600, color: s.green, letterSpacing: '0.08em' }}>READY</span>
               </div>
-            ))}
+            </div>
+            <span style={{ fontSize: '11px', color: '#98A2B3' }}>Average Clearance Score</span>
           </div>
-        </Card>
-
-        {/* Compliance Checklist */}
-        <div className="lg:col-span-2 space-y-4">
-          {/* Summary */}
-          <div className="grid grid-cols-3 gap-4">
-            <div className="bg-green-50 rounded-xl p-4 text-center border border-green-200">
-              <CheckCircle className="mx-auto text-green-500 mb-1" size={24} />
-              <p className="text-2xl font-bold text-green-700">{completeCount}</p>
-              <p className="text-xs text-green-600">Complete</p>
+          {[
+            { label: 'Counterparty', value: 96, color: s.green },
+            { label: 'Documentation', value: 92, color: s.green },
+            { label: 'Quality', value: 98, color: s.green },
+            { label: 'Saudi Import', value: 91, color: s.green },
+            { label: 'Contract', value: 100, color: s.green },
+          ].map((item, idx) => (
+            <div key={idx} style={{ padding: '16px', background: '#F9FAFB', borderRadius: '10px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span style={{ fontSize: '12px', color: s.textSec }}>{item.label}</span>
+                <span style={{ fontSize: '14px', fontWeight: 700, color: item.color }}>{item.value}%</span>
+              </div>
+              <div style={{ height: '6px', background: '#E5E7EB', borderRadius: '3px', overflow: 'hidden' }}>
+                <div style={{ width: `${item.value}%`, height: '100%', background: item.color, borderRadius: '3px' }} />
+              </div>
             </div>
-            <div className="bg-yellow-50 rounded-xl p-4 text-center border border-yellow-200">
-              <Clock className="mx-auto text-yellow-500 mb-1" size={24} />
-              <p className="text-2xl font-bold text-yellow-700">{pendingCount}</p>
-              <p className="text-xs text-yellow-600">Pending</p>
-            </div>
-            <div className="bg-red-50 rounded-xl p-4 text-center border border-red-200">
-              <AlertTriangle className="mx-auto text-red-500 mb-1" size={24} />
-              <p className="text-2xl font-bold text-red-700">{missingCount}</p>
-              <p className="text-xs text-red-600">Missing/Expired</p>
-            </div>
-          </div>
-
-          {/* Export-side Documents */}
-          <Card title="Export-Side Compliance" subtitle="Nigerian export requirements">
-            <div className="space-y-2">
-              {exportItems.map((item) => (
-                <div key={item.id} className={`flex items-center justify-between p-3 rounded-lg border ${getStatusStyle(item.status)}`}>
-                  <div className="flex items-center gap-3">
-                    {getStatusIcon(item.status)}
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">{item.name}</p>
-                      {item.required && <span className="text-xs text-gray-400">Required</span>}
-                      {item.dueDate && <span className="text-xs text-red-500 ml-2">Due: {item.dueDate}</span>}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <StatusBadge status={item.status.toUpperCase()} />
-                    <button className="p-1 text-gray-400 hover:text-gray-600">
-                      <Eye size={14} />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-
-          {/* Saudi-side Documents */}
-          <Card title="Saudi-Side Compliance" subtitle="Saudi import requirements">
-            <div className="space-y-2">
-              {saudiItems.map((item) => (
-                <div key={item.id} className={`flex items-center justify-between p-3 rounded-lg border ${getStatusStyle(item.status)}`}>
-                  <div className="flex items-center gap-3">
-                    {getStatusIcon(item.status)}
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">{item.name}</p>
-                      {item.required && <span className="text-xs text-gray-400">Required</span>}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <StatusBadge status={item.status.toUpperCase()} />
-                    <button className="p-1 text-gray-400 hover:text-gray-600">
-                      <Upload size={14} />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
+          ))}
         </div>
       </div>
-    </div>
+
+      {/* Exceptions Table */}
+      <div style={{ background: 'white', borderRadius: '12px', border: `1px solid ${s.border}`, overflow: 'hidden' }}>
+        <div style={{ padding: '16px 20px', borderBottom: `1px solid ${s.border}` }}>
+          <h3 style={{ fontSize: '14px', fontWeight: 700, color: s.text }}>Compliance Exceptions</h3>
+        </div>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead><tr style={{ background: '#F9FAFB' }}>
+            {['Priority', 'Transaction', 'Issue', 'Owner', 'Deadline', 'Status'].map(h => (
+              <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontSize: '10px', fontWeight: 700, color: '#98A2B3', letterSpacing: '0.05em', borderBottom: `1px solid ${s.border}` }}>{h}</th>
+            ))}
+          </tr></thead>
+          <tbody>
+            {exceptions.map((exc, idx) => (
+              <tr key={idx} style={{ borderBottom: `1px solid ${s.border}` }}>
+                <td style={{ padding: '12px 14px' }}><span style={{ fontSize: '10px', fontWeight: 700, color: exc.color, padding: '3px 8px', background: `${exc.color}10`, borderRadius: '4px' }}>{exc.priority}</span></td>
+                <td style={{ padding: '12px 14px', fontSize: '12px', fontWeight: 600, color: s.text, fontFamily: 'monospace' }}>{exc.txn}</td>
+                <td style={{ padding: '12px 14px', fontSize: '12px', color: s.text }}>{exc.issue}</td>
+                <td style={{ padding: '12px 14px', fontSize: '12px', color: s.textSec }}>{exc.owner}</td>
+                <td style={{ padding: '12px 14px', fontSize: '12px', color: exc.deadline === 'Today' ? s.red : s.textSec, fontWeight: exc.deadline === 'Today' ? 600 : 400 }}>{exc.deadline}</td>
+                <td style={{ padding: '12px 14px' }}><span style={{ fontSize: '10px', fontWeight: 600, color: exc.status === 'Open' ? s.red : s.amber, padding: '3px 8px', background: exc.status === 'Open' ? '#FEF2F2' : '#FFFBEB', borderRadius: '4px' }}>{exc.status}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </DashboardPage>
   );
 }

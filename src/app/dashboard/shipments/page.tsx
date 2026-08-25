@@ -1,236 +1,72 @@
 'use client';
-
-import React, { useState } from 'react';
-import { 
-  Ship, 
-  MapPin, 
-  Calendar, 
-  Package, 
-  CheckCircle, 
-  Clock, 
-  AlertTriangle,
-  Anchor,
-  Navigation,
-  Truck,
-  Globe,
-  ArrowRight
-} from 'lucide-react';
-import Card from '@/components/shared/Card';
-import StatusBadge from '@/components/shared/StatusBadge';
-import { shipments, Shipment, getTransactionById, transactions } from '@/lib/data';
+import React from 'react';
+import DashboardPage from '@/components/dashboard/DashboardPage';
+import { Ship, MapPin, Calendar, CheckCircle, Clock, Package, ArrowRight, Anchor, Globe } from 'lucide-react';
+import { shipments, getTransactionById } from '@/lib/data';
 
 export default function ShipmentsPage() {
-  const [selectedShipment, setSelectedShipment] = useState<Shipment | null>(null);
+  const s = { navy: '#0B1F3A', gold: '#C9A24A', text: '#142235', textSec: '#667085', border: '#E4E7EC', green: '#16A34A', blue: '#3B82F6' };
 
-  const shipmentStatuses = ['BOOKED', 'LOADED', 'DEPARTED', 'IN_TRANSIT', 'ARRIVED', 'PORT_INSPECTION', 'CLEARED', 'RELEASE'];
+  const metrics = [
+    { label: 'IN TRANSIT', value: '1', icon: Ship, color: s.blue },
+    { label: 'PREPARING', value: '3', icon: Package, color: '#F59E0B' },
+    { label: 'ARRIVED', value: '0', icon: Anchor, color: s.green },
+    { label: 'RELEASED', value: '1', icon: CheckCircle, color: s.green },
+  ];
+
+  const shipmentStatuses = ['BOOKED', 'LOADED', 'DEPARTED', 'IN_TRANSIT', 'ARRIVED', 'PORT_INSPECTION', 'CLEARED', 'RELEASED'];
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Shipment Control</h1>
-          <p className="text-gray-500 mt-1">Monitor and manage shipments</p>
-        </div>
-      </div>
-
-      {/* Corridor Visualization */}
-      <Card title="Active Corridor — Nigeria → Saudi Arabia">
-        <div className="relative bg-gradient-to-r from-green-50 via-blue-50 to-yellow-50 rounded-xl p-8">
-          <div className="flex items-center justify-between">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                <span className="text-2xl">🇳🇬</span>
-              </div>
-              <h4 className="font-semibold text-gray-900 text-sm">Apapa Port</h4>
-              <p className="text-xs text-gray-500">Lagos, Nigeria</p>
-            </div>
-
-            <div className="flex-1 mx-6 relative">
-              <div className="h-2 bg-gradient-to-r from-green-400 via-blue-400 to-yellow-400 rounded-full" />
-              <div className="absolute top-1/2 left-[65%] transform -translate-x-1/2 -translate-y-1/2">
-                <div className="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center">
-                  <Ship size={18} className="text-masar-blue" />
-                </div>
-              </div>
-              <div className="absolute -bottom-6 left-0 text-xs text-gray-500">Aug 18</div>
-              <div className="absolute -bottom-6 right-0 text-xs text-gray-500">Sep 05</div>
-              <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs font-medium text-blue-600">In Transit</div>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                <span className="text-2xl">🇸🇦</span>
-              </div>
-              <h4 className="font-semibold text-gray-900 text-sm">Jeddah Port</h4>
-              <p className="text-xs text-gray-500">Saudi Arabia</p>
-            </div>
+    <DashboardPage title="Shipment Control Tower" subtitle="End-to-end shipment monitoring from port loading to Saudi port verification and release." breadcrumbs={[{ label: 'Logistics' }, { label: 'Shipments' }]} metrics={metrics}>
+      {/* Corridor Map */}
+      <div style={{ background: 'white', borderRadius: '12px', border: `1px solid ${s.border}`, padding: '20px', marginBottom: '16px' }}>
+        <h3 style={{ fontSize: '14px', fontWeight: 700, color: s.text, marginBottom: '16px' }}>Active Corridor — Nigeria → Saudi Arabia</h3>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px', background: 'linear-gradient(135deg, #F0FDF4, #EFF6FF, #FFFBEB)', borderRadius: '10px' }}>
+          <div style={{ textAlign: 'center' }}><div style={{ fontSize: '2rem', marginBottom: '4px' }}>🇳🇬</div><p style={{ fontSize: '13px', fontWeight: 700, color: s.text, margin: 0 }}>Apapa Port</p><p style={{ fontSize: '11px', color: s.textSec, margin: 0 }}>Lagos, Nigeria</p></div>
+          <div style={{ flex: 1, margin: '0 2rem', position: 'relative', height: '6px' }}>
+            <div style={{ position: 'absolute', inset: 0, background: '#E5E7EB', borderRadius: '3px' }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, #16A34A, #C9A24A, #3B82F6)', borderRadius: '3px', width: '65%' }} />
+            <div style={{ position: 'absolute', top: '-5px', left: '65%', width: '16px', height: '16px', background: 'white', borderRadius: '50%', border: `3px solid ${s.blue}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Ship size={8} color={s.blue} /></div>
           </div>
-        </div>
-      </Card>
-
-      {/* Shipment List & Detail */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-3">
-          {shipments.map((ship) => {
-            const txn = getTransactionById(ship.transactionId);
-            return (
-              <div 
-                key={ship.id}
-                onClick={() => setSelectedShipment(ship)}
-                className={`bg-white rounded-xl border p-5 cursor-pointer transition-all hover:shadow-md ${
-                  selectedShipment?.id === ship.id ? 'border-masar-gold shadow-md' : 'border-gray-200'
-                }`}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                      <Ship size={24} className="text-blue-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-base font-semibold text-gray-900">{txn?.masarId}</h3>
-                      <p className="text-sm text-gray-500">{ship.vessel} • {ship.containerNumber}</p>
-                      <div className="flex items-center gap-4 mt-2">
-                        <span className="flex items-center gap-1 text-xs text-gray-500">
-                          <MapPin size={12} /> {ship.portOfOrigin}
-                        </span>
-                        <ArrowRight size={12} className="text-gray-300" />
-                        <span className="flex items-center gap-1 text-xs text-gray-500">
-                          <MapPin size={12} /> {ship.destination}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <StatusBadge status={ship.status} size="md" />
-                </div>
-                <div className="mt-4 grid grid-cols-4 gap-4 pt-4 border-t border-gray-100">
-                  <div>
-                    <p className="text-xs text-gray-400">Container</p>
-                    <p className="text-sm font-medium">{ship.containerNumber}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-400">ETD</p>
-                    <p className="text-sm font-medium">{ship.etd}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-400">ETA</p>
-                    <p className="text-sm font-medium">{ship.eta}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-400">Customs</p>
-                    <StatusBadge status={ship.customsStatus} />
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-
-          {/* Additional Shipment Cards for Demo */}
-          {transactions.filter(t => t.status === 'IN_TRANSIT' || t.status === 'SHIPMENT_RELEASED').length > shipments.length && (
-            <div className="bg-white rounded-xl border border-gray-200 p-5">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
-                  <Package size={24} className="text-yellow-600" />
-                </div>
-                <div>
-                  <h3 className="text-base font-semibold text-gray-900">MASAR-SES-2026-000002</h3>
-                  <p className="text-sm text-gray-500">Awaiting shipment — Inspection pending</p>
-                  <div className="mt-2">
-                    <StatusBadge status="PRE_SHIPMENT" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Shipment Detail */}
-        <div className="lg:col-span-1">
-          {selectedShipment ? (
-            <div className="space-y-4 sticky top-6">
-              <Card title="Shipment Details">
-                <div className="space-y-4">
-                  <div className="text-center pb-4 border-b">
-                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <Ship size={32} className="text-blue-600" />
-                    </div>
-                    <h3 className="font-semibold text-gray-900">{selectedShipment.containerNumber}</h3>
-                    <p className="text-sm text-gray-500">{selectedShipment.vessel}</p>
-                    <StatusBadge status={selectedShipment.status} size="md" />
-                  </div>
-
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                      <Package size={16} className="text-gray-400" />
-                      <div>
-                        <p className="text-xs text-gray-400">Container</p>
-                        <p className="text-sm font-medium">{selectedShipment.containerNumber}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                      <Ship size={16} className="text-gray-400" />
-                      <div>
-                        <p className="text-xs text-gray-400">Vessel</p>
-                        <p className="text-sm font-medium">{selectedShipment.vessel}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                      <Navigation size={16} className="text-gray-400" />
-                      <div>
-                        <p className="text-xs text-gray-400">Booking</p>
-                        <p className="text-sm font-medium">{selectedShipment.booking}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                      <Calendar size={16} className="text-gray-400" />
-                      <div>
-                        <p className="text-xs text-gray-400">ETD / ETA</p>
-                        <p className="text-sm font-medium">{selectedShipment.etd} → {selectedShipment.eta}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Shipment Timeline */}
-                  <div className="pt-4 border-t">
-                    <h4 className="text-xs font-semibold text-gray-500 uppercase mb-3">Shipment Timeline</h4>
-                    <div className="space-y-0">
-                      {shipmentStatuses.map((status, idx) => {
-                        const currentIdx = shipmentStatuses.indexOf(selectedShipment.status);
-                        const isCompleted = idx <= currentIdx;
-                        const isCurrent = idx === currentIdx;
-                        return (
-                          <div key={status} className="flex items-start gap-3 pb-3 last:pb-0">
-                            <div className="flex flex-col items-center">
-                              {isCompleted ? (
-                                <CheckCircle size={16} className="text-green-500" />
-                              ) : (
-                                <div className="w-4 h-4 rounded-full border-2 border-gray-300" />
-                              )}
-                              {idx < shipmentStatuses.length - 1 && (
-                                <div className={`w-0.5 h-4 mt-0.5 ${isCompleted ? 'bg-green-300' : 'bg-gray-200'}`} />
-                              )}
-                            </div>
-                            <p className={`text-xs ${isCurrent ? 'font-semibold text-blue-600' : isCompleted ? 'text-gray-700' : 'text-gray-400'}`}>
-                              {status.replace(/_/g, ' ')}
-                            </p>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </div>
-          ) : (
-            <Card>
-              <div className="text-center py-12">
-                <Ship className="mx-auto text-gray-300 mb-3" size={48} />
-                <p className="text-gray-500">Select a shipment to view details</p>
-              </div>
-            </Card>
-          )}
+          <div style={{ textAlign: 'center' }}><div style={{ fontSize: '2rem', marginBottom: '4px' }}>🇸🇦</div><p style={{ fontSize: '13px', fontWeight: 700, color: s.text, margin: 0 }}>Jeddah Port</p><p style={{ fontSize: '11px', color: s.textSec, margin: 0 }}>Saudi Arabia</p></div>
         </div>
       </div>
-    </div>
+
+      {/* Shipment Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: '16px' }}>
+        {shipments.map(ship => {
+          const txn = getTransactionById(ship.transactionId);
+          const currentIdx = shipmentStatuses.indexOf(ship.status);
+          return (
+            <div key={ship.id} style={{ background: 'white', borderRadius: '12px', border: `1px solid ${s.border}`, padding: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                <div><span style={{ fontSize: '13px', fontWeight: 700, color: s.text, fontFamily: 'monospace' }}>{txn?.masarId}</span><p style={{ fontSize: '12px', color: s.textSec, margin: '2px 0 0' }}>{ship.vessel} · {ship.containerNumber}</p></div>
+                <span style={{ fontSize: '10px', fontWeight: 600, color: s.blue, padding: '3px 8px', background: '#EFF6FF', borderRadius: '4px' }}>{ship.status.replace('_', ' ')}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                <span style={{ fontSize: '11px', color: s.textSec }}>🇳🇬 {ship.portOfOrigin}</span>
+                <div style={{ flex: 1, height: '2px', background: '#E5E7EB', borderRadius: '1px', position: 'relative' }}>
+                  <div style={{ position: 'absolute', left: `${((currentIdx + 1) / shipmentStatuses.length) * 100}%`, top: '-3px', width: '8px', height: '8px', background: s.blue, borderRadius: '50%' }} />
+                </div>
+                <span style={{ fontSize: '11px', color: s.textSec }}>🇸🇦 {ship.destination}</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '12px' }}>
+                <div style={{ padding: '8px', background: '#F9FAFB', borderRadius: '6px' }}><span style={{ fontSize: '9px', color: '#98A2B3' }}>ETD</span><p style={{ fontSize: '11px', fontWeight: 600, color: s.text, margin: 0 }}>{ship.etd}</p></div>
+                <div style={{ padding: '8px', background: '#F9FAFB', borderRadius: '6px' }}><span style={{ fontSize: '9px', color: '#98A2B3' }}>ETA</span><p style={{ fontSize: '11px', fontWeight: 600, color: s.text, margin: 0 }}>{ship.eta}</p></div>
+                <div style={{ padding: '8px', background: '#F9FAFB', borderRadius: '6px' }}><span style={{ fontSize: '9px', color: '#98A2B3' }}>Customs</span><p style={{ fontSize: '11px', fontWeight: 600, color: s.text, margin: 0 }}>{ship.customsStatus}</p></div>
+              </div>
+              <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                {shipmentStatuses.map((status, idx) => (
+                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '3px 6px', borderRadius: '4px', background: idx <= currentIdx ? '#F0FDF4' : '#F9FAFB', border: `1px solid ${idx <= currentIdx ? '#BBF7D0' : '#E5E7EB'}` }}>
+                    {idx <= currentIdx ? <CheckCircle size={8} color={s.green} /> : <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#D0D5DD' }} />}
+                    <span style={{ fontSize: '8px', color: idx <= currentIdx ? s.green : '#98A2B3' }}>{status.replace('_', ' ')}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </DashboardPage>
   );
 }
