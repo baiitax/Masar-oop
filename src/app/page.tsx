@@ -2,18 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { 
   Globe, Shield, Search, DollarSign, Users, Truck, ArrowLeft, ArrowRight,
-  CheckCircle, Star, Ship, FileText, Lock, Zap, BarChart3, ChevronDown,
+  CheckCircle, Star, Ship, FileText, Lock, ChevronDown,
   Menu, X, MapPin, Mail, Building2, Award, TrendingUp, Languages, Eye,
-  Scale, Leaf, Package, Clock, ArrowUpRight, ChevronRight, ExternalLink,
-  Briefcase, Landmark, Network, ShieldCheck, FileCheck, Banknote,
-  Factory, Wheat, Target, Layers, GitBranch,
-  Route, Milestone, Flag, Compass, Navigation2, Anchor, Boxes,
-  Receipt, BadgeCheck, FileSignature, ScrollText, ClipboardCheck, Handshake,
-  Fingerprint, KeyRound, Server, Database, Cpu, Activity,
-  Phone, MessageSquare, Send
+  Scale, Leaf, Package, Clock, ChevronRight,
+  Landmark, ShieldCheck, FileCheck, Banknote,
+  Wheat, Target, ClipboardCheck, BadgeCheck, FileSignature, ScrollText, Handshake,
+  Fingerprint, KeyRound, Activity, Phone, MessageSquare, Play, Pause,
+  Volume2, VolumeX, Maximize, BarChart3, TrendingDown, ArrowUpRight
 } from 'lucide-react';
 
 // ============================================================
@@ -81,6 +78,38 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes routeMove { 0% { left: 0; } 100% { left: 100%; } }
       `}</style>
+    </div>
+  );
+}
+
+// ============================================================
+// VIDEO PLAYER COMPONENT
+// ============================================================
+function VideoPlayer({ src, poster }: { src: string; poster?: string }) {
+  const [playing, setPlaying] = useState(false);
+  const [muted, setMuted] = useState(true);
+
+  return (
+    <div style={{ position: 'relative', borderRadius: '16px', overflow: 'hidden', background: '#0B1F3A', aspectRatio: '16/9' }}>
+      <video
+        src={src}
+        poster={poster}
+        muted={muted}
+        loop
+        playsInline
+        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        ref={el => { if (el) { playing ? el.play() : el.pause(); } }}
+      />
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(11,31,58,0.8), transparent 50%)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <button onClick={() => setPlaying(!playing)} style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(201,162,74,0.9)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {playing ? <Pause size={18} color="#0B1F3A" /> : <Play size={18} color="#0B1F3A" />}
+          </button>
+          <button onClick={() => setMuted(!muted)} style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {muted ? <VolumeX size={14} color="white" /> : <Volume2 size={14} color="white" />}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -203,7 +232,6 @@ export default function LandingPage() {
                 <Link href="/auth" style={{ ...s.btnPrimary, padding: '10px 20px', fontSize: '13px' }}>Start a Trade</Link>
               </div>
 
-              {/* Mobile Menu Button */}
               <button className="lg:hidden" onClick={() => setMobileMenuOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px' }}>
                 <Menu size={24} color={scrolled ? '#0B1F3A' : 'white'} />
               </button>
@@ -260,7 +288,7 @@ export default function LandingPage() {
               </p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', marginBottom: '2rem' }}>
                 <Link href="/auth" style={s.btnPrimary}>Start a Trade <ArrowRight size={16} /></Link>
-                <a href="#how-it-works" style={s.btnSecondary}>Explore the MASAR Rail</a>
+                <Link href="/how-it-works" style={s.btnSecondary}>Explore the MASAR Rail</Link>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 16px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', marginBottom: '2rem' }}>
                 <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>Powered by</span>
@@ -325,9 +353,42 @@ export default function LandingPage() {
       </section>
 
       {/* ============================================================ */}
+      {/* CTO BRIEFING SECTION */}
+      {/* ============================================================ */}
+      <section style={{ ...s.section, background: 'white' }}>
+        <div style={s.container}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '4rem', alignItems: 'center' }} className="lg:grid-cols-2">
+            <div>
+              <div style={s.goldDivider} />
+              <h2 style={s.sectionTitle}>A Message from Our CTO</h2>
+              <p style={{ ...s.sectionSubtitle, marginBottom: '1.5rem' }}>
+                &ldquo;At MASAR, we are building more than software — we are engineering trust into every cross-border transaction. Our technology transforms fragmented trade processes into one controlled, auditable corridor.&rdquo;
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.5rem' }}>
+                <img src="/images/cto-portrait.png" alt="CTO" style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} />
+                <div>
+                  <p style={{ fontSize: '14px', fontWeight: 700, color: '#0B1F3A', margin: 0 }}>Mujaheed Baita</p>
+                  <p style={{ fontSize: '12px', color: '#5B6778', margin: 0 }}>Chief Technology Officer, MASAR</p>
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                {['Protocol Architecture', 'Trust Engineering', 'Compliance Automation', 'Transaction Intelligence'].map((tag, idx) => (
+                  <span key={idx} style={{ padding: '4px 10px', background: '#F7F9FC', border: '1px solid #E5E9F0', borderRadius: '6px', fontSize: '11px', color: '#5B6778', fontWeight: 500 }}>{tag}</span>
+                ))}
+              </div>
+            </div>
+            <div>
+              <VideoPlayer src="/assets/video/cto-briefing.mp4" poster="/images/cto-portrait.png" />
+              <p style={{ fontSize: '11px', color: '#9BA3AE', textAlign: 'center', marginTop: '8px' }}>CTO Briefing — The MASAR Technology Vision</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================ */}
       {/* MARKET OPPORTUNITY */}
       {/* ============================================================ */}
-      <section id="platform" style={{ ...s.section, background: 'white' }}>
+      <section id="platform" style={{ ...s.section, background: '#F7F9FC' }}>
         <div style={s.container}>
           <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
             <div style={{ ...s.goldDivider, margin: '0 auto 1.5rem' }} />
@@ -352,33 +413,36 @@ export default function LandingPage() {
       </section>
 
       {/* ============================================================ */}
-      {/* PROBLEM */}
+      {/* SESAME FEATURE WITH IMAGE */}
       {/* ============================================================ */}
-      <section style={{ ...s.section, background: '#F7F9FC' }}>
+      <section style={{ ...s.section, background: 'white' }}>
         <div style={s.container}>
-          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-            <div style={{ ...s.goldDivider, margin: '0 auto 1.5rem' }} />
-            <h2 style={s.sectionTitle}>Cross-border trade doesn&apos;t fail because supply is missing.</h2>
-            <p style={{ ...s.sectionSubtitle, margin: '0 auto' }}>It fails because trust, compliance and liquidity are fragmented across too many parties.</p>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px' }}>
-            {[
-              { title: 'TRUST', icon: Shield, color: '#C9A24A', items: ['Unknown counterparties', 'Weak transaction history', 'Limited visibility'] },
-              { title: 'COMPLIANCE', icon: FileText, color: '#3B82F6', items: ['Multiple documents', 'Different authorities', 'Time-sensitive certifications'] },
-              { title: 'QUALITY', icon: Search, color: '#8B5CF6', items: ['Fragmented inspection', 'Disconnected results', 'No standardized evidence'] },
-              { title: 'LIQUIDITY', icon: Banknote, color: '#2D7D46', items: ['Exporters need capital', 'Buyers need confidence', 'Banks need visibility'] },
-            ].map((card, idx) => (
-              <div key={idx} style={{ ...s.card, padding: '2rem' }}>
-                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: `${card.color}10`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}><card.icon size={24} color={card.color} /></div>
-                <h3 style={{ fontSize: '13px', fontWeight: 700, color: card.color, letterSpacing: '0.1em', marginBottom: '1rem' }}>{card.title}</h3>
-                {card.items.map((item, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '6px' }}>
-                    <div style={{ width: '4px', height: '4px', background: '#CBD5E1', borderRadius: '50%', marginTop: '8px', flexShrink: 0 }} />
-                    <span style={{ fontSize: '14px', color: '#5B6778', lineHeight: 1.5 }}>{item}</span>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '4rem', alignItems: 'center' }} className="lg:grid-cols-2">
+            <div>
+              <div style={s.goldDivider} />
+              <h2 style={s.sectionTitle}>Nigeria → Saudi Arabia<br />The First MASAR Commodity Lane</h2>
+              <p style={{ ...s.sectionSubtitle, marginBottom: '1.5rem' }}>
+                Premium Nigerian sesame — verified, inspected, and settled through one controlled transaction rail.
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                {[
+                  { label: 'Commodity', value: 'Non-GMO Sesame' },
+                  { label: 'Origin', value: 'Nigeria' },
+                  { label: 'Destination', value: 'Saudi Arabia' },
+                  { label: 'Verification', value: 'Independent' },
+                  { label: 'Compliance', value: 'Managed' },
+                  { label: 'Settlement', value: 'Controlled' },
+                ].map((item, idx) => (
+                  <div key={idx} style={{ padding: '10px', background: '#F7F9FC', borderRadius: '8px' }}>
+                    <span style={{ fontSize: '10px', color: '#9BA3AE' }}>{item.label}</span>
+                    <p style={{ fontSize: '13px', fontWeight: 600, color: '#0B1F3A', margin: 0 }}>{item.value}</p>
                   </div>
                 ))}
               </div>
-            ))}
+            </div>
+            <div style={{ borderRadius: '16px', overflow: 'hidden', boxShadow: '0 12px 40px rgba(0,0,0,0.1)' }}>
+              <img src="/images/sesame-harvest.png" alt="Nigerian Sesame Harvest" style={{ width: '100%', height: 'auto', display: 'block' }} />
+            </div>
           </div>
         </div>
       </section>
@@ -386,7 +450,7 @@ export default function LandingPage() {
       {/* ============================================================ */}
       {/* HOW MASAR WORKS */}
       {/* ============================================================ */}
-      <section id="how-it-works" style={{ ...s.section, background: 'white' }}>
+      <section id="how-it-works" style={{ ...s.section, background: '#F7F9FC' }}>
         <div style={s.container}>
           <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
             <div style={{ ...s.goldDivider, margin: '0 auto 1.5rem' }} />
@@ -411,26 +475,6 @@ export default function LandingPage() {
                   <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0B1F3A', marginBottom: '0.5rem', letterSpacing: '0.05em' }}>{step.title}</h3>
                   <p style={{ fontSize: '14px', color: '#5B6778', lineHeight: 1.6 }}>{step.desc}</p>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/* COMPLIANCE */}
-      {/* ============================================================ */}
-      <section id="trust-&-compliance" style={{ ...s.section, background: '#F7F9FC' }}>
-        <div style={s.container}>
-          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-            <div style={{ ...s.goldDivider, margin: '0 auto 1.5rem' }} />
-            <h2 style={s.sectionTitle}>Compliance before the cargo moves.</h2>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px' }}>
-            {['Certificate of Origin', 'Phytosanitary Certificate', 'Certificate of Analysis', 'SFDA Requirements', 'Halal Documentation', 'Arabic Labelling', 'Commercial Invoice', 'ZATCA E-Invoicing'].map((doc, idx) => (
-              <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 16px', background: 'white', borderRadius: '10px', border: '1px solid #E5E9F0' }}>
-                <FileCheck size={16} color="#2D7D46" />
-                <span style={{ fontSize: '13px', color: '#122033', fontWeight: 500 }}>{doc}</span>
               </div>
             ))}
           </div>
@@ -495,9 +539,42 @@ export default function LandingPage() {
       </section>
 
       {/* ============================================================ */}
-      {/* ROADMAP */}
+      {/* TEAM IMAGE SECTION */}
       {/* ============================================================ */}
       <section style={{ ...s.section, background: 'white' }}>
+        <div style={s.container}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '4rem', alignItems: 'center' }} className="lg:grid-cols-2">
+            <div style={{ borderRadius: '16px', overflow: 'hidden', boxShadow: '0 12px 40px rgba(0,0,0,0.1)' }}>
+              <img src="/images/team-office.png" alt="MASAR Team" style={{ width: '100%', height: 'auto', display: 'block' }} />
+            </div>
+            <div>
+              <div style={s.goldDivider} />
+              <h2 style={s.sectionTitle}>Built by operators who understand trade.</h2>
+              <p style={{ ...s.sectionSubtitle, marginBottom: '1.5rem' }}>
+                Our team combines deep expertise in African commodity markets, Saudi regulatory frameworks, international trade finance, and technology infrastructure.
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                {[
+                  { value: '7+', label: 'Years of Impact' },
+                  { value: '31+', label: 'Projects Completed' },
+                  { value: '15', label: 'Awards & Recognition' },
+                  { value: '10k+', label: 'Daily Transactions' },
+                ].map((stat, idx) => (
+                  <div key={idx} style={{ padding: '12px', background: '#F7F9FC', borderRadius: '8px', textAlign: 'center' }}>
+                    <p style={{ fontSize: '20px', fontWeight: 800, color: '#0B1F3A', margin: 0 }}>{stat.value}</p>
+                    <p style={{ fontSize: '11px', color: '#5B6778', margin: 0 }}>{stat.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================ */}
+      {/* ROADMAP */}
+      {/* ============================================================ */}
+      <section style={{ ...s.section, background: '#F7F9FC' }}>
         <div style={s.container}>
           <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
             <div style={{ ...s.goldDivider, margin: '0 auto 1.5rem' }} />
