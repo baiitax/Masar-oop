@@ -1,17 +1,18 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { 
   Globe, Shield, Search, DollarSign, Users, Truck, ArrowLeft, ArrowRight,
   CheckCircle, Star, Ship, FileText, Lock, Zap, BarChart3, ChevronDown,
   Menu, X, MapPin, Mail, Building2, Award, TrendingUp, Languages, Eye,
   Scale, Leaf, Package, Clock, ArrowUpRight, ChevronRight, ExternalLink,
-  Briefcase, Landmark, Network, ShieldCheck, FileCheck, Banknote, TruckIcon,
-  Factory, Wheat, CircleDot, Hexagon, Diamond, Target, Layers, GitBranch,
-  Route, Waypoints, Milestone, Flag, Compass, Navigation2, Anchor, Boxes,
+  Briefcase, Landmark, Network, ShieldCheck, FileCheck, Banknote,
+  Factory, Wheat, Target, Layers, GitBranch,
+  Route, Milestone, Flag, Compass, Navigation2, Anchor, Boxes,
   Receipt, BadgeCheck, FileSignature, ScrollText, ClipboardCheck, Handshake,
-  Building, CircleUser, Fingerprint, KeyRound, Server, Database, Cpu, Activity,
+  Fingerprint, KeyRound, Server, Database, Cpu, Activity,
   Phone, MessageSquare, Send
 } from 'lucide-react';
 
@@ -127,7 +128,6 @@ export default function LandingPage() {
     localStorage.setItem('masar-lang', newLang);
   };
 
-  // WhatsApp message
   const whatsappUrl = `https://wa.me/2348022220247?text=${encodeURIComponent('Hello MASAR, I am interested in learning more about your trade corridor infrastructure for Africa–Saudi Arabia commerce.')}`;
 
   const s = {
@@ -139,7 +139,6 @@ export default function LandingPage() {
     pattern: { backgroundImage: `linear-gradient(30deg, rgba(201,162,74,0.04) 12%, transparent 12.5%, transparent 87%, rgba(201,162,74,0.04) 87.5%), linear-gradient(150deg, rgba(201,162,74,0.04) 12%, transparent 12.5%, transparent 87%, rgba(201,162,74,0.04) 87.5%)`, backgroundSize: '60px 100px' },
     btnPrimary: { display: 'inline-flex', alignItems: 'center', gap: '10px', padding: '14px 28px', background: `linear-gradient(135deg, #C9A24A 0%, #E3C875 100%)`, color: '#0B1F3A', borderRadius: '12px', fontSize: '15px', fontWeight: 700, textDecoration: 'none', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease', boxShadow: '0 4px 16px rgba(201,162,74,0.25)' },
     btnSecondary: { display: 'inline-flex', alignItems: 'center', gap: '10px', padding: '14px 28px', background: 'rgba(255,255,255,0.08)', color: 'white', borderRadius: '12px', fontSize: '15px', fontWeight: 600, textDecoration: 'none', border: '1px solid rgba(255,255,255,0.15)', cursor: 'pointer', transition: 'all 0.3s ease' },
-    btnNavy: { display: 'inline-flex', alignItems: 'center', gap: '10px', padding: '14px 28px', background: '#0B1F3A', color: 'white', borderRadius: '12px', fontSize: '15px', fontWeight: 700, textDecoration: 'none', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease' },
     section: { padding: '6rem 1.5rem' },
     container: { maxWidth: '1280px', margin: '0 auto' },
     sectionTitle: { fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', fontWeight: 800, color: '#0B1F3A', marginBottom: '1rem', lineHeight: 1.2 },
@@ -151,9 +150,7 @@ export default function LandingPage() {
 
   return (
     <div style={{ minHeight: '100vh', fontFamily: "'Inter', 'IBM Plex Sans Arabic', system-ui, sans-serif" }}>
-      {/* ============================================================ */}
-      {/* FIXED LANGUAGE TOGGLER */}
-      {/* ============================================================ */}
+      {/* Fixed Language Toggler */}
       <button onClick={toggleLang} style={{
         position: 'fixed', bottom: '90px', right: '24px', zIndex: 90,
         width: '48px', height: '48px', borderRadius: '50%',
@@ -161,54 +158,49 @@ export default function LandingPage() {
         boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         cursor: 'pointer', transition: 'all 0.3s ease',
-      }}
-        onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.1)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.15)'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.1)'; }}
-        title={lang === 'en' ? 'تبديل إلى العربية' : 'Switch to English'}
-      >
+      }}>
         <Languages size={16} color="#0B1F3A" />
         <span style={{ fontSize: '9px', fontWeight: 700, color: '#0B1F3A', marginTop: '2px' }}>{lang === 'en' ? 'عربي' : 'EN'}</span>
       </button>
 
-      {/* ============================================================ */}
-      {/* FIXED WHATSAPP BUTTON */}
-      {/* ============================================================ */}
+      {/* Fixed WhatsApp Button */}
       <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" style={{
         position: 'fixed', bottom: '24px', right: '24px', zIndex: 90,
         width: '56px', height: '56px', borderRadius: '50%',
         background: '#25D366', display: 'flex', alignItems: 'center', justifyContent: 'center',
         boxShadow: '0 4px 20px rgba(37,211,102,0.4)',
         transition: 'all 0.3s ease', textDecoration: 'none',
-      }}
-        onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.1)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(37,211,102,0.5)'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(37,211,102,0.4)'; }}
-      >
+      }}>
         <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
       </a>
 
       {/* Navigation */}
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, transition: 'all 0.4s ease', padding: scrolled ? '8px 0' : '16px 0' }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 1.5rem' }}>
-          <div style={{ ...(scrolled ? { ...s.glassLight, borderRadius: '16px', padding: '10px 24px' } : { padding: '0' }), transition: 'all 0.4s ease' }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 1rem' }}>
+          <div style={{ ...(scrolled ? { ...s.glassLight, borderRadius: '16px', padding: '10px 20px' } : { padding: '0' }), transition: 'all 0.4s ease' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'linear-gradient(135deg, #0B1F3A 0%, #102A4C 100%)', border: '2px solid #C9A24A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <svg width="22" height="22" viewBox="0 0 48 48" fill="none"><path d="M8 40V12L24 28L40 12V40" stroke="#C9A24A" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /><circle cx="24" cy="36" r="2" fill="#C9A24A" /></svg>
+              <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'linear-gradient(135deg, #0B1F3A 0%, #102A4C 100%)', border: '2px solid #C9A24A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="18" height="18" viewBox="0 0 48 48" fill="none"><path d="M8 40V12L24 28L40 12V40" stroke="#C9A24A" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /><circle cx="24" cy="36" r="2" fill="#C9A24A" /></svg>
                 </div>
                 <div>
-                  <span style={{ fontSize: '18px', fontWeight: 800, color: scrolled ? '#0B1F3A' : 'white', letterSpacing: '0.08em', transition: 'color 0.3s' }}>MASAR</span>
-                  <span style={{ display: 'block', fontSize: '9px', color: scrolled ? '#C9A24A' : 'rgba(201,162,74,0.8)', letterSpacing: '0.15em', transition: 'color 0.3s' }}>مسار — THE PATH</span>
+                  <span style={{ fontSize: '16px', fontWeight: 800, color: scrolled ? '#0B1F3A' : 'white', letterSpacing: '0.08em', transition: 'color 0.3s' }}>MASAR</span>
+                  <span style={{ display: 'block', fontSize: '8px', color: scrolled ? '#C9A24A' : 'rgba(201,162,74,0.8)', letterSpacing: '0.15em', transition: 'color 0.3s' }}>مسار — THE PATH</span>
                 </div>
               </Link>
-              <div className="hidden lg:flex" style={{ alignItems: 'center', gap: '24px' }}>
-                {[{l:'Platform',h:'/platform'},{l:'How It Works',h:'/how-it-works'},{l:'For Buyers',h:'/for-buyers'},{l:'For Exporters',h:'/for-exporters'},{l:'Trust & Compliance',h:'/trust-compliance'},{l:'About',h:'/about'}].map((item) => (
-                  <Link key={item.h} href={item.h} style={{ fontSize: '13px', fontWeight: 500, color: scrolled ? '#5B6778' : 'rgba(255,255,255,0.7)', textDecoration: 'none', transition: 'color 0.3s' }}>{item.l}</Link>
+              
+              {/* Desktop Nav */}
+              <div className="hidden lg:flex" style={{ alignItems: 'center', gap: '20px' }}>
+                {['Platform', 'How It Works', 'For Buyers', 'For Exporters', 'About'].map((item) => (
+                  <a key={item} href={`#${item.toLowerCase().replace(/ /g, '-')}`} style={{ fontSize: '13px', fontWeight: 500, color: scrolled ? '#5B6778' : 'rgba(255,255,255,0.7)', textDecoration: 'none', transition: 'color 0.3s' }}>{item}</a>
                 ))}
-                <button onClick={toggleLang} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: 600, border: 'none', cursor: 'pointer', ...(scrolled ? { background: '#F0F2F5', color: '#5B6778' } : { background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)' }), transition: 'all 0.3s' }}>
+                <button onClick={toggleLang} style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '6px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: 600, border: 'none', cursor: 'pointer', ...(scrolled ? { background: '#F0F2F5', color: '#5B6778' } : { background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)' }), transition: 'all 0.3s' }}>
                   <Languages size={14} /> {lang === 'en' ? 'العربية' : 'EN'}
                 </button>
                 <Link href="/auth" style={{ ...s.btnPrimary, padding: '10px 20px', fontSize: '13px' }}>Start a Trade</Link>
               </div>
+
+              {/* Mobile Menu Button */}
               <button className="lg:hidden" onClick={() => setMobileMenuOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px' }}>
                 <Menu size={24} color={scrolled ? '#0B1F3A' : 'white'} />
               </button>
@@ -225,8 +217,8 @@ export default function LandingPage() {
             <button onClick={() => setMobileMenuOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={24} color="#0B1F3A" /></button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {[{l:'Platform',h:'/platform'},{l:'How It Works',h:'/how-it-works'},{l:'For Buyers',h:'/for-buyers'},{l:'For Exporters',h:'/for-exporters'},{l:'Trust & Compliance',h:'/trust-compliance'},{l:'About',h:'/about'},{l:'Contact',h:'/contact'}].map((item) => (
-              <Link key={item.h} href={item.h} onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '18px', fontWeight: 500, color: '#0B1F3A', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid #E5E9F0' }}>{item.l}</Link>
+            {['Platform', 'How It Works', 'For Buyers', 'For Exporters', 'About', 'Contact'].map((item) => (
+              <a key={item} href={`#${item.toLowerCase().replace(/ /g, '-')}`} onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '18px', fontWeight: 500, color: '#0B1F3A', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid #E5E9F0' }}>{item}</a>
             ))}
             <div style={{ display: 'flex', gap: '12px', marginTop: '1rem' }}>
               <button onClick={() => { toggleLang(); }} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '1px solid #E5E9F0', background: '#F7F9FC', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
@@ -239,14 +231,15 @@ export default function LandingPage() {
       )}
 
       {/* ============================================================ */}
-      {/* HERO */}
+      {/* HERO SECTION */}
       {/* ============================================================ */}
       <section style={{ ...s.meshBg, position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, opacity: 0.08, ...s.pattern }} />
         <div style={{ position: 'absolute', top: '10%', right: '10%', width: '400px', height: '400px', background: 'rgba(201,162,74,0.08)', borderRadius: '50%', filter: 'blur(100px)' }} />
         <div style={{ position: 'absolute', bottom: '10%', left: '5%', width: '300px', height: '300px', background: 'rgba(45,125,70,0.06)', borderRadius: '50%', filter: 'blur(80px)' }} />
+
         <div style={{ ...s.container, padding: '7rem 1.5rem 4rem', position: 'relative', zIndex: 10 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: '4rem', alignItems: 'center' }} className="lg-hero-grid">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '4rem', alignItems: 'center' }} className="lg:grid-cols-2">
             <div>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 16px', background: 'rgba(201,162,74,0.1)', border: '1px solid rgba(201,162,74,0.2)', borderRadius: '6px', marginBottom: '2rem' }}>
                 <div style={{ width: '6px', height: '6px', background: '#C9A24A', borderRadius: '50%' }} />
@@ -262,13 +255,11 @@ export default function LandingPage() {
                 <Link href="/auth" style={s.btnPrimary}>Start a Trade <ArrowRight size={16} /></Link>
                 <a href="#how-it-works" style={s.btnSecondary}>Explore the MASAR Rail</a>
               </div>
-              {/* Powered by KGM */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 16px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', marginBottom: '2rem' }}>
                 <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>Powered by</span>
                 <a href="https://kgmlimited.com" target="_blank" rel="noopener noreferrer" style={{ fontSize: '12px', fontWeight: 700, color: '#C9A24A', textDecoration: 'none' }}>KGM Limited</a>
                 <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)' }}>— Kurra Greenfield Merchants Ltd</span>
               </div>
-              {/* Trust Strip */}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
                 {['Verified Counterparties', 'Compliance', 'Independent Inspection', 'Secure Settlement', 'Trade Finance'].map((item, idx) => (
                   <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -278,79 +269,42 @@ export default function LandingPage() {
                 ))}
               </div>
             </div>
-            {/* Right - Transaction Visual */}
+
+            {/* Right - Corridor Image */}
             <div className="hidden lg:block">
-              <div style={{ position: 'relative' }}>
-                <div style={{ ...s.glass, borderRadius: '20px', padding: '2rem', marginBottom: '1.5rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
+              <div style={{ position: 'relative', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
+                <img src="/images/hero-corridor.png" alt="MASAR Trade Corridor" style={{ width: '100%', height: 'auto', display: 'block' }} />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(11,31,58,0.8), transparent)' }} />
+                <div style={{ position: 'absolute', bottom: '20px', left: '20px', right: '20px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: '2.5rem', marginBottom: '4px' }}>🇳🇬</div>
-                      <div style={{ fontSize: '12px', fontWeight: 600, color: 'white' }}>Nigeria</div>
-                      <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>Lagos · Kano</div>
+                      <span style={{ fontSize: '2rem' }}>🇳🇬</span>
+                      <p style={{ fontSize: '11px', color: 'white', fontWeight: 600, margin: '4px 0 0' }}>Nigeria</p>
                     </div>
-                    <div style={{ flex: 1, margin: '0 2rem', position: 'relative', height: '4px' }}>
-                      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(201,162,74,0.2), rgba(201,162,74,0.6), rgba(201,162,74,0.2))', borderRadius: '2px' }} />
-                      <div style={{ position: 'absolute', top: '-4px', width: '12px', height: '12px', background: '#C9A24A', borderRadius: '50%', boxShadow: '0 0 12px rgba(201,162,74,0.6)', animation: 'routePulse 3s ease-in-out infinite' }} />
-                    </div>
+                    <div style={{ flex: 1, margin: '0 12px', height: '3px', background: 'linear-gradient(90deg, #C9A24A, #E3C875, #C9A24A)', borderRadius: '2px' }} />
                     <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: '2.5rem', marginBottom: '4px' }}>🇸🇦</div>
-                      <div style={{ fontSize: '12px', fontWeight: 600, color: 'white' }}>Saudi Arabia</div>
-                      <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>Jeddah · Riyadh</div>
+                      <span style={{ fontSize: '2rem' }}>🇸🇦</span>
+                      <p style={{ fontSize: '11px', color: 'white', fontWeight: 600, margin: '4px 0 0' }}>Saudi Arabia</p>
                     </div>
-                  </div>
-                </div>
-                <div style={{ ...s.glass, borderRadius: '16px', padding: '1.5rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                    <span style={{ fontSize: '11px', fontWeight: 600, color: '#C9A24A', letterSpacing: '0.08em' }}>MASAR TRANSACTION</span>
-                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>MASAR-SES-2026-000001</span>
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '1rem' }}>
-                    <div><span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>Route</span><div style={{ fontSize: '13px', color: 'white', fontWeight: 600 }}>NG → SA</div></div>
-                    <div><span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>Commodity</span><div style={{ fontSize: '13px', color: 'white', fontWeight: 600 }}>Sesame</div></div>
-                    <div><span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>Quantity</span><div style={{ fontSize: '13px', color: 'white', fontWeight: 600 }}>1,000 MT</div></div>
-                  </div>
-                  <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '12px' }}>
-                    {[
-                      { label: 'Buyer Verified', done: true },
-                      { label: 'Compliance Ready', done: true },
-                      { label: 'Inspection Passed', done: true },
-                      { label: 'Funds Secured', done: activeStep >= 4 },
-                      { label: 'Shipment', done: false, active: activeStep === 5 },
-                      { label: 'Settlement', done: false },
-                    ].map((step, idx) => (
-                      <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 0' }}>
-                        <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: step.done ? 'rgba(45,125,70,0.2)' : step.active ? 'rgba(201,162,74,0.2)' : 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          {step.done ? <CheckCircle size={12} color="#2D7D46" /> : step.active ? <div style={{ width: '6px', height: '6px', background: '#C9A24A', borderRadius: '50%' }} /> : <div style={{ width: '4px', height: '4px', background: 'rgba(255,255,255,0.2)', borderRadius: '50%' }} />}
-                        </div>
-                        <span style={{ fontSize: '12px', color: step.done ? 'rgba(255,255,255,0.8)' : step.active ? '#C9A24A' : 'rgba(255,255,255,0.3)', fontWeight: step.active ? 600 : 400 }}>{step.label}</span>
-                      </div>
-                    ))}
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <style jsx>{`
-          @keyframes routePulse { 0%, 100% { left: 0; } 50% { left: calc(100% - 12px); } }
-          @media (min-width: 1024px) { .lg-hero-grid { grid-template-columns: 1fr 1fr !important; } }
-          @media (min-width: 1024px) { .hidden.lg\\:block { display: block !important; } }
-        `}</style>
       </section>
 
       {/* ============================================================ */}
-      {/* COMPLIANCE TRUST BAR — KGM Certifications */}
+      {/* COMPLIANCE TRUST BAR */}
       {/* ============================================================ */}
       <section style={{ padding: '2rem 1.5rem', background: 'white', borderBottom: '1px solid #E5E9F0' }}>
-        <div style={{ ...s.container, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '24px' }}>
-          <span style={{ fontSize: '11px', color: '#9BA3AE', fontWeight: 600, letterSpacing: '0.08em' }}>BACKED BY KGM LIMITED — TRUSTED & CERTIFIED:</span>
+        <div style={{ ...s.container, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
+          <span style={{ fontSize: '11px', color: '#9BA3AE', fontWeight: 600, letterSpacing: '0.08em' }}>BACKED BY KGM LIMITED:</span>
           {[
             { label: 'CAC Registered', sub: 'RC 1539036' },
             { label: 'BPP Compliant', sub: 'Federal Bureau' },
-            { label: 'SCUML Certified', sub: 'CBN Anti-Money Laundering' },
-            { label: 'MISA Saudi Arabia', sub: 'Ministry of Investment' },
-            { label: 'FIRS Registered', sub: 'Federal Inland Revenue' },
-            { label: 'PenCom Compliant', sub: 'Pension Commission' },
+            { label: 'SCUML Certified', sub: 'CBN AML' },
+            { label: 'MISA Saudi', sub: 'Ministry of Investment' },
           ].map((cert, idx) => (
             <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 12px', background: '#F7F9FC', borderRadius: '6px', border: '1px solid #E5E9F0' }}>
               <ShieldCheck size={14} color="#2D7D46" />
@@ -371,7 +325,7 @@ export default function LandingPage() {
           <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
             <div style={{ ...s.goldDivider, margin: '0 auto 1.5rem' }} />
             <h2 style={s.sectionTitle}>The corridor already exists.<br />The infrastructure doesn&apos;t.</h2>
-            <p style={{ ...s.sectionSubtitle, margin: '0 auto' }}>Saudi Arabia is heavily dependent on imported food and agricultural products, while African exporters possess significant agricultural supply. The problem isn&apos;t supply — it&apos;s making the transaction trusted, compliant and financeable.</p>
+            <p style={{ ...s.sectionSubtitle, margin: '0 auto' }}>Saudi Arabia is heavily dependent on imported food and agricultural products, while African exporters possess significant agricultural supply.</p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
             {[
@@ -387,7 +341,6 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
-          <p style={{ fontSize: '11px', color: '#9BA3AE', textAlign: 'center', marginTop: '1.5rem' }}>Market figures are based on sources documented in the MASAR Business Plan and may be revised as source data changes.</p>
         </div>
       </section>
 
@@ -424,27 +377,6 @@ export default function LandingPage() {
       </section>
 
       {/* ============================================================ */}
-      {/* MASAR ANSWER */}
-      {/* ============================================================ */}
-      <section style={{ ...s.section, ...s.meshBg, position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, opacity: 0.06, ...s.pattern }} />
-        <div style={{ ...s.container, position: 'relative', zIndex: 10 }}>
-          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-            <div style={{ ...s.goldDivider, margin: '0 auto 1.5rem' }} />
-            <h2 style={{ ...s.sectionTitle, color: 'white' }}>MASAR turns a fragmented trade into one controlled transaction.</h2>
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '8px', maxWidth: '900px', margin: '0 auto' }}>
-            {['BUYER', 'VERIFICATION', 'CONTRACT', 'COMPLIANCE', 'INSPECTION', 'FINANCE', 'SETTLEMENT', 'SHIPMENT', 'PORT VERIFICATION', 'RELEASE'].map((step, idx) => (
-              <React.Fragment key={idx}>
-                <div style={{ padding: '10px 16px', borderRadius: '8px', fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', background: idx <= activeStep ? 'rgba(201,162,74,0.15)' : 'rgba(255,255,255,0.04)', border: `1px solid ${idx <= activeStep ? 'rgba(201,162,74,0.3)' : 'rgba(255,255,255,0.06)'}`, color: idx <= activeStep ? '#C9A24A' : 'rgba(255,255,255,0.3)', transition: 'all 0.5s ease' }}>{step}</div>
-                {idx < 9 && <div style={{ display: 'flex', alignItems: 'center', color: idx < activeStep ? '#C9A24A' : 'rgba(255,255,255,0.1)', transition: 'color 0.5s' }}><ChevronRight size={14} /></div>}
-              </React.Fragment>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
       {/* HOW MASAR WORKS */}
       {/* ============================================================ */}
       <section id="how-it-works" style={{ ...s.section, background: 'white' }}>
@@ -454,11 +386,11 @@ export default function LandingPage() {
             <h2 style={s.sectionTitle}>One rail. Every critical condition.</h2>
             <p style={{ ...s.sectionSubtitle, margin: '0 auto' }}>Six steps from counterparty verification to settlement.</p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '20px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
             {[
               { num: '01', title: 'VERIFY', desc: 'Buyer and exporter KYB — identity, ownership, sanctions, trade history.', icon: ShieldCheck, color: '#C9A24A' },
               { num: '02', title: 'CONTRACT', desc: 'Digital transaction terms — commodity, quantity, quality, Incoterms, release conditions.', icon: FileSignature, color: '#3B82F6' },
-              { num: '03', title: 'COMPLY', desc: 'Build the transaction\'s compliance pack — export docs, SFDA, phytosanitary, lab COA.', icon: ClipboardCheck, color: '#8B5CF6' },
+              { num: '03', title: 'COMPLY', desc: 'Build the compliance pack — export docs, SFDA, phytosanitary, lab COA.', icon: ClipboardCheck, color: '#8B5CF6' },
               { num: '04', title: 'INSPECT', desc: 'Independent inspection and laboratory evidence against contract specifications.', icon: Search, color: '#2D7D46' },
               { num: '05', title: 'SECURE', desc: 'Funds coordinated through licensed financial partners — escrow, not custody.', icon: Lock, color: '#C9A24A' },
               { num: '06', title: 'RELEASE', desc: 'Settlement occurs when predefined transaction conditions are satisfied.', icon: BadgeCheck, color: '#0B1F3A' },
@@ -479,94 +411,31 @@ export default function LandingPage() {
       </section>
 
       {/* ============================================================ */}
-      {/* TRUST IS ENGINEERED */}
-      {/* ============================================================ */}
-      <section style={{ ...s.section, background: '#F7F9FC' }}>
-        <div style={s.container}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '4rem', alignItems: 'center' }}>
-            <div>
-              <div style={s.goldDivider} />
-              <h2 style={s.sectionTitle}>Trust isn&apos;t a promise.<br />It&apos;s a process.</h2>
-              <p style={{ ...s.sectionSubtitle, marginBottom: '2rem' }}>MASAR connects transaction evidence to transaction conditions, creating a verifiable chain from counterparty onboarding to settlement.</p>
-              {['Document verification', 'Inspection evidence', 'Release conditions', 'Settlement triggers', 'Audit trail'].map((item, idx) => (
-                <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', background: 'white', borderRadius: '10px', border: '1px solid #E5E9F0', marginBottom: '8px' }}>
-                  <CheckCircle size={16} color="#2D7D46" />
-                  <span style={{ fontSize: '14px', color: '#122033', fontWeight: 500 }}>{item}</span>
-                </div>
-              ))}
-            </div>
-            <div style={{ ...s.card, padding: '2rem' }}>
-              {[
-                { icon: FileText, label: 'DOCUMENT', color: '#3B82F6' },
-                { icon: ShieldCheck, label: 'VERIFICATION', color: '#8B5CF6' },
-                { icon: Search, label: 'INSPECTION', color: '#C9A24A' },
-                { icon: Eye, label: 'EVIDENCE', color: '#2D7D46' },
-                { icon: Lock, label: 'RELEASE CONDITION', color: '#0B1F3A' },
-                { icon: Banknote, label: 'SETTLEMENT', color: '#C9A24A' },
-              ].map((item, idx) => (
-                <React.Fragment key={idx}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px' }}>
-                    <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: `${item.color}10`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><item.icon size={20} color={item.color} /></div>
-                    <span style={{ fontSize: '13px', fontWeight: 600, color: '#0B1F3A', letterSpacing: '0.05em' }}>{item.label}</span>
-                  </div>
-                  {idx < 5 && <div style={{ display: 'flex', justifyContent: 'center' }}><div style={{ width: '1px', height: '20px', background: '#E5E9F0' }} /></div>}
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
       {/* COMPLIANCE */}
       {/* ============================================================ */}
-      <section id="trust-&-compliance" style={{ ...s.section, background: 'white' }}>
+      <section id="trust-&-compliance" style={{ ...s.section, background: '#F7F9FC' }}>
         <div style={s.container}>
           <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
             <div style={{ ...s.goldDivider, margin: '0 auto 1.5rem' }} />
             <h2 style={s.sectionTitle}>Compliance before the cargo moves.</h2>
-            <p style={{ ...s.sectionSubtitle, margin: '0 auto' }}>MASAR transforms fragmented compliance requirements into a managed transaction workflow.</p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px', marginBottom: '3rem' }}>
-            {['Certificate of Origin', 'Phytosanitary Certificate', 'Certificate of Analysis', 'SFDA Requirements', 'Halal Documentation', 'Arabic Labelling', 'Commercial Invoice', 'ZATCA E-Invoicing', 'Packing List', 'Export License', 'Import Documentation', 'Inspection Certificate'].map((doc, idx) => (
-              <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 16px', background: '#F7F9FC', borderRadius: '10px', border: '1px solid #E5E9F0' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px' }}>
+            {['Certificate of Origin', 'Phytosanitary Certificate', 'Certificate of Analysis', 'SFDA Requirements', 'Halal Documentation', 'Arabic Labelling', 'Commercial Invoice', 'ZATCA E-Invoicing'].map((doc, idx) => (
+              <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 16px', background: 'white', borderRadius: '10px', border: '1px solid #E5E9F0' }}>
                 <FileCheck size={16} color="#2D7D46" />
                 <span style={{ fontSize: '13px', color: '#122033', fontWeight: 500 }}>{doc}</span>
               </div>
             ))}
           </div>
-          {/* Clearance Score */}
-          <div style={{ ...s.card, padding: '2.5rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '3rem', alignItems: 'center' }}>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ width: '160px', height: '160px', borderRadius: '50%', margin: '0 auto 1rem', background: 'conic-gradient(#2D7D46 0deg, #2D7D46 338deg, #E5E9F0 338deg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ width: '130px', height: '130px', borderRadius: '50%', background: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ fontSize: '2.5rem', fontWeight: 800, color: '#0B1F3A' }}>94</span>
-                  <span style={{ fontSize: '10px', fontWeight: 600, color: '#2D7D46', letterSpacing: '0.1em' }}>CLEARANCE READY</span>
-                </div>
-              </div>
-              <span style={{ fontSize: '11px', color: '#9BA3AE' }}>MASAR Clearance Readiness</span>
-            </div>
-            <div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0B1F3A', marginBottom: '1rem' }}>Clearance Readiness Score</h3>
-              <p style={{ fontSize: '14px', color: '#5B6778', marginBottom: '1.5rem', lineHeight: 1.6 }}>Every transaction receives a proprietary clearance score based on documentation completeness, counterparty verification, inspection readiness, and compliance status.</p>
-              {['Counterparty verified', 'Required documents complete', 'Inspection scheduled', 'Laboratory results verified', 'Saudi import requirements satisfied'].map((item, idx) => (
-                <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                  <CheckCircle size={14} color="#2D7D46" />
-                  <span style={{ fontSize: '13px', color: '#122033' }}>{item}</span>
-                </div>
-              ))}
-              <p style={{ fontSize: '11px', color: '#9BA3AE', marginTop: '1rem' }}>Powered by MASAR operations — evolving into automated protocol intelligence.</p>
-            </div>
-          </div>
         </div>
       </section>
 
       {/* ============================================================ */}
-      {/* FOR SAUDI BUYERS */}
+      {/* FOR BUYERS */}
       {/* ============================================================ */}
-      <section id="for-buyers" style={{ ...s.section, background: '#F7F9FC' }}>
+      <section id="for-buyers" style={{ ...s.section, background: 'white' }}>
         <div style={s.container}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '4rem', alignItems: 'center' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '4rem', alignItems: 'center' }} className="lg:grid-cols-2">
             <div>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', background: 'rgba(45,125,70,0.08)', borderRadius: '6px', marginBottom: '1.5rem' }}><span>🇸🇦</span><span style={{ fontSize: '12px', fontWeight: 600, color: '#2D7D46', letterSpacing: '0.05em' }}>FOR SAUDI BUYERS</span></div>
               <h2 style={s.sectionTitle}>Source with confidence.</h2>
@@ -592,11 +461,11 @@ export default function LandingPage() {
       </section>
 
       {/* ============================================================ */}
-      {/* FOR AFRICAN EXPORTERS */}
+      {/* FOR EXPORTERS */}
       {/* ============================================================ */}
-      <section id="for-exporters" style={{ ...s.section, background: 'white' }}>
+      <section id="for-exporters" style={{ ...s.section, background: '#F7F9FC' }}>
         <div style={s.container}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '4rem', alignItems: 'center' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '4rem', alignItems: 'center' }} className="lg:grid-cols-2">
             <div style={{ order: 2 }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', background: 'rgba(45,125,70,0.08)', borderRadius: '6px', marginBottom: '1.5rem' }}><span>🇳🇬</span><span style={{ fontSize: '12px', fontWeight: 600, color: '#2D7D46', letterSpacing: '0.05em' }}>FOR AFRICAN EXPORTERS</span></div>
               <h2 style={s.sectionTitle}>Turn verified supply into trusted market access.</h2>
@@ -619,104 +488,6 @@ export default function LandingPage() {
       </section>
 
       {/* ============================================================ */}
-      {/* FOR CAPITAL PARTNERS */}
-      {/* ============================================================ */}
-      <section id="for-capital-partners" style={{ ...s.section, ...s.meshBg, position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, opacity: 0.06, ...s.pattern }} />
-        <div style={{ ...s.container, position: 'relative', zIndex: 10 }}>
-          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-            <div style={{ ...s.goldDivider, margin: '0 auto 1.5rem' }} />
-            <h2 style={{ ...s.sectionTitle, color: 'white' }}>Finance transactions with better visibility.</h2>
-            <p style={{ ...s.sectionSubtitle, color: 'rgba(255,255,255,0.6)', margin: '0 auto' }}>For banks, DFIs, trade-finance institutions and structured-finance providers.</p>
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px', marginBottom: '2rem' }}>
-            {['Verified Buyer', 'Verified Exporter', 'Verified Commodity', 'Independent Inspection', 'Transaction Evidence'].map((item, idx) => (
-              <React.Fragment key={idx}>
-                <div style={{ padding: '10px 20px', borderRadius: '8px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', fontSize: '13px', fontWeight: 500, color: 'rgba(255,255,255,0.8)' }}>{item}</div>
-                {idx < 4 && <span style={{ color: 'rgba(201,162,74,0.5)', display: 'flex', alignItems: 'center' }}>+</span>}
-              </React.Fragment>
-            ))}
-            <span style={{ color: '#C9A24A', fontSize: '20px', display: 'flex', alignItems: 'center', margin: '0 8px' }}>=</span>
-            <div style={{ padding: '10px 20px', borderRadius: '8px', background: 'rgba(201,162,74,0.15)', border: '1px solid rgba(201,162,74,0.3)', fontSize: '13px', fontWeight: 700, color: '#C9A24A' }}>Financeable Trade</div>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <Link href="/for-capital-partners" style={s.btnPrimary}>Explore Capital Partnerships <ArrowRight size={16} /></Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/* ASSET-LIGHT MODEL */}
-      {/* ============================================================ */}
-      <section style={{ ...s.section, background: 'white' }}>
-        <div style={s.container}>
-          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-            <div style={{ ...s.goldDivider, margin: '0 auto 1.5rem' }} />
-            <h2 style={s.sectionTitle}>We don&apos;t own the cargo.<br />We own the coordination.</h2>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
-            {[
-              { title: 'MASAR OWNS', color: '#C9A24A', items: ['Software', 'Data', 'Transaction protocol', 'Relationships', 'Compliance intelligence', 'Audit ledger'] },
-              { title: 'MASAR ORCHESTRATES', color: '#3B82F6', items: ['Inspection', 'Compliance', 'Trade finance', 'Settlement', 'E-invoicing', 'Customs coordination'] },
-              { title: 'PARTNERS OPERATE', color: '#2D7D46', items: ['Ships', 'Trucks', 'Warehouses', 'Escrow', 'Laboratories', 'Capital', 'Insurance'] },
-            ].map((col, idx) => (
-              <div key={idx} style={{ ...s.card, padding: '2rem', borderTop: `3px solid ${col.color}` }}>
-                <h3 style={{ fontSize: '13px', fontWeight: 700, color: col.color, letterSpacing: '0.1em', marginBottom: '1.5rem' }}>{col.title}</h3>
-                {col.items.map((item, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                    <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: col.color, opacity: 0.5 }} />
-                    <span style={{ fontSize: '14px', color: '#122033' }}>{item}</span>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/* WHY MASAR */}
-      {/* ============================================================ */}
-      <section style={{ ...s.section, background: '#F7F9FC' }}>
-        <div style={s.container}>
-          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-            <div style={{ ...s.goldDivider, margin: '0 auto 1.5rem' }} />
-            <h2 style={s.sectionTitle}>Why MASAR</h2>
-          </div>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', minWidth: '600px', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr>
-                  <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#5B6778', borderBottom: '2px solid #E5E9F0' }}></th>
-                  <th style={{ padding: '14px 16px', textAlign: 'center', fontSize: '12px', fontWeight: 600, color: '#5B6778', borderBottom: '2px solid #E5E9F0' }}>Traditional Broker</th>
-                  <th style={{ padding: '14px 16px', textAlign: 'center', fontSize: '12px', fontWeight: 600, color: '#5B6778', borderBottom: '2px solid #E5E9F0' }}>Bank / LC</th>
-                  <th style={{ padding: '14px 16px', textAlign: 'center', fontSize: '12px', fontWeight: 700, color: '#C9A24A', borderBottom: '2px solid #C9A24A', background: 'rgba(201,162,74,0.04)' }}>MASAR</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  { feature: 'Counterparty verification', broker: 'Limited', bank: 'Partial', masar: 'Native' },
-                  { feature: 'Compliance workflow', broker: 'Fragmented', bank: 'Limited', masar: 'Native' },
-                  { feature: 'Independent inspection', broker: 'Separate', bank: 'Separate', masar: 'Integrated' },
-                  { feature: 'Settlement coordination', broker: 'Basic', bank: 'Bank-led', masar: 'Protocol-led' },
-                  { feature: 'Trade finance', broker: 'Separate', bank: 'Traditional', masar: 'Embedded pathway' },
-                  { feature: 'Transaction data', broker: 'Fragmented', bank: 'Limited', masar: 'Proprietary' },
-                  { feature: 'Network effect', broker: 'Low', bank: 'Institutional', masar: 'Corridor network' },
-                ].map((row, idx) => (
-                  <tr key={idx}>
-                    <td style={{ padding: '12px 16px', fontSize: '14px', color: '#122033', fontWeight: 500, borderBottom: '1px solid #E5E9F0' }}>{row.feature}</td>
-                    <td style={{ padding: '12px 16px', textAlign: 'center', fontSize: '13px', color: '#9BA3AE', borderBottom: '1px solid #E5E9F0' }}>{row.broker}</td>
-                    <td style={{ padding: '12px 16px', textAlign: 'center', fontSize: '13px', color: '#9BA3AE', borderBottom: '1px solid #E5E9F0' }}>{row.bank}</td>
-                    <td style={{ padding: '12px 16px', textAlign: 'center', fontSize: '13px', fontWeight: 600, color: '#0B1F3A', borderBottom: '1px solid #E5E9F0', background: 'rgba(201,162,74,0.04)' }}>{row.masar}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
       {/* ROADMAP */}
       {/* ============================================================ */}
       <section style={{ ...s.section, background: 'white' }}>
@@ -727,10 +498,10 @@ export default function LandingPage() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
             {[
-              { phase: 'V0 — 2026', title: 'Concierge Pilot', desc: 'Real transactions. Real inspection. Real settlement. Target: 10 completed transactions.', active: true },
-              { phase: 'V1 — 2027', title: 'Protocol Automation', desc: 'KYB automation, compliance engine, inspection integration, e-invoicing.' },
-              { phase: '2027+', title: 'Embedded Finance', desc: 'Up to 80% advance product through capital partners.' },
-              { phase: '2028+', title: 'Network Density', desc: 'More buyers. More exporter syndicates. More commodity lanes.' },
+              { phase: 'V0 — 2026', title: 'Concierge Pilot', desc: 'Real transactions. Real inspection. Real settlement.', active: true },
+              { phase: 'V1 — 2027', title: 'Protocol Automation', desc: 'KYB automation, compliance engine, inspection integration.' },
+              { phase: '2027+', title: 'Embedded Finance', desc: 'Up to 80% advance through capital partners.' },
+              { phase: '2028+', title: 'Network Density', desc: 'More buyers. More exporters. More commodity lanes.' },
               { phase: '2029+', title: 'Corridor OS', desc: 'Multiple African origins. Multiple GCC destinations.' },
               { phase: '2030', title: 'Financial Layer', desc: 'FX, structured finance and institutional licensing.' },
             ].map((item, idx) => (
@@ -775,14 +546,14 @@ export default function LandingPage() {
                   <span style={{ display: 'block', fontSize: '9px', color: 'rgba(201,162,74,0.6)', letterSpacing: '0.1em' }}>مسار — The Path</span>
                 </div>
               </div>
-              <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.6, marginBottom: '12px' }}>Trust. Compliance. Capital. One transaction rail.</p>
-              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', lineHeight: 1.6 }}>Powered by <a href="https://kgmlimited.com" target="_blank" rel="noopener noreferrer" style={{ color: '#C9A24A', textDecoration: 'none' }}>Kurra Greenfield Merchants Limited</a></p>
+              <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.6 }}>Trust. Compliance. Capital. One transaction rail.</p>
+              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', marginTop: '8px' }}>Powered by <a href="https://kgmlimited.com" target="_blank" rel="noopener noreferrer" style={{ color: '#C9A24A', textDecoration: 'none' }}>Kurra Greenfield Merchants Limited</a></p>
               <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.2)', marginTop: '4px' }}>CAC RC 1539036 · BPP · SCUML · MISA Saudi</p>
             </div>
             <div>
               <h4 style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em', marginBottom: '1rem' }}>PLATFORM</h4>
-              {[{l:'Platform',h:'/platform'},{l:'How It Works',h:'/how-it-works'},{l:'For Buyers',h:'/for-buyers'},{l:'For Exporters',h:'/for-exporters'},{l:'Capital Partners',h:'/for-capital-partners'},{l:'Trust & Compliance',h:'/trust-compliance'},{l:'About',h:'/about'}].map((item) => (
-                <Link key={item.h} href={item.h} style={{ display: 'block', fontSize: '12px', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', marginBottom: '6px' }}>{item.l}</Link>
+              {['Platform', 'How It Works', 'For Buyers', 'For Exporters', 'Capital Partners', 'Trust & Compliance', 'About'].map((item) => (
+                <a key={item} href={`#${item.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-')}`} style={{ display: 'block', fontSize: '12px', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', marginBottom: '6px' }}>{item}</a>
               ))}
             </div>
             <div>
@@ -813,6 +584,15 @@ export default function LandingPage() {
         </div>
       </footer>
 
+      <style jsx>{`
+        @media (min-width: 1024px) { 
+          .lg\\:grid-cols-2 { grid-template-columns: repeat(2, 1fr) !important; }
+          .hidden.lg\\:block { display: block !important; }
+        }
+        @media (max-width: 1023px) {
+          .hidden.lg\\:block { display: none !important; }
+        }
+      `}</style>
     </div>
   );
 }
