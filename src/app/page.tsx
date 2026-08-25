@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { 
   Globe, Shield, Search, DollarSign, Users, Truck, ArrowLeft, ArrowRight,
@@ -10,7 +10,7 @@ import {
   Landmark, ShieldCheck, FileCheck, Banknote,
   Wheat, Target, ClipboardCheck, BadgeCheck, FileSignature, ScrollText, Handshake,
   Fingerprint, KeyRound, Activity, Phone, MessageSquare, Play, Pause,
-  Volume2, VolumeX, Maximize, BarChart3, TrendingDown, ArrowUpRight
+  Volume2, VolumeX, BarChart3, ArrowUpRight, Quote
 } from 'lucide-react';
 
 // ============================================================
@@ -83,30 +83,44 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
 }
 
 // ============================================================
-// VIDEO PLAYER COMPONENT
+// VIDEO PLAYER (Portrait 9:16)
 // ============================================================
-function VideoPlayer({ src, poster }: { src: string; poster?: string }) {
+function PortraitVideoPlayer({ src, poster }: { src: string; poster?: string }) {
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const togglePlay = () => {
+    if (videoRef.current) {
+      if (playing) videoRef.current.pause();
+      else videoRef.current.play();
+      setPlaying(!playing);
+    }
+  };
 
   return (
-    <div style={{ position: 'relative', borderRadius: '16px', overflow: 'hidden', background: '#0B1F3A', aspectRatio: '16/9' }}>
+    <div style={{ position: 'relative', borderRadius: '16px', overflow: 'hidden', background: '#0B1F3A', maxWidth: '320px', margin: '0 auto', aspectRatio: '9/16' }}>
       <video
+        ref={videoRef}
         src={src}
         poster={poster}
         muted={muted}
         loop
         playsInline
         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-        ref={el => { if (el) { playing ? el.play() : el.pause(); } }}
       />
-      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(11,31,58,0.8), transparent 50%)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '20px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <button onClick={() => setPlaying(!playing)} style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(201,162,74,0.9)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {playing ? <Pause size={18} color="#0B1F3A" /> : <Play size={18} color="#0B1F3A" />}
-          </button>
-          <button onClick={() => setMuted(!muted)} style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {muted ? <VolumeX size={14} color="white" /> : <Volume2 size={14} color="white" />}
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(11,31,58,0.9), transparent 40%, rgba(11,31,58,0.3))', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '16px' }}>
+        <div style={{ textAlign: 'center' }}>
+          <span style={{ fontSize: '10px', fontWeight: 600, color: '#C9A24A', letterSpacing: '0.1em', textTransform: 'uppercase' }}>CTO Briefing</span>
+        </div>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '8px' }}>
+            <button onClick={togglePlay} style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(201,162,74,0.9)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {playing ? <Pause size={20} color="#0B1F3A" /> : <Play size={20} color="#0B1F3A" />}
+            </button>
+          </div>
+          <button onClick={() => setMuted(!muted)} style={{ display: 'block', margin: '0 auto', padding: '4px 12px', background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '20px', cursor: 'pointer', fontSize: '10px', color: 'white' }}>
+            {muted ? '🔇 Unmute' : '🔊 Mute'}
           </button>
         </div>
       </div>
@@ -164,8 +178,6 @@ export default function LandingPage() {
     glassLight: { background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 24px rgba(0,0,0,0.06)' },
     card: { background: '#FFFFFF', border: '1px solid #E5E9F0', borderRadius: '14px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' },
     gold: '#C9A24A', goldLight: '#E3C875', navy: '#0B1F3A', navyLight: '#102A4C', bg: '#F7F9FC', text: '#122033', textSec: '#5B6778', green: '#2D7D46',
-    meshBg: { background: `radial-gradient(at 20% 30%, rgba(201,162,74,0.08) 0px, transparent 50%), radial-gradient(at 80% 70%, rgba(45,125,70,0.06) 0px, transparent 50%), linear-gradient(135deg, #0B1F3A 0%, #102A4C 100%)` },
-    pattern: { backgroundImage: `linear-gradient(30deg, rgba(201,162,74,0.04) 12%, transparent 12.5%, transparent 87%, rgba(201,162,74,0.04) 87.5%), linear-gradient(150deg, rgba(201,162,74,0.04) 12%, transparent 12.5%, transparent 87%, rgba(201,162,74,0.04) 87.5%)`, backgroundSize: '60px 100px' },
     btnPrimary: { display: 'inline-flex', alignItems: 'center', gap: '10px', padding: '14px 28px', background: `linear-gradient(135deg, #C9A24A 0%, #E3C875 100%)`, color: '#0B1F3A', borderRadius: '12px', fontSize: '15px', fontWeight: 700, textDecoration: 'none', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease', boxShadow: '0 4px 16px rgba(201,162,74,0.25)' },
     btnSecondary: { display: 'inline-flex', alignItems: 'center', gap: '10px', padding: '14px 28px', background: 'rgba(255,255,255,0.08)', color: 'white', borderRadius: '12px', fontSize: '15px', fontWeight: 600, textDecoration: 'none', border: '1px solid rgba(255,255,255,0.15)', cursor: 'pointer', transition: 'all 0.3s ease' },
     section: { padding: '6rem 1.5rem' },
@@ -218,7 +230,6 @@ export default function LandingPage() {
                 </div>
               </Link>
               
-              {/* Desktop Nav */}
               <div className="hidden lg:flex" style={{ alignItems: 'center', gap: '20px' }}>
                 <Link href="/platform" style={{ fontSize: '13px', fontWeight: 500, color: scrolled ? '#5B6778' : 'rgba(255,255,255,0.7)', textDecoration: 'none', transition: 'color 0.3s' }}>Platform</Link>
                 <Link href="/how-it-works" style={{ fontSize: '13px', fontWeight: 500, color: scrolled ? '#5B6778' : 'rgba(255,255,255,0.7)', textDecoration: 'none', transition: 'color 0.3s' }}>How It Works</Link>
@@ -248,13 +259,13 @@ export default function LandingPage() {
             <button onClick={() => setMobileMenuOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={24} color="#0B1F3A" /></button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <Link href="/platform" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '18px', fontWeight: 500, color: '#0B1F3A', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid #E5E9F0' }}>Platform</Link>
-            <Link href="/how-it-works" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '18px', fontWeight: 500, color: '#0B1F3A', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid #E5E9F0' }}>How It Works</Link>
-            <Link href="/for-buyers" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '18px', fontWeight: 500, color: '#0B1F3A', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid #E5E9F0' }}>For Buyers</Link>
-            <Link href="/for-exporters" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '18px', fontWeight: 500, color: '#0B1F3A', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid #E5E9F0' }}>For Exporters</Link>
-            <Link href="/trust-compliance" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '18px', fontWeight: 500, color: '#0B1F3A', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid #E5E9F0' }}>Trust & Compliance</Link>
-            <Link href="/about" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '18px', fontWeight: 500, color: '#0B1F3A', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid #E5E9F0' }}>About</Link>
-            <Link href="/contact" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '18px', fontWeight: 500, color: '#0B1F3A', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid #E5E9F0' }}>Contact</Link>
+            {[
+              { l: 'Platform', h: '/platform' }, { l: 'How It Works', h: '/how-it-works' },
+              { l: 'For Buyers', h: '/for-buyers' }, { l: 'For Exporters', h: '/for-exporters' },
+              { l: 'Trust & Compliance', h: '/trust-compliance' }, { l: 'About', h: '/about' }, { l: 'Contact', h: '/contact' },
+            ].map((item) => (
+              <Link key={item.h} href={item.h} onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '18px', fontWeight: 500, color: '#0B1F3A', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid #E5E9F0' }}>{item.l}</Link>
+            ))}
             <div style={{ display: 'flex', gap: '12px', marginTop: '1rem' }}>
               <button onClick={() => { toggleLang(); }} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '1px solid #E5E9F0', background: '#F7F9FC', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
                 {lang === 'en' ? '🇸🇦 العربية' : '🇳🇬 English'}
@@ -266,10 +277,15 @@ export default function LandingPage() {
       )}
 
       {/* ============================================================ */}
-      {/* HERO SECTION */}
+      {/* HERO SECTION WITH BACKGROUND IMAGE */}
       {/* ============================================================ */}
-      <section style={{ ...s.meshBg, position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, opacity: 0.08, ...s.pattern }} />
+      <section style={{ position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+        {/* Background Image */}
+        <div style={{ position: 'absolute', inset: 0 }}>
+          <img src="/images/hero-bg.png" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(11,31,58,0.92) 0%, rgba(16,42,76,0.88) 50%, rgba(11,31,58,0.95) 100%)' }} />
+        </div>
+        <div style={{ position: 'absolute', inset: 0, opacity: 0.08, backgroundImage: `linear-gradient(30deg, rgba(201,162,74,0.04) 12%, transparent 12.5%, transparent 87%, rgba(201,162,74,0.04) 87.5%), linear-gradient(150deg, rgba(201,162,74,0.04) 12%, transparent 12.5%, transparent 87%, rgba(201,162,74,0.04) 87.5%)`, backgroundSize: '60px 100px' }} />
         <div style={{ position: 'absolute', top: '10%', right: '10%', width: '400px', height: '400px', background: 'rgba(201,162,74,0.08)', borderRadius: '50%', filter: 'blur(100px)' }} />
         <div style={{ position: 'absolute', bottom: '10%', left: '5%', width: '300px', height: '300px', background: 'rgba(45,125,70,0.06)', borderRadius: '50%', filter: 'blur(80px)' }} />
 
@@ -353,33 +369,60 @@ export default function LandingPage() {
       </section>
 
       {/* ============================================================ */}
-      {/* CTO BRIEFING SECTION */}
+      {/* CEO & CTO BRIEFING SECTION */}
       {/* ============================================================ */}
       <section style={{ ...s.section, background: 'white' }}>
         <div style={s.container}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '4rem', alignItems: 'center' }} className="lg:grid-cols-2">
-            <div>
-              <div style={s.goldDivider} />
-              <h2 style={s.sectionTitle}>A Message from Our CTO</h2>
-              <p style={{ ...s.sectionSubtitle, marginBottom: '1.5rem' }}>
-                &ldquo;At MASAR, we are building more than software — we are engineering trust into every cross-border transaction. Our technology transforms fragmented trade processes into one controlled, auditable corridor.&rdquo;
-              </p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.5rem' }}>
-                <img src="/images/cto-portrait.png" alt="CTO" style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} />
+          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+            <div style={{ ...s.goldDivider, margin: '0 auto 1.5rem' }} />
+            <h2 style={s.sectionTitle}>Leadership Vision</h2>
+            <p style={{ ...s.sectionSubtitle, margin: '0 auto' }}>Hear from the leaders building MASAR — the trusted infrastructure for Africa–Saudi trade.</p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '3rem' }} className="lg:grid-cols-2">
+            {/* CEO Quote */}
+            <div style={{ ...s.card, padding: '2.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '1.5rem' }}>
+                <img src="/images/ceo-portrait.png" alt="CEO" style={{ width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover', border: '3px solid #C9A24A' }} />
                 <div>
-                  <p style={{ fontSize: '14px', fontWeight: 700, color: '#0B1F3A', margin: 0 }}>Mujaheed Baita</p>
-                  <p style={{ fontSize: '12px', color: '#5B6778', margin: 0 }}>Chief Technology Officer, MASAR</p>
+                  <p style={{ fontSize: '16px', fontWeight: 700, color: '#0B1F3A', margin: 0 }}>Mujaheed Baita</p>
+                  <p style={{ fontSize: '13px', color: '#5B6778', margin: 0 }}>Founder & CEO, MASAR</p>
                 </div>
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                {['Protocol Architecture', 'Trust Engineering', 'Compliance Automation', 'Transaction Intelligence'].map((tag, idx) => (
+              <div style={{ position: 'relative', paddingLeft: '20px', borderLeft: '3px solid #C9A24A' }}>
+                <Quote size={24} color="#C9A24A" style={{ position: 'absolute', top: '-4px', left: '-14px', opacity: 0.3 }} />
+                <p style={{ fontSize: '16px', color: '#122033', lineHeight: 1.8, fontStyle: 'italic', margin: 0 }}>
+                  &ldquo;Our journey at MASAR is fueled by a commitment to innovation and customer success. By bridging the gap between national policy and grassroots delivery, we aren&apos;t just building infrastructure; we are building the future of Africa&apos;s digital economy and its trade connection with the Kingdom.&rdquo;
+                </p>
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '1.5rem' }}>
+                {['Strategic Vision', 'Corridor Development', 'Partnership Building'].map((tag, idx) => (
                   <span key={idx} style={{ padding: '4px 10px', background: '#F7F9FC', border: '1px solid #E5E9F0', borderRadius: '6px', fontSize: '11px', color: '#5B6778', fontWeight: 500 }}>{tag}</span>
                 ))}
               </div>
             </div>
+
+            {/* CTO Briefing Video */}
             <div>
-              <VideoPlayer src="/assets/video/cto-briefing.mp4" poster="/images/cto-portrait.png" />
-              <p style={{ fontSize: '11px', color: '#9BA3AE', textAlign: 'center', marginTop: '8px' }}>CTO Briefing — The MASAR Technology Vision</p>
+              <div style={{ ...s.card, padding: '1.5rem', marginBottom: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem' }}>
+                  <img src="/images/cto-portrait.png" alt="CTO" style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #C9A24A' }} />
+                  <div>
+                    <p style={{ fontSize: '14px', fontWeight: 700, color: '#0B1F3A', margin: 0 }}>Mujaheed Baita</p>
+                    <p style={{ fontSize: '12px', color: '#5B6778', margin: 0 }}>Chief Technology Officer</p>
+                  </div>
+                </div>
+                <p style={{ fontSize: '14px', color: '#5B6778', lineHeight: 1.6, marginBottom: '1rem' }}>
+                  &ldquo;At MASAR, we are building more than software — we are engineering trust into every cross-border transaction.&rdquo;
+                </p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                  {['Protocol Architecture', 'Trust Engineering', 'Compliance Automation'].map((tag, idx) => (
+                    <span key={idx} style={{ padding: '3px 8px', background: '#F7F9FC', border: '1px solid #E5E9F0', borderRadius: '4px', fontSize: '10px', color: '#5B6778' }}>{tag}</span>
+                  ))}
+                </div>
+              </div>
+              <PortraitVideoPlayer src="/assets/video/cto-briefing.mp4" poster="/images/cto-portrait.png" />
+              <p style={{ fontSize: '11px', color: '#9BA3AE', textAlign: 'center', marginTop: '8px' }}>CTO Briefing — The MASAR Technology Vision (9:16 Portrait)</p>
             </div>
           </div>
         </div>
@@ -413,7 +456,7 @@ export default function LandingPage() {
       </section>
 
       {/* ============================================================ */}
-      {/* SESAME FEATURE WITH IMAGE */}
+      {/* SESAME FEATURE */}
       {/* ============================================================ */}
       <section style={{ ...s.section, background: 'white' }}>
         <div style={s.container}>
@@ -421,9 +464,7 @@ export default function LandingPage() {
             <div>
               <div style={s.goldDivider} />
               <h2 style={s.sectionTitle}>Nigeria → Saudi Arabia<br />The First MASAR Commodity Lane</h2>
-              <p style={{ ...s.sectionSubtitle, marginBottom: '1.5rem' }}>
-                Premium Nigerian sesame — verified, inspected, and settled through one controlled transaction rail.
-              </p>
+              <p style={{ ...s.sectionSubtitle, marginBottom: '1.5rem' }}>Premium Nigerian sesame — verified, inspected, and settled through one controlled transaction rail.</p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 {[
                   { label: 'Commodity', value: 'Non-GMO Sesame' },
@@ -482,7 +523,7 @@ export default function LandingPage() {
       </section>
 
       {/* ============================================================ */}
-      {/* FOR BUYERS */}
+      {/* FOR BUYERS WITH IMAGE */}
       {/* ============================================================ */}
       <section id="for-buyers" style={{ ...s.section, background: 'white' }}>
         <div style={s.container}>
@@ -493,26 +534,15 @@ export default function LandingPage() {
               <p style={{ ...s.sectionSubtitle, marginBottom: '2rem' }}>Saudi buyers gain a structured transaction environment where suppliers, documentation, inspection and transaction status are coordinated through one operating layer.</p>
               <Link href="/for-buyers" style={s.btnPrimary}>Become a MASAR Buyer <ArrowRight size={16} /></Link>
             </div>
-            <div style={{ display: 'grid', gap: '14px' }}>
-              {[
-                { icon: ShieldCheck, title: 'Verified suppliers', desc: 'Know who you are buying from.' },
-                { icon: Search, title: 'Quality evidence', desc: 'Independent inspection and laboratory results.' },
-                { icon: Eye, title: 'Compliance visibility', desc: 'Know what is complete before shipment.' },
-                { icon: Activity, title: 'Transaction visibility', desc: 'Track the entire deal in real time.' },
-                { icon: Banknote, title: 'Capital access', desc: 'Enable eligible supplier financing.' },
-              ].map((item, idx) => (
-                <div key={idx} style={{ ...s.card, padding: '1.25rem', display: 'flex', gap: '14px' }}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(201,162,74,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><item.icon size={20} color="#C9A24A" /></div>
-                  <div><h4 style={{ fontSize: '14px', fontWeight: 600, color: '#0B1F3A', marginBottom: '2px' }}>{item.title}</h4><p style={{ fontSize: '13px', color: '#5B6778' }}>{item.desc}</p></div>
-                </div>
-              ))}
+            <div style={{ borderRadius: '16px', overflow: 'hidden', boxShadow: '0 12px 40px rgba(0,0,0,0.1)' }}>
+              <img src="/images/buyer-saudi.png" alt="Saudi Buyer" style={{ width: '100%', height: 'auto', display: 'block' }} />
             </div>
           </div>
         </div>
       </section>
 
       {/* ============================================================ */}
-      {/* FOR EXPORTERS */}
+      {/* FOR EXPORTERS WITH IMAGE */}
       {/* ============================================================ */}
       <section id="for-exporters" style={{ ...s.section, background: '#F7F9FC' }}>
         <div style={s.container}>
@@ -523,36 +553,26 @@ export default function LandingPage() {
               <p style={{ ...s.sectionSubtitle, marginBottom: '2rem' }}>MASAR helps qualified African exporters reach institutional Saudi buyers while reducing transaction friction.</p>
               <Link href="/for-exporters" style={s.btnPrimary}>Join the Exporter Network <ArrowRight size={16} /></Link>
             </div>
-            <div style={{ order: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-              {[
-                { icon: Users, label: 'Buyer access' }, { icon: ShieldCheck, label: 'KYB verification' }, { icon: FileText, label: 'Compliance support' }, { icon: Search, label: 'Inspection coordination' },
-                { icon: ScrollText, label: 'Documentation' }, { icon: Banknote, label: 'Financing pathway' }, { icon: Handshake, label: 'Settlement coordination' }, { icon: Award, label: 'Performance history' },
-              ].map((item, idx) => (
-                <div key={idx} style={{ ...s.card, padding: '1.25rem', textAlign: 'center' }}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(201,162,74,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 0.75rem' }}><item.icon size={20} color="#C9A24A" /></div>
-                  <span style={{ fontSize: '13px', fontWeight: 600, color: '#0B1F3A' }}>{item.label}</span>
-                </div>
-              ))}
+            <div style={{ order: 1, borderRadius: '16px', overflow: 'hidden', boxShadow: '0 12px 40px rgba(0,0,0,0.1)' }}>
+              <img src="/images/exporter-nigerian.png" alt="Nigerian Exporter" style={{ width: '100%', height: 'auto', display: 'block' }} />
             </div>
           </div>
         </div>
       </section>
 
       {/* ============================================================ */}
-      {/* TEAM IMAGE SECTION */}
+      {/* TEAM & ABOUT */}
       {/* ============================================================ */}
       <section style={{ ...s.section, background: 'white' }}>
         <div style={s.container}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '4rem', alignItems: 'center' }} className="lg:grid-cols-2">
             <div style={{ borderRadius: '16px', overflow: 'hidden', boxShadow: '0 12px 40px rgba(0,0,0,0.1)' }}>
-              <img src="/images/team-office.png" alt="MASAR Team" style={{ width: '100%', height: 'auto', display: 'block' }} />
+              <img src="/images/about-team.png" alt="MASAR Team" style={{ width: '100%', height: 'auto', display: 'block' }} />
             </div>
             <div>
               <div style={s.goldDivider} />
               <h2 style={s.sectionTitle}>Built by operators who understand trade.</h2>
-              <p style={{ ...s.sectionSubtitle, marginBottom: '1.5rem' }}>
-                Our team combines deep expertise in African commodity markets, Saudi regulatory frameworks, international trade finance, and technology infrastructure.
-              </p>
+              <p style={{ ...s.sectionSubtitle, marginBottom: '1.5rem' }}>Our team combines deep expertise in African commodity markets, Saudi regulatory frameworks, international trade finance, and technology infrastructure.</p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 {[
                   { value: '7+', label: 'Years of Impact' },
@@ -602,8 +622,11 @@ export default function LandingPage() {
       {/* ============================================================ */}
       {/* FINAL CTA */}
       {/* ============================================================ */}
-      <section id="about" style={{ ...s.section, ...s.meshBg, position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, opacity: 0.06, ...s.pattern }} />
+      <section id="about" style={{ ...s.section, position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0 }}>
+          <img src="/images/compliance-bg.png" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(11,31,58,0.95) 0%, rgba(16,42,76,0.92) 100%)' }} />
+        </div>
         <div style={{ ...s.container, position: 'relative', zIndex: 10, textAlign: 'center', maxWidth: '800px' }}>
           <h2 style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', fontWeight: 800, color: 'white', marginBottom: '1rem' }}>Build the next trade corridor with MASAR.</h2>
           <p style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, marginBottom: '2.5rem' }}>Whether you are a Saudi buyer, African exporter, financial institution or strategic infrastructure partner, MASAR is building the transaction rail that makes the corridor work.</p>
