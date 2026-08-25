@@ -1,139 +1,307 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import Link from 'next/link';
 import { 
-  TrendingUp, Users, Truck, FileText, AlertTriangle, CheckCircle, 
-  Clock, DollarSign, Ship, Shield, Activity, Globe, Package, ArrowUpRight
+  TrendingUp, Users, Truck, FileText, AlertTriangle, CheckCircle, Clock, 
+  DollarSign, Ship, Shield, Activity, Globe, Package, ArrowUpRight, ArrowRight,
+  Eye, Banknote, Scale, Target, ChevronRight, MapPin, Calendar, BarChart3,
+  ArrowDownRight, Minus, RefreshCw, Download, Filter, Search
 } from 'lucide-react';
-import StatusBadge from '@/components/shared/StatusBadge';
 import { transactions, buyers, exporters, formatCurrency, getClearanceScoreColor, getClearanceScoreLabel } from '@/lib/data';
 
 export default function CommandCenter() {
-  const activeTransactions = transactions.filter(t => !['COMPLETED', 'CANCELLED', 'SETTLED'].includes(t.status));
-  const completedTransactions = transactions.filter(t => ['COMPLETED', 'SETTLED'].includes(t.status));
+  const [activeTab, setActiveTab] = useState('pipeline');
+  const s = { navy: '#0B1F3A', gold: '#C9A24A', bg: '#F6F8FB', text: '#142235', textSec: '#667085', border: '#E4E7EC', green: '#16A34A', red: '#EF4444', amber: '#F59E0B' };
+
+  const activeTxns = transactions.filter(t => !['COMPLETED', 'CANCELLED', 'SETTLED'].includes(t.status));
+  const completedTxns = transactions.filter(t => ['COMPLETED', 'SETTLED'].includes(t.status));
   const totalGMV = transactions.reduce((sum, t) => sum + t.contractValue, 0);
-  const completedGMV = completedTransactions.reduce((sum, t) => sum + t.contractValue, 0);
-  const exceptions = transactions.flatMap(t => t.exceptions.map(e => ({ ...e, transactionId: t.masarId })));
+  const exceptions = transactions.flatMap(t => t.exceptions.map(e => ({ ...e, transactionId: t.masarId, commodity: t.commodity })));
+
+  // Pipeline stages
+  const pipelineStages = [
+    { label: 'RFQ', count: 4, color: '#667085' },
+    { label: 'Verification', count: 3, color: '#3B82F6' },
+    { label: 'Contracting', count: 2, color: '#8B5CF6' },
+    { label: 'Compliance', count: 3, color: '#F59E0B' },
+    { label: 'Inspection', count: 2, color: '#C9A24A' },
+    { label: 'Financing', count: 2, color: '#10B981' },
+    { label: 'Shipment', count: 4, color: '#3B82F6' },
+    { label: 'Port Verif.', count: 1, color: '#F59E0B' },
+    { label: 'Release', count: 1, color: '#16A34A' },
+    { label: 'Completed', count: 12, color: '#16A34A' },
+  ];
+
+  // KPI Cards
+  const kpis = [
+    { label: 'ACTIVE TRANSACTIONS', value: '07', change: '+2 this week', trend: 'up', icon: FileText, color: '#3B82F6' },
+    { label: 'PIPELINE GMV', value: '$3.84M', change: '+$420K this month', trend: 'up', icon: TrendingUp, color: s.gold },
+    { label: 'CONTRACTED GMV', value: '$1.92M', change: '50% of pipeline', trend: 'neutral', icon: Shield, color: '#8B5CF6' },
+    { label: 'IN-TRANSIT VALUE', value: '$740K', change: '2 shipments', trend: 'up', icon: Ship, color: '#3B82F6' },
+    { label: 'FINANCED', value: '$520K', change: 'Afreximbank', trend: 'up', icon: Banknote, color: '#10B981' },
+    { label: 'PENDING RELEASE', value: '$310K', change: '1 transaction', trend: 'neutral', icon: Lock, color: s.gold },
+    { label: 'AT-RISK', value: '02', change: 'Compliance issues', trend: 'down', icon: AlertTriangle, color: '#EF4444' },
+    { label: 'DISPUTES', value: '01', change: 'Under mediation', trend: 'down', icon: Scale, color: '#EF4444' },
+  ];
+
+  // Transaction cards for pipeline
+  const txnCards = [
+    { id: 'MASAR-SES-2026-000001', buyer: 'Al Rajhi Foods', exporter: 'Dangote Sesame', commodity: 'Sesame', qty: '1,000 MT', value: '$500,000', stage: 'Inspection', risk: 'LOW', status: '🟢 On Track', next: 'Review inspection certificate' },
+    { id: 'MASAR-SES-2026-000002', buyer: 'SGT Foods', exporter: 'Dangote Sesame', commodity: 'Sesame', qty: '500 MT', value: '$250,000', stage: 'Compliance', risk: 'MEDIUM', status: '🟡 Watch', next: 'Renew phytosanitary certificate' },
+    { id: 'MASAR-CAS-2026-000003', buyer: 'Al Rajhi Foods', exporter: 'NPG Exports', commodity: 'Cashew', qty: '300 MT', value: '$180,000', stage: 'Financing', risk: 'LOW', status: '🟢 On Track', next: 'Confirm escrow funding' },
+    { id: 'MASAR-SES-2026-000004', buyer: 'SGT Foods', exporter: 'Dangote Sesame', commodity: 'Sesame', qty: '2,000 MT', value: '$1,000,000', stage: 'Shipment', risk: 'LOW', status: '🟢 On Track', next: 'Monitor vessel ETA' },
+  ];
+
+  // Recent activity
+  const recentActivity = [
+    { time: '14:20', event: 'Inspection report uploaded', txn: 'SES-001', user: 'SGS Nigeria', type: 'inspection' },
+    { time: '13:05', event: 'Laboratory certificate verified', txn: 'SES-001', user: 'Compliance Officer', type: 'document' },
+    { time: '11:30', event: 'Finance partner approved facility', txn: 'SES-001', user: 'Afreximbank', type: 'finance' },
+    { time: '09:15', event: 'Compliance pack approved', txn: 'CAS-003', user: 'KSA Compliance', type: 'compliance' },
+    { time: '08:44', event: 'Contract executed', txn: 'SES-004', user: 'Operations Manager', type: 'contract' },
+  ];
 
   return (
-    <div className="space-y-6">
+    <div>
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">مركز القيادة — Command Center</h1>
-          <p className="text-gray-500 mt-1">مسار — Nigeria → Saudi Arabia Corridor</p>
+          <h1 style={{ fontSize: '22px', fontWeight: 800, color: s.text, marginBottom: '4px' }}>MASAR Command Center</h1>
+          <p style={{ fontSize: '13px', color: s.textSec }}>Real-time operational view of the Saudi–Africa trade corridor</p>
         </div>
-        <div className="flex items-center gap-3">
-          <button className="px-4 py-2.5 glass-card rounded-xl text-sm font-medium text-gray-700">تصدير التقرير</button>
-          <button className="px-4 py-2.5 bg-masar-navy text-white rounded-xl text-sm font-medium hover:bg-masar-dark transition-colors shadow-lg">+ معاملة جديدة</button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '11px', color: '#98A2B3' }}>Tuesday, 25 August 2026 · Last sync: 23:48 UTC+1</span>
+          <button style={{ padding: '6px 12px', background: 'white', border: `1px solid ${s.border}`, borderRadius: '6px', fontSize: '12px', fontWeight: 500, color: s.textSec, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}><RefreshCw size={12} /> Refresh</button>
+          <button style={{ padding: '6px 12px', background: 'white', border: `1px solid ${s.border}`, borderRadius: '6px', fontSize: '12px', fontWeight: 500, color: s.textSec, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}><Download size={12} /> Export</button>
         </div>
       </div>
 
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          { title: 'المعاملات النشطة', value: activeTransactions.length, change: '+2 هذا الأسبوع', icon: FileText, color: 'from-blue-500/20 to-blue-600/5', iconColor: 'text-blue-600' },
-          { title: 'قيمةライン', value: formatCurrency(totalGMV), change: '+$1.2M هذا الشهر', icon: TrendingUp, color: 'from-green-500/20 to-green-600/5', iconColor: 'text-green-600' },
-          { title: 'مشترون موثقون', value: buyers.filter(b => b.verificationStatus === 'APPROVED').length, change: '+1 هذا الشهر', icon: Users, color: 'from-purple-500/20 to-purple-600/5', iconColor: 'text-purple-600' },
-          { title: 'مصدرون موثقون', value: exporters.filter(e => e.verificationStatus === 'APPROVED').length, change: '2 نشط', icon: Truck, color: 'from-masar-gold/20 to-masar-gold/5', iconColor: 'text-masar-gold' },
-        ].map((metric, idx) => (
-          <div key={idx} className="glass-card rounded-2xl p-5">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm text-gray-500">{metric.title}</p>
-                <p className="text-2xl font-bold text-gray-900 mt-1">{metric.value}</p>
-                <p className="text-xs text-green-600 mt-1 flex items-center gap-1"><ArrowUpRight size={12} />{metric.change}</p>
+      {/* KPI Strip */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '12px', marginBottom: '24px' }}>
+        {kpis.map((kpi, idx) => (
+          <div key={idx} style={{ background: 'white', borderRadius: '10px', border: `1px solid ${s.border}`, padding: '16px', cursor: 'pointer', transition: 'all 0.2s' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+              <span style={{ fontSize: '10px', fontWeight: 600, color: '#98A2B3', letterSpacing: '0.05em' }}>{kpi.label}</span>
+              <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: `${kpi.color}10`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <kpi.icon size={14} color={kpi.color} />
               </div>
-              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${metric.color} flex items-center justify-center`}>
-                <metric.icon size={22} className={metric.iconColor} />
-              </div>
+            </div>
+            <div style={{ fontSize: '24px', fontWeight: 800, color: s.text, lineHeight: 1, marginBottom: '4px' }}>{kpi.value}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              {kpi.trend === 'up' ? <ArrowUpRight size={12} color={s.green} /> : kpi.trend === 'down' ? <ArrowDownRight size={12} color={s.red} /> : <Minus size={12} color="#98A2B3" />}
+              <span style={{ fontSize: '11px', color: kpi.trend === 'up' ? s.green : kpi.trend === 'down' ? s.red : '#98A2B3' }}>{kpi.change}</span>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Transaction Pipeline */}
-        <div className="lg:col-span-2 glass-card rounded-2xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">خط أنابيب المعاملات — Transaction Pipeline</h3>
-          <div className="space-y-3">
-            {transactions.filter(t => t.status !== 'COMPLETED' && t.status !== 'SETTLED').map((txn) => (
-              <div key={txn.id} className="flex items-center gap-4 p-4 glass-card rounded-xl cursor-pointer">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                  txn.riskLevel === 'CRITICAL' ? 'bg-red-100' : txn.riskLevel === 'HIGH' ? 'bg-orange-100' : txn.riskLevel === 'MEDIUM' ? 'bg-yellow-100' : 'bg-green-100'
-                }`}>
-                  <Package size={18} className={
-                    txn.riskLevel === 'CRITICAL' ? 'text-red-600' : txn.riskLevel === 'HIGH' ? 'text-orange-600' : txn.riskLevel === 'MEDIUM' ? 'text-yellow-600' : 'text-green-600'
-                  } />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold text-gray-900">{txn.masarId}</p>
-                    <StatusBadge status={txn.status} />
+      {/* Transaction Pipeline */}
+      <div style={{ background: 'white', borderRadius: '12px', border: `1px solid ${s.border}`, marginBottom: '24px', overflow: 'hidden' }}>
+        <div style={{ padding: '16px 20px', borderBottom: `1px solid ${s.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2 style={{ fontSize: '15px', fontWeight: 700, color: s.text }}>Transaction Pipeline</h2>
+          <div style={{ display: 'flex', gap: '4px' }}>
+            {['pipeline', 'cards', 'map'].map(tab => (
+              <button key={tab} onClick={() => setActiveTab(tab)} style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '11px', fontWeight: 600, border: 'none', cursor: 'pointer', ...(activeTab === tab ? { background: s.navy, color: 'white' } : { background: '#F9FAFB', color: s.textSec }) }}>
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </button>
+            ))}
+          </div>
+        </div>
+        {activeTab === 'pipeline' && (
+          <div style={{ padding: '20px', overflowX: 'auto' }}>
+            <div style={{ display: 'flex', gap: '8px', minWidth: '900px' }}>
+              {pipelineStages.map((stage, idx) => (
+                <div key={idx} style={{ flex: 1, minWidth: '80px' }}>
+                  <div style={{ textAlign: 'center', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '10px', fontWeight: 600, color: '#98A2B3', letterSpacing: '0.05em' }}>{stage.label}</span>
+                    <div style={{ fontSize: '20px', fontWeight: 800, color: stage.color, marginTop: '2px' }}>{stage.count}</div>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">{txn.commodity} • {txn.quantity} • {formatCurrency(txn.contractValue)}</p>
+                  <div style={{ height: '4px', background: '#F3F4F6', borderRadius: '2px', overflow: 'hidden' }}>
+                    <div style={{ width: `${(stage.count / 12) * 100}%`, height: '100%', background: stage.color, borderRadius: '2px' }} />
+                  </div>
                 </div>
-                <div className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${getClearanceScoreColor(txn.clearanceScore.total)}`}>
-                  {txn.clearanceScore.total} — {getClearanceScoreLabel(txn.clearanceScore.total)}
+              ))}
+            </div>
+          </div>
+        )}
+        {activeTab === 'cards' && (
+          <div style={{ padding: '16px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '12px' }}>
+            {txnCards.map((txn, idx) => (
+              <div key={idx} style={{ border: `1px solid ${s.border}`, borderRadius: '10px', padding: '16px', cursor: 'pointer', transition: 'all 0.2s' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+                  <div>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: s.text, fontFamily: 'monospace' }}>{txn.id}</span>
+                    <p style={{ fontSize: '11px', color: s.textSec, margin: '2px 0 0' }}>{txn.buyer} → {txn.exporter}</p>
+                  </div>
+                  <span style={{ fontSize: '10px', fontWeight: 600, color: txn.risk === 'LOW' ? s.green : txn.risk === 'MEDIUM' ? s.amber : s.red, padding: '2px 8px', background: txn.risk === 'LOW' ? '#F0FDF4' : txn.risk === 'MEDIUM' ? '#FFFBEB' : '#FEF2F2', borderRadius: '4px' }}>{txn.risk}</span>
                 </div>
-                {txn.exceptions.length > 0 && (
-                  <span className="flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">
-                    <AlertTriangle size={12} /> {txn.exceptions.length}
-                  </span>
-                )}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '10px', padding: '8px', background: '#F9FAFB', borderRadius: '6px' }}>
+                  <div><span style={{ fontSize: '9px', color: '#98A2B3' }}>Commodity</span><p style={{ fontSize: '12px', fontWeight: 600, color: s.text, margin: 0 }}>{txn.commodity}</p></div>
+                  <div><span style={{ fontSize: '9px', color: '#98A2B3' }}>Quantity</span><p style={{ fontSize: '12px', fontWeight: 600, color: s.text, margin: 0 }}>{txn.qty}</p></div>
+                  <div><span style={{ fontSize: '9px', color: '#98A2B3' }}>Value</span><p style={{ fontSize: '12px', fontWeight: 600, color: s.text, margin: 0 }}>{txn.value}</p></div>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <span style={{ fontSize: '10px', color: '#98A2B3' }}>Stage: </span>
+                    <span style={{ fontSize: '11px', fontWeight: 600, color: s.gold }}>{txn.stage}</span>
+                    <span style={{ fontSize: '10px', color: s.textSec, marginLeft: '8px' }}>{txn.status}</span>
+                  </div>
+                </div>
+                <div style={{ marginTop: '8px', padding: '8px', background: '#FFFBEB', borderRadius: '6px', fontSize: '11px', color: s.text }}>
+                  <span style={{ fontWeight: 600 }}>Next: </span>{txn.next}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: '16px' }}>
+        {/* Exceptions */}
+        <div style={{ background: 'white', borderRadius: '12px', border: `1px solid ${s.border}`, overflow: 'hidden' }}>
+          <div style={{ padding: '16px 20px', borderBottom: `1px solid ${s.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h2 style={{ fontSize: '15px', fontWeight: 700, color: s.text }}>Active Exceptions</h2>
+            <span style={{ fontSize: '11px', fontWeight: 600, color: s.red, padding: '2px 8px', background: '#FEF2F2', borderRadius: '4px' }}>{exceptions.length} active</span>
+          </div>
+          <div style={{ padding: '12px' }}>
+            {exceptions.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '2rem' }}><CheckCircle size={32} color={s.green} style={{ margin: '0 auto 8px' }} /><p style={{ fontSize: '13px', color: s.textSec }}>No active exceptions</p></div>
+            ) : exceptions.map((exc, idx) => (
+              <div key={idx} style={{ padding: '12px', borderLeft: `3px solid ${exc.severity === 'CRITICAL' ? '#EF4444' : exc.severity === 'HIGH' ? '#F59E0B' : '#3B82F6'}`, background: exc.severity === 'CRITICAL' ? '#FEF2F2' : '#FFFBEB', borderRadius: '0 8px 8px 0', marginBottom: '8px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div>
+                    <span style={{ fontSize: '10px', fontWeight: 600, color: '#98A2B3', fontFamily: 'monospace' }}>{exc.transactionId}</span>
+                    <p style={{ fontSize: '12px', fontWeight: 600, color: s.text, margin: '2px 0' }}>{exc.description}</p>
+                  </div>
+                  <span style={{ fontSize: '9px', fontWeight: 700, color: exc.severity === 'CRITICAL' ? '#EF4444' : '#F59E0B', padding: '2px 6px', background: 'white', borderRadius: '4px', border: `1px solid ${exc.severity === 'CRITICAL' ? '#FECACA' : '#FDE68A'}` }}>{exc.severity}</span>
+                </div>
+                <div style={{ display: 'flex', gap: '12px', marginTop: '6px' }}>
+                  <span style={{ fontSize: '10px', color: '#98A2B3' }}>Owner: {exc.assignedTo}</span>
+                  <span style={{ fontSize: '10px', color: '#98A2B3' }}>Due: {exc.deadline}</span>
+                </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Exceptions */}
-        <div className="glass-card rounded-2xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">الاستثناءات النشطة — Exceptions</h3>
-          <div className="space-y-3">
-            {exceptions.length === 0 ? (
-              <div className="text-center py-8"><CheckCircle className="mx-auto text-green-500 mb-2" size={32} /><p className="text-sm text-gray-500">لا توجد استثناءات</p></div>
-            ) : (
-              exceptions.map((exc, idx) => (
-                <div key={idx} className={`p-3 rounded-xl border-r-4 ${
-                  exc.severity === 'CRITICAL' ? 'bg-red-50 border-red-500' : exc.severity === 'HIGH' ? 'bg-orange-50 border-orange-500' : 'bg-yellow-50 border-yellow-500'
-                }`}>
-                  <p className="text-xs font-medium text-gray-500">{exc.transactionId}</p>
-                  <p className="text-sm font-medium text-gray-900 mt-1">{exc.description}</p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Clock size={12} className="text-gray-400" />
-                    <span className="text-xs text-gray-500">{exc.deadline}</span>
+        {/* Recent Activity */}
+        <div style={{ background: 'white', borderRadius: '12px', border: `1px solid ${s.border}`, overflow: 'hidden' }}>
+          <div style={{ padding: '16px 20px', borderBottom: `1px solid ${s.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h2 style={{ fontSize: '15px', fontWeight: 700, color: s.text }}>Activity Timeline</h2>
+            <Link href="/dashboard/audit" style={{ fontSize: '11px', color: s.gold, textDecoration: 'none', fontWeight: 600 }}>View All →</Link>
+          </div>
+          <div style={{ padding: '12px 16px' }}>
+            {recentActivity.map((act, idx) => (
+              <div key={idx} style={{ display: 'flex', gap: '12px', padding: '10px 0', borderBottom: idx < recentActivity.length - 1 ? `1px solid #F3F4F6` : 'none' }}>
+                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: act.type === 'inspection' ? '#3B82F6' : act.type === 'finance' ? '#10B981' : act.type === 'compliance' ? '#F59E0B' : '#8B5CF6', marginTop: '6px', flexShrink: 0 }} />
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontSize: '12px', color: s.text, margin: 0 }}>{act.event}</p>
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '2px' }}>
+                    <span style={{ fontSize: '10px', color: '#98A2B3', fontFamily: 'monospace' }}>{act.txn}</span>
+                    <span style={{ fontSize: '10px', color: '#98A2B3' }}>· {act.user}</span>
                   </div>
                 </div>
-              ))
-            )}
+                <span style={{ fontSize: '10px', color: '#98A2B3', flexShrink: 0 }}>{act.time}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Finance Overview */}
+        <div style={{ background: 'white', borderRadius: '12px', border: `1px solid ${s.border}`, overflow: 'hidden' }}>
+          <div style={{ padding: '16px 20px', borderBottom: `1px solid ${s.border}` }}>
+            <h2 style={{ fontSize: '15px', fontWeight: 700, color: s.text }}>Finance & Settlement</h2>
+          </div>
+          <div style={{ padding: '16px' }}>
+            {[
+              { label: 'Financing Pipeline', value: '$1.24M', color: '#3B82F6' },
+              { label: 'Approved', value: '$820K', color: '#10B981' },
+              { label: 'Funded', value: '$520K', color: s.gold },
+              { label: 'Outstanding', value: '$410K', color: '#F59E0B' },
+              { label: 'At Risk', value: '$0', color: '#16A34A' },
+            ].map((item, idx) => (
+              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: idx < 4 ? '1px solid #F3F4F6' : 'none' }}>
+                <span style={{ fontSize: '13px', color: s.textSec }}>{item.label}</span>
+                <span style={{ fontSize: '14px', fontWeight: 700, color: item.color }}>{item.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Shipment Control */}
+        <div style={{ background: 'white', borderRadius: '12px', border: `1px solid ${s.border}`, overflow: 'hidden' }}>
+          <div style={{ padding: '16px 20px', borderBottom: `1px solid ${s.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h2 style={{ fontSize: '15px', fontWeight: 700, color: s.text }}>Shipment Control</h2>
+            <Link href="/dashboard/shipments" style={{ fontSize: '11px', color: s.gold, textDecoration: 'none', fontWeight: 600 }}>View All →</Link>
+          </div>
+          <div style={{ padding: '16px' }}>
+            <div style={{ padding: '12px', background: '#F9FAFB', borderRadius: '8px', marginBottom: '12px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: s.text, fontFamily: 'monospace' }}>MSCU1234567</span>
+                <span style={{ fontSize: '10px', fontWeight: 600, color: '#3B82F6', padding: '2px 8px', background: '#EFF6FF', borderRadius: '4px' }}>IN TRANSIT</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                <span style={{ fontSize: '11px', color: s.textSec }}>🇳🇬 Lagos</span>
+                <div style={{ flex: 1, height: '2px', background: '#E5E7EB', borderRadius: '1px', position: 'relative' }}>
+                  <div style={{ position: 'absolute', left: '65%', top: '-3px', width: '8px', height: '8px', background: '#3B82F6', borderRadius: '50%' }} />
+                </div>
+                <span style={{ fontSize: '11px', color: s.textSec }}>🇸🇦 Jeddah</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '10px', color: '#98A2B3' }}>ETA: 08 Sep 2026</span>
+                <span style={{ fontSize: '10px', color: '#98A2B3' }}>MSC Aurora</span>
+              </div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              {[{ l: 'In Transit', v: '1', c: '#3B82F6' }, { l: 'Preparing', v: '3', c: '#F59E0B' }, { l: 'Arrived', v: '0', c: '#16A34A' }, { l: 'Released', v: '1', c: '#16A34A' }].map((item, idx) => (
+                <div key={idx} style={{ textAlign: 'center', padding: '10px', background: '#F9FAFB', borderRadius: '6px' }}>
+                  <div style={{ fontSize: '18px', fontWeight: 800, color: item.c }}>{item.v}</div>
+                  <div style={{ fontSize: '10px', color: '#98A2B3' }}>{item.l}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Corridor Map */}
-      <div className="glass-card rounded-2xl p-8">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">حالة الممر — Corridor Status</h3>
-        <div className="relative bg-gradient-to-r from-green-50 via-blue-50 to-yellow-50 rounded-2xl p-8">
-          <div className="flex items-center justify-between">
-            <div className="text-center">
-              <div className="w-20 h-20 glass-card rounded-2xl flex items-center justify-center mx-auto mb-3"><span className="text-3xl">🇳🇬</span></div>
-              <h4 className="font-semibold text-gray-900">نيجيريا</h4>
-              <p className="text-xs text-gray-500">لاغوس • كانو</p>
+      <div style={{ background: 'white', borderRadius: '12px', border: `1px solid ${s.border}`, marginTop: '16px', overflow: 'hidden' }}>
+        <div style={{ padding: '16px 20px', borderBottom: `1px solid ${s.border}` }}>
+          <h2 style={{ fontSize: '15px', fontWeight: 700, color: s.text }}>Corridor Intelligence — Nigeria → Saudi Arabia</h2>
+        </div>
+        <div style={{ padding: '20px', background: 'linear-gradient(135deg, #F0FDF4 0%, #EFF6FF 50%, #FFFBEB 100%)', borderRadius: '0 0 12px 12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '4px' }}>🇳🇬</div>
+              <div style={{ fontSize: '13px', fontWeight: 700, color: s.text }}>Nigeria</div>
+              <div style={{ fontSize: '11px', color: s.textSec }}>Lagos · Kano · Abuja</div>
             </div>
-            <div className="flex-1 mx-8 relative">
-              <div className="h-2 bg-gradient-to-r from-green-400 via-masar-gold to-yellow-400 rounded-full" />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center"><Ship size={20} className="text-masar-blue" /></div>
+            <div style={{ flex: 1, margin: '0 2rem', position: 'relative', height: '6px' }}>
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, #16A34A, #C9A24A, #3B82F6)', borderRadius: '3px', opacity: 0.3 }} />
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, #16A34A, #C9A24A, #3B82F6)', borderRadius: '3px', width: '65%', transition: 'width 1s ease' }} />
+              {[20, 40, 65, 85].map((pos, i) => (
+                <div key={i} style={{ position: 'absolute', top: '-4px', left: `${pos}%`, width: '14px', height: '14px', background: 'white', borderRadius: '50%', border: '2px solid #C9A24A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: '6px', height: '6px', background: i === 2 ? '#3B82F6' : '#C9A24A', borderRadius: '50%' }} />
+                </div>
+              ))}
             </div>
-            <div className="text-center">
-              <div className="w-20 h-20 glass-card rounded-2xl flex items-center justify-center mx-auto mb-3"><span className="text-3xl">🇸🇦</span></div>
-              <h4 className="font-semibold text-gray-900">السعودية</h4>
-              <p className="text-xs text-gray-500">جدة • الرياض</p>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '4px' }}>🇸🇦</div>
+              <div style={{ fontSize: '13px', fontWeight: 700, color: s.text }}>Saudi Arabia</div>
+              <div style={{ fontSize: '11px', color: s.textSec }}>Jeddah · Riyadh · Dammam</div>
             </div>
           </div>
-          <div className="mt-8 grid grid-cols-4 gap-4">
-            {[{ v: '1', l: 'في العبور' }, { v: '3', l: 'قيد التحضير' }, { v: '1', l: 'مكتملة' }, { v: formatCurrency(totalGMV), l: 'إجمالي GMV' }].map((s, i) => (
-              <div key={i} className="text-center p-3 glass-card rounded-xl"><p className="text-xl font-bold text-masar-navy">{s.v}</p><p className="text-xs text-gray-500">{s.l}</p></div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '12px' }}>
+            {[
+              { l: 'Active GMV', v: '$3.84M' }, { l: 'Avg Transaction', v: '$480K' }, { l: 'Avg Cycle', v: '42 days' },
+              { l: 'Inspection Pass', v: '96%' }, { l: 'Compliance Pass', v: '94%' }, { l: 'Repeat Buyers', v: '67%' },
+            ].map((item, idx) => (
+              <div key={idx} style={{ textAlign: 'center', padding: '12px', background: 'rgba(255,255,255,0.7)', borderRadius: '8px' }}>
+                <div style={{ fontSize: '16px', fontWeight: 800, color: s.text }}>{item.v}</div>
+                <div style={{ fontSize: '10px', color: s.textSec }}>{item.l}</div>
+              </div>
             ))}
           </div>
         </div>
