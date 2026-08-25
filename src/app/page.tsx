@@ -104,6 +104,8 @@ export default function LandingPage() {
   useEffect(() => {
     document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
     document.documentElement.lang = lang;
+    document.body.style.direction = isRTL ? 'rtl' : 'ltr';
+    document.body.style.textAlign = isRTL ? 'right' : 'left';
   }, [lang, isRTL]);
 
   useEffect(() => {

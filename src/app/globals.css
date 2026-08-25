@@ -27,26 +27,29 @@ body {
   overflow-x: hidden;
 }
 
-/* Default LTR for English */
-html:not([dir="rtl"]) {
+/* Default: English LTR */
+html {
   direction: ltr;
   text-align: left;
 }
 
-html:not([dir="rtl"]) body {
+html[lang="ar"],
+html[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Ensure all text respects direction */
+html[lang="ar"] body,
+html[dir="rtl"] body {
+  direction: rtl;
+  text-align: right;
+}
+
+html[lang="en"] body,
+html[dir="ltr"] body {
   direction: ltr;
   text-align: left;
-}
-
-/* RTL for Arabic */
-[dir="rtl"] {
-  direction: rtl;
-  text-align: right;
-}
-
-[dir="rtl"] body {
-  direction: rtl;
-  text-align: right;
 }
 
 /* Animations */
