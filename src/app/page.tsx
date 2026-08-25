@@ -191,9 +191,12 @@ export default function LandingPage() {
               
               {/* Desktop Nav */}
               <div className="hidden lg:flex" style={{ alignItems: 'center', gap: '20px' }}>
-                {['Platform', 'How It Works', 'For Buyers', 'For Exporters', 'About'].map((item) => (
-                  <a key={item} href={`#${item.toLowerCase().replace(/ /g, '-')}`} style={{ fontSize: '13px', fontWeight: 500, color: scrolled ? '#5B6778' : 'rgba(255,255,255,0.7)', textDecoration: 'none', transition: 'color 0.3s' }}>{item}</a>
-                ))}
+                <Link href="/platform" style={{ fontSize: '13px', fontWeight: 500, color: scrolled ? '#5B6778' : 'rgba(255,255,255,0.7)', textDecoration: 'none', transition: 'color 0.3s' }}>Platform</Link>
+                <Link href="/how-it-works" style={{ fontSize: '13px', fontWeight: 500, color: scrolled ? '#5B6778' : 'rgba(255,255,255,0.7)', textDecoration: 'none', transition: 'color 0.3s' }}>How It Works</Link>
+                <Link href="/for-buyers" style={{ fontSize: '13px', fontWeight: 500, color: scrolled ? '#5B6778' : 'rgba(255,255,255,0.7)', textDecoration: 'none', transition: 'color 0.3s' }}>For Buyers</Link>
+                <Link href="/for-exporters" style={{ fontSize: '13px', fontWeight: 500, color: scrolled ? '#5B6778' : 'rgba(255,255,255,0.7)', textDecoration: 'none', transition: 'color 0.3s' }}>For Exporters</Link>
+                <Link href="/trust-compliance" style={{ fontSize: '13px', fontWeight: 500, color: scrolled ? '#5B6778' : 'rgba(255,255,255,0.7)', textDecoration: 'none', transition: 'color 0.3s' }}>Trust & Compliance</Link>
+                <Link href="/about" style={{ fontSize: '13px', fontWeight: 500, color: scrolled ? '#5B6778' : 'rgba(255,255,255,0.7)', textDecoration: 'none', transition: 'color 0.3s' }}>About</Link>
                 <button onClick={toggleLang} style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '6px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: 600, border: 'none', cursor: 'pointer', ...(scrolled ? { background: '#F0F2F5', color: '#5B6778' } : { background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)' }), transition: 'all 0.3s' }}>
                   <Languages size={14} /> {lang === 'en' ? 'العربية' : 'EN'}
                 </button>
@@ -217,9 +220,13 @@ export default function LandingPage() {
             <button onClick={() => setMobileMenuOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={24} color="#0B1F3A" /></button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {['Platform', 'How It Works', 'For Buyers', 'For Exporters', 'About', 'Contact'].map((item) => (
-              <a key={item} href={`#${item.toLowerCase().replace(/ /g, '-')}`} onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '18px', fontWeight: 500, color: '#0B1F3A', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid #E5E9F0' }}>{item}</a>
-            ))}
+            <Link href="/platform" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '18px', fontWeight: 500, color: '#0B1F3A', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid #E5E9F0' }}>Platform</Link>
+            <Link href="/how-it-works" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '18px', fontWeight: 500, color: '#0B1F3A', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid #E5E9F0' }}>How It Works</Link>
+            <Link href="/for-buyers" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '18px', fontWeight: 500, color: '#0B1F3A', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid #E5E9F0' }}>For Buyers</Link>
+            <Link href="/for-exporters" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '18px', fontWeight: 500, color: '#0B1F3A', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid #E5E9F0' }}>For Exporters</Link>
+            <Link href="/trust-compliance" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '18px', fontWeight: 500, color: '#0B1F3A', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid #E5E9F0' }}>Trust & Compliance</Link>
+            <Link href="/about" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '18px', fontWeight: 500, color: '#0B1F3A', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid #E5E9F0' }}>About</Link>
+            <Link href="/contact" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '18px', fontWeight: 500, color: '#0B1F3A', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid #E5E9F0' }}>Contact</Link>
             <div style={{ display: 'flex', gap: '12px', marginTop: '1rem' }}>
               <button onClick={() => { toggleLang(); }} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '1px solid #E5E9F0', background: '#F7F9FC', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
                 {lang === 'en' ? '🇸🇦 العربية' : '🇳🇬 English'}
@@ -552,9 +559,13 @@ export default function LandingPage() {
             </div>
             <div>
               <h4 style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em', marginBottom: '1rem' }}>PLATFORM</h4>
-              {['Platform', 'How It Works', 'For Buyers', 'For Exporters', 'Capital Partners', 'Trust & Compliance', 'About'].map((item) => (
-                <a key={item} href={`#${item.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-')}`} style={{ display: 'block', fontSize: '12px', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', marginBottom: '6px' }}>{item}</a>
-              ))}
+              <Link href="/platform" style={{ display: 'block', fontSize: '12px', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', marginBottom: '6px' }}>Platform</Link>
+              <Link href="/how-it-works" style={{ display: 'block', fontSize: '12px', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', marginBottom: '6px' }}>How It Works</Link>
+              <Link href="/for-buyers" style={{ display: 'block', fontSize: '12px', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', marginBottom: '6px' }}>For Buyers</Link>
+              <Link href="/for-exporters" style={{ display: 'block', fontSize: '12px', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', marginBottom: '6px' }}>For Exporters</Link>
+              <Link href="/for-capital-partners" style={{ display: 'block', fontSize: '12px', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', marginBottom: '6px' }}>Capital Partners</Link>
+              <Link href="/trust-compliance" style={{ display: 'block', fontSize: '12px', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', marginBottom: '6px' }}>Trust & Compliance</Link>
+              <Link href="/about" style={{ display: 'block', fontSize: '12px', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', marginBottom: '6px' }}>About</Link>
             </div>
             <div>
               <h4 style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em', marginBottom: '1rem' }}>CORPORATE</h4>
@@ -572,9 +583,10 @@ export default function LandingPage() {
             </div>
             <div>
               <h4 style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em', marginBottom: '1rem' }}>LEGAL</h4>
-              {['Privacy Policy', 'Terms of Service', 'Data Protection', 'Compliance'].map((item) => (
-                <a key={item} href="#" style={{ display: 'block', fontSize: '12px', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', marginBottom: '6px' }}>{item}</a>
-              ))}
+              <Link href="/privacy" style={{ display: 'block', fontSize: '12px', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', marginBottom: '6px' }}>Privacy Policy</Link>
+              <Link href="/terms" style={{ display: 'block', fontSize: '12px', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', marginBottom: '6px' }}>Terms of Service</Link>
+              <Link href="/data-protection" style={{ display: 'block', fontSize: '12px', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', marginBottom: '6px' }}>Data Protection</Link>
+              <Link href="/compliance-legal" style={{ display: 'block', fontSize: '12px', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', marginBottom: '6px' }}>Compliance</Link>
             </div>
           </div>
           <div style={{ paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
