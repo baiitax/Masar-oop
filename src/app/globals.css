@@ -1,11 +1,10 @@
 @import "tailwindcss";
 
 @theme {
-  --color-masar-navy: #0A1628;
-  --color-masar-dark: #0F2847;
-  --color-masar-blue: #1E4D8C;
-  --color-masar-gold: #C8A951;
-  --color-masar-gold-light: #E8D48B;
+  --color-masar-navy: #0B1F3A;
+  --color-masar-dark: #102A4C;
+  --color-masar-gold: #C9A24A;
+  --color-masar-gold-light: #E3C875;
   --color-masar-green: #2D7D46;
   --color-masar-red: #C1272D;
   --color-saudi-green: #006C35;
@@ -19,6 +18,7 @@
 
 html {
   scroll-behavior: smooth;
+  text-align: left;
 }
 
 body {
@@ -26,12 +26,30 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  text-align: left;
+  direction: ltr;
 }
 
+/* RTL Support - Only apply when explicitly set */
 [dir="rtl"] {
-  font-family: 'Noto Kufi Arabic', 'Inter', system-ui, sans-serif;
+  direction: rtl;
+  text-align: right;
 }
 
+[dir="rtl"] body {
+  text-align: right;
+  direction: rtl;
+}
+
+[dir="rtl"] .text-left {
+  text-align: right;
+}
+
+[dir="rtl"] .text-right {
+  text-align: left;
+}
+
+/* Arabic Typography */
 .font-arabic {
   font-family: 'Noto Kufi Arabic', system-ui, sans-serif;
 }
@@ -68,8 +86,13 @@ body {
 }
 
 @keyframes glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(200,169,81,0.3); }
-  50% { box-shadow: 0 0 40px rgba(200,169,81,0.5); }
+  0%, 100% { box-shadow: 0 0 20px rgba(201,162,81,0.3); }
+  50% { box-shadow: 0 0 40px rgba(201,162,81,0.5); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .animate-fade-in {
@@ -92,8 +115,12 @@ body {
   animation: glow 2s ease-in-out infinite;
 }
 
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
 .gradient-text-gold {
-  background: linear-gradient(135deg, #C8A951 0%, #E8D48B 50%, #C8A951 100%);
+  background: linear-gradient(135deg, #C9A24A 0%, #E3C875 50%, #C9A24A 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -120,6 +147,19 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid #C8A951;
+  outline: 2px solid #C9A24A;
   outline-offset: 2px;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
 }
