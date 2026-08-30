@@ -1,263 +1,621 @@
 'use client';
 
-import React, { useState } from 'react';
-import Link from 'next/link';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  Mail, Lock, Eye, EyeOff, ArrowRight, Shield, Globe, Languages, 
-  Loader2, ChevronDown, Users, Crown, Cpu, Settings, Truck, Search, 
-  DollarSign, Landmark, BarChart3, Scale, Building2, MapPin, AlertTriangle,
-  KeyRound, Fingerprint
-} from 'lucide-react';
+import { supabase } from '@/lib/supabase/client';
 
-const roles = [
-  { id: 'ceo', title: 'CEO / Corridor Lead', category: 'Executive', email: 'ceo@demo.masar.local', icon: Crown, color: '#C9A24A', access: ['Executive Overview', 'Corridor Performance', 'Risk & Compliance'], redirect: '/app/executive' },
-  { id: 'operations', title: 'Corridor Operations', category: 'Operations', email: 'operations@demo.masar.local', icon: Settings, color: '#8B5CF6', access: ['Transaction Queue', 'RFQs', 'Exception Center'], redirect: '/dashboard' },
-  { id: 'compliance', title: 'KSA Compliance', category: 'Compliance', email: 'compliance@demo.masar.local', icon: Shield, color: '#10B981', access: ['Compliance Center', 'KYB / KYC', 'Documents'], redirect: '/dashboard/compliance' },
-  { id: 'buyer', title: 'Saudi Anchor Buyer', category: 'External', email: 'buyer@demo.masar.local', icon: Building2, color: '#DC2626', access: ['Trade Desk', 'RFQs', 'Transactions'], redirect: '/buyer' },
-  { id: 'exporter', title: 'Nigerian Exporter', category: 'External', email: 'exporter@demo.masar.local', icon: Truck, color: '#16A34A', access: ['Export Operations', 'Orders', 'Financing'], redirect: '/exporter' },
-  { id: 'capital', title: 'Capital Partner', category: 'External', email: 'capital@demo.masar.local', icon: Landmark, color: '#7C3AED', access: ['Portfolio', 'Funding Requests', 'Exposure'], redirect: '/capital' },
-  { id: 'inspector', title: 'Inspection Partner', category: 'External', email: 'inspector@demo.masar.local', icon: Search, color: '#0891B2', access: ['Assignments', 'Schedule', 'Reports'], redirect: '/inspector' },
-  { id: 'auditor', title: 'Audit / Regulatory', category: 'Governance', email: 'auditor@demo.masar.local', icon: Scale, color: '#6B7280', access: ['Audit Overview', 'Evidence', 'Release Ledger'], redirect: '/audit-portal' },
-  { id: 'admin', title: 'System Administrator', category: 'Administration', email: 'admin@demo.masar.local', icon: Settings, color: '#4B5563', access: ['Users', 'Roles', 'Settings'], redirect: '/dashboard' },
+const colors = {
+  navy: '#0B1F3A', navyLight: '#142235', navyLighter: '#1a2f4a', navyDark: '#071428',
+  gold: '#C9A24A', goldLight: '#D4B366', white: '#FFFFFF',
+  gray: '#6B7280', grayLight: '#D1D5DB', grayLighter: '#F3F4F6',
+  green: '#10B981', greenLight: '#D1FAE5', red: '#EF4444', redLight: '#FEE2E2',
+  blue: '#3B82F6', blueLight: '#DBEAFE', amber: '#F59E0B', amberLight: '#FEF3C7',
+};
+
+// Demo accounts matching database seed data
+const demoAccounts = [
+  { 
+    id: 'ceo', 
+    email: 'demo.ceo@masar.local', 
+    password: 'MasarDemo2026!', 
+    role: 'CEO', 
+    name: 'Lukman Kura', 
+    organization: 'MASAR Platform',
+    icon: '👔', 
+    dashboard: '/app/executive', 
+    color: '#8B5CF6',
+    description: 'Executive Command Center'
+  },
+  { 
+    id: 'operations', 
+    email: 'demo.operations@masar.local', 
+    password: 'MasarDemo2026!', 
+    role: 'Operations', 
+    name: 'Operations Manager', 
+    organization: 'MASAR Platform',
+    icon: '⚙️', 
+    dashboard: '/app/operations', 
+    color: '#3B82F6',
+    description: 'Operations Dashboard'
+  },
+  { 
+    id: 'compliance', 
+    email: 'demo.compliance@masar.local', 
+    password: 'MasarDemo2026!', 
+    role: 'Compliance', 
+    name: 'Compliance Officer', 
+    organization: 'MASAR Platform',
+    icon: '📋', 
+    dashboard: '/app/compliance', 
+    color: '#10B981',
+    description: 'KYB & Compliance'
+  },
+  { 
+    id: 'finance', 
+    email: 'demo.finance@masar.local', 
+    password: 'MasarDemo2026!', 
+    role: 'Finance', 
+    name: 'Finance Manager', 
+    organization: 'MASAR Platform',
+    icon: '💰', 
+    dashboard: '/app/tradefinance', 
+    color: '#F59E0B',
+    description: 'Trade Finance'
+  },
+  { 
+    id: 'buyer', 
+    email: 'demo.buyer@masar.local', 
+    password: 'MasarDemo2026!', 
+    role: 'Buyer', 
+    name: 'Ahmed Al Rajhi', 
+    organization: 'Al Rajhi Foods',
+    icon: '🛒', 
+    dashboard: '/buyer', 
+    color: '#EC4899',
+    description: 'Saudi Buyer Portal'
+  },
+  { 
+    id: 'exporter', 
+    email: 'demo.exporter@masar.local', 
+    password: 'MasarDemo2026!', 
+    role: 'Exporter', 
+    name: 'Oluwaseun Adebayo', 
+    organization: 'Nigerian Sesame Co.',
+    icon: '📦', 
+    dashboard: '/exporter', 
+    color: '#14B8A6',
+    description: 'Nigerian Exporter Portal'
+  },
+  { 
+    id: 'inspector', 
+    email: 'demo.inspector@masar.local', 
+    password: 'MasarDemo2026!', 
+    role: 'Inspector', 
+    name: 'Inspector SGS', 
+    organization: 'SGS Nigeria',
+    icon: '🔍', 
+    dashboard: '/inspector', 
+    color: '#6366F1',
+    description: 'Inspection Portal'
+  },
+  { 
+    id: 'auditor', 
+    email: 'demo.auditor@masar.local', 
+    password: 'MasarDemo2026!', 
+    role: 'Auditor', 
+    name: 'Internal Auditor', 
+    organization: 'MASAR Platform',
+    icon: '📊', 
+    dashboard: '/audit-portal', 
+    color: '#84CC16',
+    description: 'Audit & Compliance'
+  },
 ];
 
-const DEMO_PASSWORD = 'MasarDemo@2026!';
-
-export default function LoginPage() {
+export default function AuthPage() {
   const router = useRouter();
-  const [lang, setLang] = useState<'en' | 'ar'>('en');
+  const emailRef = useRef<HTMLInputElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [mode, setMode] = useState<'login' | 'forgot' | 'magic'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<string | null>(null);
-  const [showDemo, setShowDemo] = useState(true);
   const [error, setError] = useState('');
-  const isRTL = lang === 'ar';
+  const [success, setSuccess] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [selectedDemo, setSelectedDemo] = useState<string | null>(null);
+  const [loginAttempts, setLoginAttempts] = useState(0);
+  const [isLocked, setIsLocked] = useState(false);
+  const [lockTimer, setLockTimer] = useState(0);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
 
-  const selectRole = (roleId: string) => {
-    const role = roles.find(r => r.id === roleId);
-    if (role) {
-      setSelectedRole(roleId);
-      setEmail(role.email);
-      setPassword(DEMO_PASSWORD);
-      setError('');
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  useEffect(() => { emailRef.current?.focus(); }, []);
+
+  useEffect(() => {
+    if (isLocked && lockTimer > 0) {
+      const interval = setInterval(() => {
+        setLockTimer(prev => {
+          if (prev <= 1) { setIsLocked(false); setLoginAttempts(0); return 0; }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(interval);
     }
+  }, [isLocked, lockTimer]);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data: membership } = await supabase
+          .from('organization_members').select('roles:role_id(code)')
+          .eq('user_id', session.user.id).eq('status', 'active').limit(1).single();
+        const roleCode = (membership?.roles as any)?.code;
+        if (roleCode) redirectBasedOnRole(roleCode);
+      }
+    };
+    checkSession();
+  }, []);
+
+  const redirectBasedOnRole = (roleCode: string) => {
+    const redirects: Record<string, string> = {
+      'SUPER_ADMIN': '/dashboard', 'CEO': '/app/executive', 'CTO': '/app/technology',
+      'OPERATIONS': '/app/operations', 'COMPLIANCE': '/app/compliance', 'ORIGIN_OPERATIONS': '/app/origin',
+      'TRADE_FINANCE': '/app/tradefinance', 'CFO': '/app/cfo', 'BUYER_ADMIN': '/buyer', 'BUYER_USER': '/buyer',
+      'EXPORTER_ADMIN': '/exporter', 'EXPORTER_USER': '/exporter', 'INSPECTOR': '/inspector', 'AUDITOR': '/audit-portal',
+    };
+    router.push(redirects[roleCode] || '/dashboard');
   };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    if (!email || !password) { setError('Please enter your credentials'); return; }
-    setLoading(true);
-    await new Promise(r => setTimeout(r, 1200));
-    const role = roles.find(r => r.email === email);
-    if (role) {
-      localStorage.setItem('masar-role', role.id);
-      localStorage.setItem('masar-user', JSON.stringify({ name: role.title, email: role.email, role: role.id }));
-      router.push(role.redirect);
-    } else {
-      // Default login
-      localStorage.setItem('masar-role', 'admin');
-      localStorage.setItem('masar-user', JSON.stringify({ name: 'Mujaheed Baita', email, role: 'admin' }));
-      router.push('/dashboard');
+    if (isLocked) return;
+    setError(''); setLoading(true);
+    try {
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email: email.trim().toLowerCase(), password,
+      });
+      if (authError) {
+        setLoginAttempts(prev => prev + 1);
+        if (loginAttempts >= 4) { setIsLocked(true); setLockTimer(30); setError('Too many failed attempts. Account locked for 30 seconds.'); }
+        else { setError(authError.message || 'Invalid email or password'); }
+        setLoading(false); return;
+      }
+      setLoginAttempts(0);
+      const { data: membership } = await supabase
+        .from('organization_members').select('roles:role_id(code)')
+        .eq('user_id', data.user.id).eq('status', 'active').limit(1).single();
+      const roleCode = (membership?.roles as any)?.code;
+      if (rememberMe) localStorage.setItem('masar_remember', 'true');
+      localStorage.setItem('masar_user', JSON.stringify({ id: data.user.id, email: data.user.email, role: roleCode }));
+      redirectBasedOnRole(roleCode);
+    } catch { setError('An unexpected error occurred.'); }
+    finally { setLoading(false); }
+  };
+
+  const handleDemoLogin = async (account: typeof demoAccounts[0]) => {
+    setSelectedDemo(account.id); setError(''); setLoading(true);
+    try {
+      // Try to sign in first
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email: account.email, password: account.password,
+      });
+
+      if (authError) {
+        // If user doesn't exist, create them
+        if (authError.message.includes('Invalid login credentials')) {
+          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+            email: account.email, 
+            password: account.password,
+            options: { 
+              data: { 
+                full_name: account.name, 
+                role: account.role,
+                organization: account.organization
+              }, 
+              emailRedirectTo: `${window.location.origin}/auth` 
+            },
+          });
+
+          if (signUpError) { 
+            setError(`Failed to create demo account: ${signUpError.message}`); 
+            setLoading(false); 
+            return; 
+          }
+
+          // Store user info
+          localStorage.setItem('masar_user', JSON.stringify({ 
+            id: signUpData.user?.id, 
+            email: account.email, 
+            role: account.role, 
+            name: account.name,
+            organization: account.organization
+          }));
+
+          // Redirect to dashboard
+          router.push(account.dashboard);
+        } else { 
+          setError(authError.message); 
+        }
+      } else {
+        // Successful login
+        localStorage.setItem('masar_user', JSON.stringify({ 
+          id: data.user.id, 
+          email: data.user.email, 
+          role: account.role, 
+          name: account.name,
+          organization: account.organization
+        }));
+        router.push(account.dashboard);
+      }
+    } catch { 
+      setError('An unexpected error occurred.'); 
+    }
+    finally { 
+      setLoading(false); 
+      setSelectedDemo(null); 
     }
   };
 
-  const selectedRoleData = roles.find(r => r.id === selectedRole);
+  const handleMagicLink = async (e: React.FormEvent) => {
+    e.preventDefault(); setError(''); setSuccess(''); setLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOtp({ 
+        email: email.trim().toLowerCase(), 
+        options: { emailRedirectTo: `${window.location.origin}/auth` } 
+      });
+      if (error) setError(error.message); 
+      else setSuccess('Magic link sent! Check your email.');
+    } catch { setError('Failed to send magic link.'); }
+    finally { setLoading(false); }
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault(); setError(''); setSuccess(''); setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(
+        email.trim().toLowerCase(), 
+        { redirectTo: `${window.location.origin}/auth/reset-password` }
+      );
+      if (error) setError(error.message); 
+      else setSuccess('Password reset email sent!');
+    } catch { setError('Failed to send reset email.'); }
+    finally { setLoading(false); }
+  };
+
+  const inputStyle = (field: string, hasIcon = true) => ({
+    width: '100%', 
+    padding: isMobile ? '16px' : '14px 16px 14px ' + (hasIcon ? '42px' : '16px'),
+    border: `2px solid ${focusedField === field ? colors.blue : colors.grayLight}`,
+    borderRadius: '10px', 
+    fontSize: isMobile ? '16px' : '14px', 
+    outline: 'none',
+    transition: 'border-color 0.2s', 
+    background: focusedField === field ? colors.white : colors.grayLighter,
+    boxSizing: 'border-box' as const,
+  });
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', fontFamily: "'Inter', 'IBM Plex Sans Arabic', system-ui, sans-serif" }}>
-      {/* Left Panel */}
-      <div className="hidden lg:flex" style={{ width: '45%', background: 'linear-gradient(135deg, #0B1F3A 0%, #102A4C 50%, #0B1F3A 100%)', flexDirection: 'column', justifyContent: 'space-between', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, opacity: 0.04, backgroundImage: `linear-gradient(30deg, rgba(201,162,74,0.1) 12%, transparent 12.5%, transparent 87%, rgba(201,162,74,0.1) 87.5%)`, backgroundSize: '60px 100px' }} />
-        <div style={{ padding: '3rem', position: 'relative', zIndex: 10 }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none', marginBottom: '4rem' }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#0B1F3A', border: '2px solid #C9A24A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="24" height="24" viewBox="0 0 48 48" fill="none"><path d="M8 40V12L24 28L40 12V40" stroke="#C9A24A" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /><circle cx="24" cy="36" r="2" fill="#C9A24A" /></svg>
+    <>
+      <style jsx global>{`
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        @media (max-width: 767px) {
+          .auth-branding { display: none !important; }
+          .auth-form { flex: 0 0 100% !important; padding: 24px 20px !important; }
+          .demo-grid { grid-template-columns: 1fr !important; }
+        }
+        @media (min-width: 768px) {
+          .auth-mobile-header { display: none !important; }
+        }
+      `}</style>
+
+      <div style={{ minHeight: '100vh', display: 'flex', background: colors.navy }}>
+        {/* Left Panel - Branding (hidden on mobile) */}
+        <div className="auth-branding" style={{
+          flex: '0 0 55%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
+          padding: '60px', position: 'relative', overflow: 'hidden',
+          background: `linear-gradient(135deg, ${colors.navyDark} 0%, ${colors.navy} 50%, ${colors.navyLight} 100%)`
+        }}>
+          <div style={{ position: 'absolute', inset: 0, opacity: 0.03, backgroundImage: `radial-gradient(${colors.gold} 1px, transparent 1px)`, backgroundSize: '30px 30px' }} />
+          <div style={{ position: 'absolute', top: '10%', left: '10%', width: '300px', height: '300px', borderRadius: '50%', background: `radial-gradient(circle, ${colors.gold}10 0%, transparent 70%)`, filter: 'blur(40px)' }} />
+          <div style={{ position: 'absolute', bottom: '10%', right: '10%', width: '200px', height: '200px', borderRadius: '50%', background: `radial-gradient(circle, ${colors.blue}10 0%, transparent 70%)`, filter: 'blur(30px)' }} />
+
+          <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', maxWidth: '500px' }}>
+            <div style={{ width: '100px', height: '100px', background: `linear-gradient(135deg, ${colors.gold}, ${colors.goldLight})`, borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 28px', boxShadow: `0 20px 60px ${colors.gold}30` }}>
+              <span style={{ fontSize: '42px', fontWeight: 800, color: colors.navy }}>M</span>
             </div>
-            <div>
-              <span style={{ fontSize: '22px', fontWeight: 800, color: 'white', letterSpacing: '0.08em' }}>MASAR</span>
-              <span style={{ display: 'block', fontSize: '10px', color: 'rgba(201,162,74,0.7)', letterSpacing: '0.15em' }}>مسار — THE PATH</span>
-            </div>
-          </Link>
-          <h2 style={{ fontSize: '2rem', fontWeight: 800, color: 'white', lineHeight: 1.2, marginBottom: '1rem' }}>The trusted path for cross-border trade.</h2>
-          <p style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginBottom: '2rem' }}>Secure access to the MASAR Trade Corridor Operating System.</p>
-          <div style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.04)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)', marginBottom: '2rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-              <div style={{ textAlign: 'center' }}><span style={{ fontSize: '1.5rem' }}>🇳🇬</span><p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', margin: '2px 0 0' }}>Nigeria</p></div>
-              <div style={{ flex: 1, margin: '0 1rem', height: '3px', background: 'linear-gradient(90deg, rgba(201,162,74,0.2), rgba(201,162,74,0.6), rgba(201,162,74,0.2))', borderRadius: '2px', position: 'relative' }}>
-                <div style={{ position: 'absolute', top: '-3px', width: '9px', height: '9px', background: '#C9A24A', borderRadius: '50%', animation: 'routePulse 3s ease-in-out infinite' }} />
-              </div>
-              <div style={{ textAlign: 'center' }}><span style={{ fontSize: '1.5rem' }}>🇸🇦</span><p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', margin: '2px 0 0' }}>Saudi Arabia</p></div>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
-              {['Verify', 'Comply', 'Inspect', 'Finance', 'Settle'].map((step, idx) => (
-                <React.Fragment key={idx}>
-                  <span style={{ fontSize: '11px', color: '#C9A24A', fontWeight: 600 }}>{step}</span>
-                  {idx < 4 && <span style={{ color: 'rgba(201,162,74,0.3)' }}>·</span>}
-                </React.Fragment>
+            <h1 style={{ fontSize: '52px', fontWeight: 800, color: colors.white, margin: '0 0 4px 0', letterSpacing: '-2px', lineHeight: 1 }}>MASAR</h1>
+            <p style={{ fontSize: '22px', color: colors.gold, margin: '0 0 8px 0', fontWeight: 500 }}>مسار</p>
+            <p style={{ fontSize: '17px', color: colors.gray, margin: '0 0 48px 0', lineHeight: 1.6 }}>Trusted Trade Infrastructure for Africa–Saudi Arabia</p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '48px' }}>
+              {[
+                { value: '$50M+', label: 'Transaction Volume' },
+                { value: '100+', label: 'Verified Partners' },
+                { value: '99.9%', label: 'Uptime SLA' },
+              ].map((stat, i) => (
+                <div key={i} style={{ padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <p style={{ fontSize: '24px', fontWeight: 700, color: colors.gold, margin: '0 0 4px 0' }}>{stat.value}</p>
+                  <p style={{ fontSize: '11px', color: colors.gray, margin: 0 }}>{stat.label}</p>
+                </div>
               ))}
             </div>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {[
-              { icon: Shield, label: '256-bit SSL encryption' },
-              { icon: KeyRound, label: 'Multi-factor authentication' },
-              { icon: Fingerprint, label: 'Role-based access control' },
-              { icon: Lock, label: 'Session timeout protection' },
-            ].map((item, idx) => (
-              <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <item.icon size={14} color="#C9A24A" />
-                <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>{item.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div style={{ padding: '2rem 3rem', borderTop: '1px solid rgba(255,255,255,0.06)', position: 'relative', zIndex: 10 }}>
-          <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)' }}>© 2026 Kurra Greenfield Merchants Limited · CAC RC 1539036</p>
-        </div>
-      </div>
 
-      {/* Right Panel */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', background: '#F6F8FB', overflowY: 'auto' }}>
-        <div style={{ width: '100%', maxWidth: '480px' }}>
-          <div className="lg:hidden" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '2rem' }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#0B1F3A', border: '2px solid #C9A24A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="18" height="18" viewBox="0 0 48 48" fill="none"><path d="M8 40V12L24 28L40 12V40" stroke="#C9A24A" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /><circle cx="24" cy="36" r="2" fill="#C9A24A" /></svg>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', textAlign: 'left' }}>
+              {[
+                { icon: '🔒', title: 'Secure Transactions', desc: 'End-to-end encryption' },
+                { icon: '✓', title: 'Verified Counterparties', desc: 'KYB/KYC verified' },
+                { icon: '📋', title: 'Compliance Automation', desc: 'Lane-specific rules' },
+                { icon: '💰', title: 'Trade Finance', desc: 'Integrated escrow' },
+              ].map((f, i) => (
+                <div key={i} style={{ padding: '16px', background: 'rgba(255,255,255,0.02)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.04)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+                    <span style={{ fontSize: '18px' }}>{f.icon}</span>
+                    <span style={{ fontSize: '13px', fontWeight: 600, color: colors.white }}>{f.title}</span>
+                  </div>
+                  <p style={{ fontSize: '11px', color: colors.gray, margin: 0, paddingLeft: '28px' }}>{f.desc}</p>
+                </div>
+              ))}
             </div>
-            <span style={{ fontSize: '17px', fontWeight: 800, color: '#0B1F3A' }}>MASAR</span>
+
+            <div style={{ marginTop: '48px', padding: '16px 24px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <p style={{ fontSize: '10px', color: colors.gray, margin: '0 0 4px 0', textTransform: 'uppercase', letterSpacing: '2px' }}>Powered by</p>
+              <p style={{ fontSize: '15px', color: colors.white, margin: 0, fontWeight: 600 }}>KGM Limited</p>
+              <p style={{ fontSize: '10px', color: colors.gray, margin: '4px 0 0 0' }}>Kurra Greenfield Merchants Ltd • CAC RC 1539036</p>
+            </div>
           </div>
+        </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
-            <button onClick={() => setLang(lang === 'en' ? 'ar' : 'en')} style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '5px 10px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, border: '1px solid #E4E7EC', background: 'white', color: '#667085', cursor: 'pointer' }}>
-              <Languages size={13} /> {lang === 'en' ? 'العربية' : 'English'}
-            </button>
-          </div>
+        {/* Right Panel - Auth Form */}
+        <div className="auth-form" style={{
+          flex: '0 0 45%', display: 'flex', flexDirection: 'column', justifyContent: 'center',
+          padding: '60px', background: colors.white, position: 'relative', overflow: 'auto'
+        }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '200px', background: `linear-gradient(180deg, ${colors.grayLighter} 0%, ${colors.white} 100%)`, zIndex: 0 }} />
 
-          {/* Login Card */}
-          <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #E4E7EC', padding: '2rem', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', marginBottom: '1.5rem' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#142235', marginBottom: '4px' }}>{isRTL ? 'مرحباً بعودتك' : 'Welcome back'}</h2>
-            <p style={{ fontSize: '14px', color: '#667085', marginBottom: '1.5rem' }}>{isRTL ? 'سجل دخولك إلى مسار' : 'Sign in to MASAR'}</p>
+          <div style={{ position: 'relative', zIndex: 1, maxWidth: '420px', margin: '0 auto', width: '100%' }}>
+            {/* Mobile Logo Header */}
+            <div className="auth-mobile-header" style={{ textAlign: 'center', marginBottom: '24px' }}>
+              <div style={{ width: '64px', height: '64px', background: `linear-gradient(135deg, ${colors.gold}, ${colors.goldLight})`, borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', boxShadow: `0 10px 30px ${colors.gold}30` }}>
+                <span style={{ fontSize: '28px', fontWeight: 800, color: colors.navy }}>M</span>
+              </div>
+              <h1 style={{ fontSize: '24px', fontWeight: 800, color: colors.navy, margin: '0 0 2px 0' }}>MASAR</h1>
+              <p style={{ fontSize: '12px', color: colors.gold, margin: 0 }}>مسار — Trade Infrastructure</p>
+            </div>
 
-            {error && (
-              <div style={{ padding: '10px 14px', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '8px', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <AlertTriangle size={14} color="#EF4444" />
-                <span style={{ fontSize: '13px', color: '#991B1B' }}>{error}</span>
+            {/* Header */}
+            <div style={{ marginBottom: '28px' }}>
+              <h2 style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 700, color: colors.navy, margin: '0 0 8px 0' }}>Welcome Back</h2>
+              <p style={{ fontSize: '15px', color: colors.gray, margin: 0 }}>Sign in to access your MASAR workspace</p>
+            </div>
+
+            {/* Mode Tabs */}
+            {mode !== 'forgot' && (
+              <div style={{ display: 'flex', gap: '0', marginBottom: '24px', background: colors.grayLighter, borderRadius: '12px', padding: '4px' }}>
+                {[
+                  { id: 'login', label: 'Email & Password', icon: '🔑' },
+                  { id: 'magic', label: 'Magic Link', icon: '✨' },
+                ].map(tab => (
+                  <button key={tab.id} onClick={() => { setMode(tab.id as any); setError(''); setSuccess(''); }}
+                    style={{
+                      flex: 1, padding: isMobile ? '14px 8px' : '12px', background: mode === tab.id ? colors.white : 'transparent',
+                      color: mode === tab.id ? colors.navy : colors.gray, border: 'none', borderRadius: '10px',
+                      fontSize: isMobile ? '12px' : '13px', fontWeight: mode === tab.id ? 600 : 400, cursor: 'pointer',
+                      boxShadow: mode === tab.id ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s'
+                    }}>
+                    <span>{tab.icon}</span>
+                    {!isMobile ? tab.label : tab.id === 'login' ? 'Password' : 'Magic Link'}
+                  </button>
+                ))}
               </div>
             )}
 
-            <form onSubmit={handleLogin}>
-              <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#667085', marginBottom: '6px' }}>{isRTL ? 'البريد الإلكتروني' : 'Work Email'}</label>
-                <div style={{ position: 'relative' }}>
-                  <Mail size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#98A2B3' }} />
-                  <input type="email" value={email} onChange={(e) => { setEmail(e.target.value); setSelectedRole(null); }} style={{ width: '100%', padding: '11px 14px 11px 36px', background: '#F9FAFB', border: '1px solid #E4E7EC', borderRadius: '10px', fontSize: '14px', color: '#142235', outline: 'none', direction: 'ltr' }} placeholder="name@company.com" />
-                </div>
+            {/* Messages */}
+            {error && (
+              <div style={{ padding: '14px 16px', background: colors.redLight, borderRadius: '10px', marginBottom: '20px', display: 'flex', alignItems: 'flex-start', gap: '10px', animation: 'shake 0.3s ease-in-out' }}>
+                <span style={{ fontSize: '16px', marginTop: '1px' }}>⚠️</span>
+                <p style={{ fontSize: '13px', color: colors.red, margin: 0, lineHeight: 1.5 }}>{error}</p>
               </div>
-
-              <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#667085', marginBottom: '6px' }}>{isRTL ? 'كلمة المرور' : 'Password'}</label>
-                <div style={{ position: 'relative' }}>
-                  <Lock size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#98A2B3' }} />
-                  <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} style={{ width: '100%', padding: '11px 40px 11px 36px', background: '#F9FAFB', border: '1px solid #E4E7EC', borderRadius: '10px', fontSize: '14px', color: '#142235', outline: 'none', direction: 'ltr' }} placeholder="••••••••" />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#98A2B3', padding: 0 }}>
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
+            )}
+            {success && (
+              <div style={{ padding: '14px 16px', background: colors.greenLight, borderRadius: '10px', marginBottom: '20px', display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                <span style={{ fontSize: '16px', marginTop: '1px' }}>✓</span>
+                <p style={{ fontSize: '13px', color: colors.green, margin: 0, lineHeight: 1.5 }}>{success}</p>
               </div>
+            )}
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
-                  <input type="checkbox" style={{ width: '16px', height: '16px', accentColor: '#C9A24A' }} />
-                  <span style={{ fontSize: '13px', color: '#667085' }}>{isRTL ? 'تذكرني' : 'Remember me'}</span>
-                </label>
-                <a href="#" style={{ fontSize: '13px', color: '#C9A24A', textDecoration: 'none', fontWeight: 500 }}>{isRTL ? 'نسيت كلمة المرور؟' : 'Forgot password?'}</a>
-              </div>
-
-              <button type="submit" disabled={loading} style={{ width: '100%', padding: '13px', background: loading ? '#98A2B3' : 'linear-gradient(135deg, #C9A24A 0%, #E3C875 100%)', color: '#0B1F3A', borderRadius: '10px', fontSize: '15px', fontWeight: 700, border: 'none', cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                {loading ? <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} /> : <>{isRTL ? 'تسجيل الدخول' : 'Sign In'} <ArrowRight size={16} /></>}
-              </button>
-            </form>
-          </div>
-
-          {/* Demo Access */}
-          <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #E4E7EC', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-            <button onClick={() => setShowDemo(!showDemo)} style={{ width: '100%', padding: '16px 20px', background: '#FFFBEB', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(201,162,74,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Users size={16} color="#C9A24A" />
+            {/* Login Form */}
+            {mode === 'login' && (
+              <form onSubmit={handleLogin}>
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ fontSize: '13px', fontWeight: 600, color: colors.navy, display: 'block', marginBottom: '8px' }}>Email Address</label>
+                  <div style={{ position: 'relative' }}>
+                    <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', fontSize: '16px', opacity: 0.5 }}>✉️</span>
+                    <input ref={emailRef} type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                      onFocus={() => setFocusedField('email')} onBlur={() => setFocusedField(null)}
+                      placeholder="you@company.com" required style={inputStyle('email')} />
+                  </div>
                 </div>
-                <div style={{ textAlign: 'left' }}>
-                  <p style={{ fontSize: '14px', fontWeight: 700, color: '#142235', margin: 0 }}>Demo Access</p>
-                  <p style={{ fontSize: '11px', color: '#98A2B3', margin: 0 }}>Select a role to explore MASAR</p>
-                </div>
-              </div>
-              <ChevronDown size={18} color="#98A2B3" style={{ transform: showDemo ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }} />
-            </button>
 
-            {showDemo && (
-              <div style={{ padding: '12px 16px', borderTop: '1px solid #FDE68A' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '8px', marginBottom: '12px' }}>
-                  {roles.map(role => (
-                    <button key={role.id} onClick={() => selectRole(role.id)} style={{ padding: '10px 12px', background: selectedRole === role.id ? '#FFFBEB' : '#F9FAFB', border: `1px solid ${selectedRole === role.id ? '#FDE68A' : '#E4E7EC'}`, borderRadius: '8px', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: `${role.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <role.icon size={14} color={role.color} />
-                      </div>
-                      <div style={{ minWidth: 0 }}>
-                        <p style={{ fontSize: '11px', fontWeight: 600, color: '#142235', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{role.title}</p>
-                        <p style={{ fontSize: '9px', color: '#98A2B3', margin: 0 }}>{role.category}</p>
+                <div style={{ marginBottom: '16px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <label style={{ fontSize: '13px', fontWeight: 600, color: colors.navy }}>Password</label>
+                    <button type="button" onClick={() => { setMode('forgot'); setError(''); setSuccess(''); }}
+                      style={{ background: 'none', border: 'none', color: colors.blue, fontSize: '12px', cursor: 'pointer', fontWeight: 500 }}>
+                      Forgot password?
+                    </button>
+                  </div>
+                  <div style={{ position: 'relative' }}>
+                    <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', fontSize: '16px', opacity: 0.5 }}>🔒</span>
+                    <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)}
+                      onFocus={() => setFocusedField('password')} onBlur={() => setFocusedField(null)}
+                      placeholder="Enter your password" required style={inputStyle('password')} />
+                    <button type="button" onClick={() => setShowPassword(!showPassword)}
+                      style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', color: colors.gray, padding: '4px' }}>
+                      {showPassword ? '🙈' : '👁️'}
+                    </button>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                    <input type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)}
+                      style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: colors.blue }} />
+                    <span style={{ fontSize: '13px', color: colors.gray }}>Remember me</span>
+                  </label>
+                  {loginAttempts > 0 && <span style={{ fontSize: '11px', color: colors.red }}>{5 - loginAttempts} attempts left</span>}
+                </div>
+
+                <button type="submit" disabled={loading || isLocked}
+                  style={{
+                    width: '100%', padding: isMobile ? '18px' : '16px',
+                    background: loading || isLocked ? colors.gray : `linear-gradient(135deg, ${colors.navy} 0%, ${colors.navyLight} 100%)`,
+                    color: colors.white, border: 'none', borderRadius: '10px',
+                    fontSize: isMobile ? '16px' : '15px', fontWeight: 600,
+                    cursor: loading || isLocked ? 'not-allowed' : 'pointer', marginBottom: '20px',
+                    boxShadow: loading || isLocked ? 'none' : `0 4px 16px ${colors.navy}40`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
+                  }}>
+                  {loading ? <><span style={{ animation: 'spin 1s linear infinite' }}>⟳</span> Signing in...</>
+                   : isLocked ? `Locked (${lockTimer}s)` : 'Sign In'}
+                </button>
+              </form>
+            )}
+
+            {/* Magic Link Form */}
+            {mode === 'magic' && (
+              <form onSubmit={handleMagicLink}>
+                <div style={{ padding: '20px', background: colors.blueLight, borderRadius: '12px', marginBottom: '24px', textAlign: 'center' }}>
+                  <span style={{ fontSize: '32px', display: 'block', marginBottom: '8px' }}>✨</span>
+                  <p style={{ fontSize: '14px', color: colors.navy, margin: 0, fontWeight: 500 }}>Enter your email for a magic sign-in link.</p>
+                </div>
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{ fontSize: '13px', fontWeight: 600, color: colors.navy, display: 'block', marginBottom: '8px' }}>Email Address</label>
+                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" required style={inputStyle('magic-email', false)} />
+                </div>
+                <button type="submit" disabled={loading}
+                  style={{ width: '100%', padding: isMobile ? '18px' : '16px', background: loading ? colors.blue + '80' : colors.blue, color: colors.white, border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', marginBottom: '12px' }}>
+                  {loading ? 'Sending...' : 'Send Magic Link'}
+                </button>
+                <button type="button" onClick={() => { setMode('login'); setError(''); setSuccess(''); }}
+                  style={{ width: '100%', padding: '12px', background: 'transparent', color: colors.gray, border: 'none', fontSize: '13px', cursor: 'pointer' }}>
+                  ← Back to password login
+                </button>
+              </form>
+            )}
+
+            {/* Forgot Password Form */}
+            {mode === 'forgot' && (
+              <form onSubmit={handleForgotPassword}>
+                <div style={{ padding: '20px', background: colors.amberLight, borderRadius: '12px', marginBottom: '24px', textAlign: 'center' }}>
+                  <span style={{ fontSize: '32px', display: 'block', marginBottom: '8px' }}>🔑</span>
+                  <p style={{ fontSize: '14px', color: colors.navy, margin: 0, fontWeight: 500 }}>Enter your email for a password reset link.</p>
+                </div>
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{ fontSize: '13px', fontWeight: 600, color: colors.navy, display: 'block', marginBottom: '8px' }}>Email Address</label>
+                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" required style={inputStyle('forgot-email', false)} />
+                </div>
+                <button type="submit" disabled={loading}
+                  style={{ width: '100%', padding: isMobile ? '18px' : '16px', background: loading ? colors.amber + '80' : colors.amber, color: colors.white, border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', marginBottom: '12px' }}>
+                  {loading ? 'Sending...' : 'Send Reset Link'}
+                </button>
+                <button type="button" onClick={() => { setMode('login'); setError(''); setSuccess(''); }}
+                  style={{ width: '100%', padding: '12px', background: 'transparent', color: colors.gray, border: 'none', fontSize: '13px', cursor: 'pointer' }}>
+                  ← Back to sign in
+                </button>
+              </form>
+            )}
+
+            {/* Demo Accounts */}
+            {mode === 'login' && (
+              <>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
+                  <div style={{ flex: 1, height: '1px', background: colors.grayLight }} />
+                  <span style={{ fontSize: '11px', color: colors.gray, fontWeight: 500, whiteSpace: 'nowrap' }}>Quick Demo Access</span>
+                  <div style={{ flex: 1, height: '1px', background: colors.grayLight }} />
+                </div>
+
+                {/* Demo Credentials Info */}
+                <div style={{ 
+                  padding: '12px 16px', 
+                  background: colors.amberLight, 
+                  borderRadius: '8px', 
+                  marginBottom: '16px',
+                  fontSize: '12px',
+                  color: colors.navy
+                }}>
+                  <strong>Demo Password:</strong> MasarDemo2026! (same for all accounts)
+                </div>
+
+                <div className="demo-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', marginBottom: '20px' }}>
+                  {demoAccounts.map((account) => (
+                    <button key={account.id} onClick={() => handleDemoLogin(account)} disabled={loading}
+                      style={{
+                        padding: isMobile ? '16px 14px' : '14px',
+                        background: selectedDemo === account.id ? `${account.color}10` : colors.grayLighter,
+                        border: selectedDemo === account.id ? `2px solid ${account.color}` : '2px solid transparent',
+                        borderRadius: '10px', cursor: loading ? 'not-allowed' : 'pointer', textAlign: 'left',
+                        transition: 'all 0.2s', opacity: loading && selectedDemo !== account.id ? 0.5 : 1,
+                      }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span style={{ 
+                          fontSize: '20px', 
+                          width: '40px', 
+                          height: '40px', 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'center', 
+                          background: `${account.color}15`, 
+                          borderRadius: '8px',
+                          flexShrink: 0
+                        }}>
+                          {account.icon}
+                        </span>
+                        <div style={{ minWidth: 0 }}>
+                          <p style={{ fontSize: '13px', fontWeight: 600, color: colors.navy, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{account.role}</p>
+                          <p style={{ fontSize: '10px', color: colors.gray, margin: '2px 0 0 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{account.organization}</p>
+                        </div>
                       </div>
                     </button>
                   ))}
                 </div>
-
-                {selectedRoleData && (
-                  <div style={{ padding: '14px', background: '#F9FAFB', borderRadius: '10px', border: `1px solid ${selectedRoleData.color}20` }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-                      <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: `${selectedRoleData.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <selectedRoleData.icon size={18} color={selectedRoleData.color} />
-                      </div>
-                      <div>
-                        <p style={{ fontSize: '13px', fontWeight: 700, color: '#142235', margin: 0 }}>{selectedRoleData.title}</p>
-                        <p style={{ fontSize: '11px', color: '#98A2B3', margin: 0 }}>{selectedRoleData.email}</p>
-                      </div>
-                    </div>
-                    <div style={{ marginBottom: '10px' }}>
-                      <span style={{ fontSize: '10px', fontWeight: 600, color: '#98A2B3', letterSpacing: '0.05em' }}>ACCESS</span>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '4px' }}>
-                        {selectedRoleData.access.map((item, idx) => (
-                          <span key={idx} style={{ fontSize: '10px', padding: '3px 8px', background: 'white', border: '1px solid #E4E7EC', borderRadius: '4px', color: '#667085' }}>{item}</span>
-                        ))}
-                      </div>
-                    </div>
-                    <button onClick={() => { selectRole(selectedRoleData.id); handleLogin(new Event('submit') as any); }} style={{ width: '100%', padding: '10px', background: `linear-gradient(135deg, ${selectedRoleData.color}, ${selectedRoleData.color}CC)`, color: 'white', borderRadius: '8px', fontSize: '13px', fontWeight: 600, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                      Continue as {selectedRoleData.title} <ArrowRight size={14} />
-                    </button>
-                  </div>
-                )}
-
-                <div style={{ marginTop: '10px', padding: '8px 12px', background: '#FEF3C7', borderRadius: '6px', border: '1px solid #FDE68A' }}>
-                  <p style={{ fontSize: '10px', color: '#92400E', margin: 0, textAlign: 'center' }}>⚠️ DEMO ENVIRONMENT — credentials are fictional</p>
-                </div>
-              </div>
+              </>
             )}
-          </div>
 
-          <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
-            <p style={{ fontSize: '11px', color: '#98A2B3' }}>Powered by <a href="https://kgmlimited.com" target="_blank" rel="noopener noreferrer" style={{ color: '#C9A24A', textDecoration: 'none', fontWeight: 600 }}>KGM Limited</a> · CAC RC 1539036</p>
+            {/* Register Link */}
+            <div style={{ textAlign: 'center', padding: '20px', background: colors.grayLighter, borderRadius: '12px', marginBottom: '20px' }}>
+              <p style={{ fontSize: '14px', color: colors.gray, margin: '0 0 8px 0' }}>Don't have an account?</p>
+              <button onClick={() => router.push('/register')}
+                style={{ background: 'none', border: 'none', color: colors.blue, fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
+                Create Account →
+              </button>
+            </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', paddingBottom: isMobile ? '40px' : '0' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '12px', flexWrap: 'wrap' }}>
+                <a href="/privacy" style={{ fontSize: '11px', color: colors.gray, textDecoration: 'none' }}>Privacy</a>
+                <a href="/terms" style={{ fontSize: '11px', color: colors.gray, textDecoration: 'none' }}>Terms</a>
+                <a href="/data-protection" style={{ fontSize: '11px', color: colors.gray, textDecoration: 'none' }}>Data Protection</a>
+                <a href="/contact" style={{ fontSize: '11px', color: colors.gray, textDecoration: 'none' }}>Support</a>
+              </div>
+              <p style={{ fontSize: '11px', color: colors.gray, margin: 0 }}>© 2026 MASAR — مسار. KGM Limited.</p>
+            </div>
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes routePulse { 0%, 100% { left: 0; } 50% { left: calc(100% - 9px); } }
-        @media (min-width: 1024px) { .hidden.lg\\:flex { display: flex !important; } }
-        @media (max-width: 1023px) { .hidden.lg\\:flex { display: none !important; } }
-        input:focus { border-color: #C9A24A !important; box-shadow: 0 0 0 3px rgba(201,162,74,0.1) !important; }
-      `}</style>
-    </div>
+    </>
   );
 }

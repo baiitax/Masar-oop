@@ -59,7 +59,7 @@ const iconMap: Record<string, any> = {
 
 // Mock data
 const mockUsers = [
-  { id: 'u1', name: 'Mujaheed Baita', email: 'mujaheed@masar.sa', role: 'Administrator', org: 'MASAR', status: 'active', lastLogin: '2026-08-25 14:30', mfa: true },
+  { id: 'u1', name: 'Lukman Kura', email: 'lukman@masar.sa', role: 'Administrator', org: 'MASAR', status: 'active', lastLogin: '2026-08-25 14:30', mfa: true },
   { id: 'u2', name: 'Ahmed Hassan', email: 'ahmed@masar.sa', role: 'Compliance Officer', org: 'MASAR', status: 'active', lastLogin: '2026-08-25 13:15', mfa: true },
   { id: 'u3', name: 'Fatima Bello', email: 'fatima@masar.sa', role: 'Operations Manager', org: 'MASAR', status: 'active', lastLogin: '2026-08-25 11:45', mfa: true },
   { id: 'u4', name: 'Ibrahim Musa', email: 'ibrahim@masar.sa', role: 'Origin Manager', org: 'MASAR', status: 'active', lastLogin: '2026-08-24 16:00', mfa: false },
@@ -227,7 +227,7 @@ export default function AdminDashboard() {
             </div>
             {!collapsed && (
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: '12px', fontWeight: 600, color: 'white', margin: 0 }}>Mujaheed Baita</p>
+                <p style={{ fontSize: '12px', fontWeight: 600, color: 'white', margin: 0 }}>Lukman Kura</p>
                 <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>Administrator</p>
               </div>
             )}
@@ -270,7 +270,7 @@ export default function AdminDashboard() {
                 <span style={{ fontSize: '11px', fontWeight: 700, color: 'white' }}>MB</span>
               </div>
               <div>
-                <p style={{ fontSize: '12px', fontWeight: 600, color: '#142235', margin: 0 }}>Mujaheed Baita</p>
+                <p style={{ fontSize: '12px', fontWeight: 600, color: '#142235', margin: 0 }}>Lukman Kura</p>
                 <p style={{ fontSize: '10px', color: '#667085', margin: 0 }}>Administrator</p>
               </div>
               <ChevronDown size={14} color="#667085" />

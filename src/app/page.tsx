@@ -385,7 +385,7 @@ export default function LandingPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '1.5rem' }}>
                 <img src="/images/ceo-portrait.png" alt="CEO" style={{ width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover', border: '3px solid #C9A24A' }} />
                 <div>
-                  <p style={{ fontSize: '16px', fontWeight: 700, color: '#0B1F3A', margin: 0 }}>Mujaheed Baita</p>
+                  <p style={{ fontSize: '16px', fontWeight: 700, color: '#0B1F3A', margin: 0 }}>Lukman Kura</p>
                   <p style={{ fontSize: '13px', color: '#5B6778', margin: 0 }}>Founder & CEO, MASAR</p>
                 </div>
               </div>
@@ -408,7 +408,7 @@ export default function LandingPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem' }}>
                   <img src="/images/cto-portrait.png" alt="CTO" style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #C9A24A' }} />
                   <div>
-                    <p style={{ fontSize: '14px', fontWeight: 700, color: '#0B1F3A', margin: 0 }}>Mujaheed Baita</p>
+                    <p style={{ fontSize: '14px', fontWeight: 700, color: '#0B1F3A', margin: 0 }}>Mujahid Baita</p>
                     <p style={{ fontSize: '12px', color: '#5B6778', margin: 0 }}>Chief Technology Officer</p>
                   </div>
                 </div>
@@ -613,6 +613,302 @@ export default function LandingPage() {
                 <span style={{ fontSize: '11px', fontWeight: 700, color: item.active ? '#C9A24A' : '#9BA3AE', letterSpacing: '0.08em' }}>{item.phase}</span>
                 <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0B1F3A', margin: '0.5rem 0' }}>{item.title}</h3>
                 <p style={{ fontSize: '13px', color: '#5B6778', lineHeight: 1.5 }}>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================ */}
+      {/* SAUDI-NIGERIA BUSINESS CULTURE SECTION */}
+      {/* ============================================================ */}
+      <section style={{ ...s.section, background: 'white' }}>
+        <div style={s.container}>
+          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+            <div style={{ ...s.goldDivider, margin: '0 auto 1.5rem' }} />
+            <h2 style={s.sectionTitle}>Different Markets. One Commercial Language.</h2>
+            <p style={{ ...s.sectionSubtitle, margin: '0 auto' }}>MASAR bridges two complementary commercial cultures—Nigerian entrepreneurial dynamism and Saudi institutional sophistication—through structured trust, verification and accountability.</p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '2rem' }} className="lg:grid-cols-3">
+            {/* Nigeria */}
+            <div style={{ ...s.card, padding: '2rem', borderTop: '4px solid #2D7D46' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.5rem' }}>
+                <span style={{ fontSize: '2rem' }}>🇳🇬</span>
+                <div>
+                  <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#0B1F3A', margin: 0 }}>Nigeria</h3>
+                  <p style={{ fontSize: '12px', color: '#5B6778', margin: 0 }}>Production & Enterprise</p>
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {[
+                  'Entrepreneurial opportunity & business resilience',
+                  'Agricultural depth & manufacturing capacity',
+                  'Growing technology ecosystem',
+                  'Youth-driven enterprise & innovation',
+                  'Resource availability & export capability',
+                  'Local market intelligence & networks',
+                ].map((item, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                    <span style={{ color: '#2D7D46', marginTop: '2px' }}>✓</span>
+                    <span style={{ fontSize: '13px', color: '#5B6778', lineHeight: 1.5 }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* MASAR Bridge */}
+            <div style={{ ...s.card, padding: '2rem', borderTop: '4px solid #C9A24A', background: 'linear-gradient(180deg, rgba(201,162,74,0.03) 0%, white 100%)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.5rem' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'linear-gradient(135deg, #C9A24A, #E3C875)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: '18px', fontWeight: 800, color: '#0B1F3A' }}>M</span>
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#0B1F3A', margin: 0 }}>MASAR</h3>
+                  <p style={{ fontSize: '12px', color: '#5B6778', margin: 0 }}>Trust Infrastructure</p>
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {[
+                  'Verification & structured transactions',
+                  'Evidence-based commercial decisions',
+                  'Independent inspection & quality',
+                  'Compliance automation & audit trail',
+                  'Financial partner coordination',
+                  'Settlement & reconciliation',
+                ].map((item, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                    <span style={{ color: '#C9A24A', marginTop: '2px' }}>◆</span>
+                    <span style={{ fontSize: '13px', color: '#5B6778', lineHeight: 1.5 }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Saudi Arabia */}
+            <div style={{ ...s.card, padding: '2rem', borderTop: '4px solid #0B1F3A' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.5rem' }}>
+                <span style={{ fontSize: '2rem' }}>🇸🇦</span>
+                <div>
+                  <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#0B1F3A', margin: 0 }}>Saudi Arabia</h3>
+                  <p style={{ fontSize: '12px', color: '#5B6778', margin: 0 }}>Capital & Markets</p>
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {[
+                  'Institutional capital & investment strength',
+                  'Strategic geography connecting three continents',
+                  'World-class logistics infrastructure',
+                  'Growing non-oil economy & Vision 2030',
+                  'GCC market access & institutional buyers',
+                  'Long-term partnership orientation',
+                ].map((item, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                    <span style={{ color: '#0B1F3A', marginTop: '2px' }}>✓</span>
+                    <span style={{ fontSize: '13px', color: '#5B6778', lineHeight: 1.5 }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================ */}
+      {/* TRUST PRINCIPLES - ARAB BUSINESS ETHOS */}
+      {/* ============================================================ */}
+      <section style={{ ...s.section, background: '#F7F9FC' }}>
+        <div style={s.container}>
+          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+            <div style={{ ...s.goldDivider, margin: '0 auto 1.5rem' }} />
+            <h2 style={s.sectionTitle}>Trust Is the Foundation of Partnership.</h2>
+            <p style={{ ...s.sectionSubtitle, margin: '0 auto' }}>MASAR's philosophy reflects commercial principles familiar within Arab and Nigerian business environments—where reputation, relationships and integrity drive sustainable commerce.</p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+            {[
+              { ar: 'Amanah', en: 'Trustworthiness', desc: 'Every transaction is built on the foundation of trust between counterparties.', icon: Shield },
+              { ar: 'Sidq', en: 'Truthfulness', desc: 'Verified information and honest representation drive commercial decisions.', icon: FileCheck },
+              { ar: 'Wafa', en: 'Keeping Commitments', desc: 'Structured contracts and protocol conditions ensure obligations are met.', icon: BadgeCheck },
+              { ar: 'Adl', en: 'Fairness', desc: 'Independent inspection and transparent workflows protect all parties.', icon: Scale },
+              { ar: 'Shura', en: 'Consultation', desc: 'Multi-party approval workflows ensure informed decision-making.', icon: Users },
+              { ar: 'Ihsan', en: 'Excellence', desc: 'Quality standards, compliance automation and continuous improvement.', icon: Award },
+            ].map((principle, idx) => (
+              <div key={idx} style={{ ...s.card, padding: '2rem', textAlign: 'center' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(201,162,74,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+                  <principle.icon size={24} color="#C9A24A" />
+                </div>
+                <p style={{ fontSize: '20px', fontWeight: 700, color: '#C9A24A', margin: '0 0 4px 0' }}>{principle.ar}</p>
+                <p style={{ fontSize: '14px', fontWeight: 600, color: '#0B1F3A', margin: '0 0 8px 0' }}>{principle.en}</p>
+                <p style={{ fontSize: '13px', color: '#5B6778', margin: 0, lineHeight: 1.6 }}>{principle.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================ */}
+      {/* NIGERIA-SAUDI CORRIDOR SECTION */}
+      {/* ============================================================ */}
+      <section style={{ ...s.section, background: 'white' }}>
+        <div style={s.container}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '4rem', alignItems: 'center' }} className="lg:grid-cols-2">
+            <div>
+              <div style={s.goldDivider} />
+              <h2 style={s.sectionTitle}>Building the Nigeria–Saudi Commercial Corridor.</h2>
+              <p style={{ ...s.sectionSubtitle, marginBottom: '1.5rem' }}>
+                MASAR sits at the intersection of two complementary economic strengths: Nigeria's productive and entrepreneurial capacity and Saudi Arabia's capital, infrastructure, logistics position and expanding investment ecosystem.
+              </p>
+              <p style={{ ...s.sectionSubtitle, marginBottom: '1.5rem' }}>
+                Recent bilateral initiatives have explicitly identified agriculture, mining, food products, banking and financial technology among areas for deeper cooperation. The opportunity is not simply to export commodities—it is to connect Nigerian productive capacity with structured international demand, capital and long-term partnerships.
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '1.5rem' }}>
+                {[
+                  { label: 'Agriculture', value: 'Sesame, Cashew, Soybean' },
+                  { label: 'Food Processing', value: 'Value-added exports' },
+                  { label: 'Mining', value: 'Solid minerals' },
+                  { label: 'Technology', value: 'Digital trade infrastructure' },
+                ].map((item, idx) => (
+                  <div key={idx} style={{ padding: '12px', background: '#F7F9FC', borderRadius: '8px' }}>
+                    <span style={{ fontSize: '10px', color: '#9BA3AE' }}>{item.label}</span>
+                    <p style={{ fontSize: '13px', fontWeight: 600, color: '#0B1F3A', margin: 0 }}>{item.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div style={{ borderRadius: '16px', overflow: 'hidden', boxShadow: '0 12px 40px rgba(0,0,0,0.1)' }}>
+              <img src="/images/trade-handshake.png" alt="Nigeria-Saudi Trade Partnership" style={{ width: '100%', height: 'auto', display: 'block' }} />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================ */}
+      {/* WHY SAUDI ARABIA */}
+      {/* ============================================================ */}
+      <section style={{ ...s.section, background: '#F7F9FC' }}>
+        <div style={s.container}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '4rem', alignItems: 'center' }} className="lg:grid-cols-2">
+            <div style={{ order: 2 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', background: 'rgba(11,31,58,0.08)', borderRadius: '6px', marginBottom: '1.5rem' }}>
+                <span>🇸🇦</span>
+                <span style={{ fontSize: '12px', fontWeight: 600, color: '#0B1F3A', letterSpacing: '0.05em' }}>STRATEGIC MARKET</span>
+              </div>
+              <h2 style={s.sectionTitle}>Saudi Arabia: A Gateway Between Three Continents.</h2>
+              <p style={{ ...s.sectionSubtitle, marginBottom: '1.5rem' }}>
+                Saudi Arabia's national strategy positions the Kingdom as an investment powerhouse and a hub connecting Asia, Europe and Africa. The Kingdom combines capital, infrastructure, strategic geography and an increasingly diversified economy.
+              </p>
+              <p style={{ ...s.sectionSubtitle, marginBottom: '1.5rem' }}>
+                For African businesses, the Kingdom represents not only a destination market but a potential gateway into wider GCC and international commercial networks.
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                {['Strategic Geography', 'Investment Capital', 'Logistics Infrastructure', 'Growing Non-Oil Economy', 'GCC Market Access', 'Institutional Buyers'].map((tag, idx) => (
+                  <span key={idx} style={{ padding: '6px 12px', background: '#F7F9FC', border: '1px solid #E5E9F0', borderRadius: '6px', fontSize: '12px', color: '#5B6778', fontWeight: 500 }}>{tag}</span>
+                ))}
+              </div>
+            </div>
+            <div style={{ order: 1, borderRadius: '16px', overflow: 'hidden', boxShadow: '0 12px 40px rgba(0,0,0,0.1)' }}>
+              <img src="/images/saudi-port.png" alt="Saudi Arabia Logistics" style={{ width: '100%', height: 'auto', display: 'block' }} />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================ */}
+      {/* WHY NIGERIA */}
+      {/* ============================================================ */}
+      <section style={{ ...s.section, background: 'white' }}>
+        <div style={s.container}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '4rem', alignItems: 'center' }} className="lg:grid-cols-2">
+            <div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', background: 'rgba(45,125,70,0.08)', borderRadius: '6px', marginBottom: '1.5rem' }}>
+                <span>🇳🇬</span>
+                <span style={{ fontSize: '12px', fontWeight: 600, color: '#2D7D46', letterSpacing: '0.05em' }}>PRODUCTION POWERHOUSE</span>
+              </div>
+              <h2 style={s.sectionTitle}>Nigeria: A Production and Enterprise Powerhouse.</h2>
+              <p style={{ ...s.sectionSubtitle, marginBottom: '1.5rem' }}>
+                Nigeria combines a large domestic market, agricultural depth, natural resources, entrepreneurial capacity and a growing technology ecosystem. The opportunity is not simply to export commodities—it is to connect Nigerian productive capacity with structured international demand, capital and long-term partnerships.
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                {[
+                  { label: 'Agriculture', value: 'Sesame, Cashew, Soybean, Shea' },
+                  { label: 'Food Processing', value: 'Value-added products' },
+                  { label: 'Manufacturing', value: 'Industrial capacity' },
+                  { label: 'Technology', value: 'Growing tech ecosystem' },
+                ].map((item, idx) => (
+                  <div key={idx} style={{ padding: '12px', background: '#F7F9FC', borderRadius: '8px' }}>
+                    <span style={{ fontSize: '10px', color: '#9BA3AE' }}>{item.label}</span>
+                    <p style={{ fontSize: '13px', fontWeight: 600, color: '#0B1F3A', margin: 0 }}>{item.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div style={{ borderRadius: '16px', overflow: 'hidden', boxShadow: '0 12px 40px rgba(0,0,0,0.1)' }}>
+              <img src="/images/nigeria-port.png" alt="Nigeria Export Capacity" style={{ width: '100%', height: 'auto', display: 'block' }} />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================ */}
+      {/* MARKET INTELLIGENCE */}
+      {/* ============================================================ */}
+      <section style={{ ...s.section, background: '#F7F9FC' }}>
+        <div style={s.container}>
+          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+            <div style={{ ...s.goldDivider, margin: '0 auto 1.5rem' }} />
+            <h2 style={s.sectionTitle}>Know the Market Before You Commit Capital.</h2>
+            <p style={{ ...s.sectionSubtitle, margin: '0 auto' }}>Good trade decisions begin with good information. MASAR provides decision intelligence around commodities, markets, supply, demand and risk.</p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+            {[
+              { icon: Globe, label: 'Market Overview', value: 'Nigeria → Saudi Arabia' },
+              { icon: Leaf, label: 'Supply', value: 'Nigerian agricultural production' },
+              { icon: TrendingUp, label: 'Demand', value: 'Saudi food import reliance' },
+              { icon: BarChart3, label: 'Price Indicators', value: 'Commodity pricing trends' },
+              { icon: Ship, label: 'Trade Flow', value: 'Lagos → Jeddah corridor' },
+              { icon: Shield, label: 'Risk Indicators', value: 'Counterparty & market risk' },
+            ].map((item, idx) => (
+              <div key={idx} style={{ ...s.card, padding: '1.5rem' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(201,162,74,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
+                  <item.icon size={20} color="#C9A24A" />
+                </div>
+                <p style={{ fontSize: '12px', color: '#9BA3AE', margin: '0 0 4px 0' }}>{item.label}</p>
+                <p style={{ fontSize: '14px', fontWeight: 600, color: '#0B1F3A', margin: 0 }}>{item.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================ */}
+      {/* MASAR COMMERCIAL PRINCIPLES */}
+      {/* ============================================================ */}
+      <section style={{ ...s.section, background: 'white' }}>
+        <div style={s.container}>
+          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+            <div style={{ ...s.goldDivider, margin: '0 auto 1.5rem' }} />
+            <h2 style={s.sectionTitle}>The MASAR Principles</h2>
+            <p style={{ ...s.sectionSubtitle, margin: '0 auto' }}>Seven principles that guide how MASAR enables cross-border commerce.</p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
+            {[
+              { num: '01', title: 'Trust Before Scale', desc: 'Sustainable commerce begins with confidence in the counterparty.' },
+              { num: '02', title: 'Evidence Before Assumption', desc: 'Commercial decisions should be supported by verifiable information.' },
+              { num: '03', title: 'Relationships Before Transactions', desc: 'The objective is not one sale; it is a durable commercial relationship.' },
+              { num: '04', title: 'Capital Follows Clarity', desc: 'Better-structured transactions create better conditions for financing decisions.' },
+              { num: '05', title: 'Local Knowledge, International Standards', desc: 'Successful cross-border commerce respects local business realities while operating with international discipline.' },
+              { num: '06', title: 'Transparency Creates Confidence', desc: 'Clear information reduces friction between counterparties.' },
+              { num: '07', title: 'Partnership Over Intermediation', desc: 'MASAR enables businesses rather than unnecessarily standing between them.' },
+            ].map((principle, idx) => (
+              <div key={idx} style={{ ...s.card, padding: '1.5rem', borderLeft: '4px solid #C9A24A' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '20px', fontWeight: 800, color: '#E5E9F0' }}>{principle.num}</span>
+                  <h4 style={{ fontSize: '15px', fontWeight: 700, color: '#0B1F3A', margin: 0 }}>{principle.title}</h4>
+                </div>
+                <p style={{ fontSize: '13px', color: '#5B6778', margin: 0, lineHeight: 1.6 }}>{principle.desc}</p>
               </div>
             ))}
           </div>

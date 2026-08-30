@@ -213,7 +213,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
             {!collapsed && (
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: '12px', fontWeight: 600, color: 'white', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Mujaheed Baita</p>
+                <p style={{ fontSize: '12px', fontWeight: 600, color: 'white', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Lukman Kura</p>
                 <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>Administrator</p>
               </div>
             )}
@@ -290,7 +290,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <span style={{ fontSize: '11px', fontWeight: 700, color: '#0B1F3A' }}>MB</span>
               </div>
               <div>
-                <p style={{ fontSize: '12px', fontWeight: 600, color: s.text, margin: 0 }}>Mujaheed Baita</p>
+                <p style={{ fontSize: '12px', fontWeight: 600, color: s.text, margin: 0 }}>Lukman Kura</p>
                 <p style={{ fontSize: '10px', color: s.textSec, margin: 0 }}>Administrator</p>
               </div>
               <ChevronDown size={14} color={s.textSec} />

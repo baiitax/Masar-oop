@@ -10,10 +10,11 @@ interface FooterProps {
 
 export default function Footer({ lang }: FooterProps) {
   const isRTL = lang === 'ar';
-  const whatsappUrl = `https://wa.me/2348022220247?text=${encodeURIComponent(
+  const whatsappNumber = '2348141815466';
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
     lang === 'ar' 
-      ? 'مرحباً مسار، أنا مهتم بمعرفة المزيد عن بنية التحتية التجارية لممر أفريقيا-السعودية.'
-      : 'Hello MASAR, I am interested in learning more about your trade corridor infrastructure for Africa–Saudi Arabia commerce.'
+      ? 'السلام عليكم ورحمة الله وبركاته،\n\nأنا مهتم بمعرفة المزيد عن خدمات منصة مسار للتجارة بين أفريقيا والمملكة العربية السعودية.\n\nشكراً لوقتكم الكريم.'
+      : 'Assalamu Alaikum,\n\nI am interested in learning more about MASAR\'s trade corridor infrastructure for Africa–Saudi Arabia commerce.\n\nThank you for your time.'
   )}`;
 
   return (
@@ -88,7 +89,7 @@ export default function Footer({ lang }: FooterProps) {
               <Mail size={14} /> info@masar.sa
             </a>
             <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', marginBottom: '10px' }}>
-              <MessageSquare size={14} /> WhatsApp: +234 802 222 0247
+              <MessageSquare size={14} /> WhatsApp: +234 814 181 5466
             </a>
             <Link href="/contact" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#C9A24A', textDecoration: 'none', marginTop: '8px', fontWeight: 600 }}>
               {isRTL ? 'نموذج الاتصال' : 'Contact Form'} <ArrowRight size={14} />

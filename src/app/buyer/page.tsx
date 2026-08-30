@@ -1,538 +1,915 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  LayoutDashboard, FileText, MessageSquare, Truck, Search, FolderOpen,
-  Receipt, DollarSign, Scale, Ship, CheckCircle, Clock, AlertTriangle,
-  Eye, Plus, Filter, RefreshCw, Download, ChevronRight, ArrowUpRight,
-  Users, Package, MapPin, Calendar, Star, TrendingUp, BarChart3,
-  Banknote, Anchor, Globe, Bell, Languages, ChevronDown, LogOut,
-  Loader2, X, Building2, Shield, Activity, Target, ArrowRight,
-  Send, Edit, Trash2, Copy, ExternalLink, Info, HelpCircle
-} from 'lucide-react';
-import { 
-  mockTransactions, mockBuyers, mockExporters, mockNotifications,
-  formatCurrency, getStatusColor, getRiskColor, Transaction
-} from '@/lib/store';
-import { colors, glass, typography, getBadgeStyle } from '@/lib/design';
-import RoleSidebar from '@/components/dashboard/RoleSidebar';
 
-// Buyer-specific types
-interface RFQ {
-  id: string;
-  masarId: string;
-  commodity: string;
-  quantity: string;
-  qualitySpec: string;
-  origin: string;
-  deliveryLocation: string;
-  incoterm: string;
-  paymentPreference: string;
-  inspectionRequired: boolean;
-  requiredDate: string;
-  status: 'DRAFT' | 'OPEN' | 'MATCHED' | 'QUOTED' | 'ACCEPTED' | 'EXPIRED';
-  createdAt: string;
-  matchedExporters: number;
-  quotesReceived: number;
+// MASAR Design System Colors
+const colors = {
+  navy: '#0B1F3A',
+  navyLight: '#142235',
+  navyLighter: '#1a2f4a',
+  gold: '#C9A24A',
+  goldLight: '#D4B366',
+  white: '#FFFFFF',
+  gray: '#6B7280',
+  grayLight: '#F3F4F6',
+  grayLighter: '#F9FAFB',
+  green: '#10B981',
+  greenLight: '#D1FAE5',
+  red: '#EF4444',
+  redLight: '#FEE2E2',
+  amber: '#F59E0B',
+  amberLight: '#FEF3C7',
+  blue: '#3B82F6',
+  blueLight: '#DBEAFE',
+  purple: '#8B5CF6',
+  purpleLight: '#EDE9FE',
+};
+
+// Buyer Dashboard Data Interface
+interface BuyerData {
+  kpis: {
+    activeTransactions: number;
+    totalPurchaseValue: number;
+    pendingRequests: number;
+    committedValue: number;
+    pendingPayments: number;
+    inTransitShipments: number;
+    completedPurchases: number;
+    completionRate: number;
+  };
+  transactions: Array<{
+    id: string;
+    transactionNumber: string;
+    currentState: string;
+    value: number;
+    currency: string;
+    quantity: number;
+    unit: string;
+    exporter: string;
+    commodity: string;
+    progress: number;
+    lastUpdated: string;
+  }>;
+  actions: Array<{
+    type: string;
+    priority: string;
+    title: string;
+    description: string;
+    transactionId?: string;
+    transactionNumber?: string;
+    dueDate?: string;
+    action: string;
+  }>;
+  milestones: Array<{
+    type: string;
+    title: string;
+    description: string;
+    date: string;
+    daysUntil: number;
+  }>;
+  shipments: Array<{
+    id: string;
+    reference: string;
+    status: string;
+    carrier: string;
+    vessel: string;
+    origin: string;
+    destination: string;
+    eta: string;
+    transactionNumber: string;
+    progress: number;
+  }>;
+  finance: {
+    totalInvoiced: number;
+    paidAmount: number;
+    pendingAmount: number;
+    overdueAmount: number;
+    settlementsCompleted: number;
+    settlementsPending: number;
+  };
+  exceptions: Array<{
+    id: string;
+    type: string;
+    severity: string;
+    status: string;
+    description: string;
+    transactionNumber: string;
+    value: number;
+    age: number;
+  }>;
+  activity: Array<{
+    id: string;
+    type: string;
+    transactionNumber: string;
+    actor: string;
+    timestamp: string;
+  }>;
+  accountHealth: {
+    kybStatus: string;
+    kybExpiring: boolean;
+    documentIssues: number;
+    verified: boolean;
+    warnings: string[];
+  };
 }
-
-interface BuyerDocument {
-  id: string;
-  name: string;
-  type: string;
-  transactionId: string;
-  status: 'uploaded' | 'verified' | 'pending' | 'expired';
-  uploadDate: string;
-  verifiedBy?: string;
-  verifiedDate?: string;
-}
-
-interface Invoice {
-  id: string;
-  invoiceNumber: string;
-  transactionId: string;
-  amount: number;
-  currency: string;
-  status: 'draft' | 'sent' | 'paid' | 'overdue';
-  issueDate: string;
-  dueDate: string;
-  paidDate?: string;
-}
-
-// Mock buyer data
-const mockRFQs: RFQ[] = [
-  { id: 'rfq-001', masarId: 'RFQ-2026-001', commodity: 'Premium Hulled Sesame', quantity: '1,000 MT', qualitySpec: '<2% moisture, >99% purity, <10 ppb aflatoxin', origin: 'Nigeria', deliveryLocation: 'Jeddah, Saudi Arabia', incoterm: 'CIF', paymentPreference: 'Escrow', inspectionRequired: true, requiredDate: '2026-09-15', status: 'MATCHED', createdAt: '2026-07-10', matchedExporters: 2, quotesReceived: 2 },
-  { id: 'rfq-002', masarId: 'RFQ-2026-002', commodity: 'Premium Hulled Sesame', quantity: '500 MT', qualitySpec: '<3% moisture, >98% purity', origin: 'Nigeria', deliveryLocation: 'Dammam, Saudi Arabia', incoterm: 'CIF', paymentPreference: 'Escrow', inspectionRequired: true, requiredDate: '2026-10-01', status: 'OPEN', createdAt: '2026-08-15', matchedExporters: 1, quotesReceived: 0 },
-  { id: 'rfq-003', masarId: 'RFQ-2026-003', commodity: 'Standard Natural Sesame', quantity: '750 MT', qualitySpec: '<3% moisture, >98% purity', origin: 'Nigeria', deliveryLocation: 'Riyadh, Saudi Arabia', incoterm: 'CFR', paymentPreference: 'Escrow', inspectionRequired: true, requiredDate: '2026-10-15', status: 'DRAFT', createdAt: '2026-08-20', matchedExporters: 0, quotesReceived: 0 },
-];
-
-const mockBuyerDocuments: BuyerDocument[] = [
-  { id: 'bdoc-001', name: 'Certificate of Origin', type: 'Export', transactionId: 'txn-001', status: 'verified', uploadDate: '2026-07-25', verifiedBy: 'Compliance Officer', verifiedDate: '2026-07-26' },
-  { id: 'bdoc-002', name: 'Phytosanitary Certificate', type: 'Export', transactionId: 'txn-001', status: 'verified', uploadDate: '2026-07-28', verifiedBy: 'Compliance Officer', verifiedDate: '2026-07-29' },
-  { id: 'bdoc-003', name: 'Certificate of Analysis', type: 'Export', transactionId: 'txn-001', status: 'verified', uploadDate: '2026-08-02', verifiedBy: 'Compliance Officer', verifiedDate: '2026-08-03' },
-  { id: 'bdoc-004', name: 'Commercial Invoice', type: 'Export', transactionId: 'txn-001', status: 'verified', uploadDate: '2026-07-20', verifiedBy: 'Operations Manager', verifiedDate: '2026-07-21' },
-  { id: 'bdoc-005', name: 'SFDA Registration', type: 'Saudi', transactionId: 'txn-002', status: 'pending', uploadDate: '2026-08-15' },
-  { id: 'bdoc-006', name: 'Arabic Labelling', type: 'Saudi', transactionId: 'txn-001', status: 'verified', uploadDate: '2026-08-10' },
-];
-
-const mockInvoices: Invoice[] = [
-  { id: 'inv-001', invoiceNumber: 'INV-2026-001', transactionId: 'txn-001', amount: 500000, currency: 'USD', status: 'paid', issueDate: '2026-07-20', dueDate: '2026-08-20', paidDate: '2026-08-18' },
-  { id: 'inv-002', invoiceNumber: 'INV-2026-002', transactionId: 'txn-002', amount: 250000, currency: 'USD', status: 'sent', issueDate: '2026-08-14', dueDate: '2026-09-14' },
-  { id: 'inv-003', invoiceNumber: 'INV-2026-003', transactionId: 'txn-003', amount: 375000, currency: 'USD', status: 'draft', issueDate: '2026-08-22', dueDate: '2026-09-22' },
-];
 
 export default function BuyerDashboard() {
   const router = useRouter();
+  const [data, setData] = useState<BuyerData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [collapsed, setCollapsed] = useState(false);
-  const [activeView, setActiveView] = useState<'overview' | 'rfqs' | 'transactions' | 'suppliers' | 'inspections' | 'shipments' | 'documents' | 'invoices' | 'payments' | 'disputes'>('overview');
-  const [selectedTxn, setSelectedTxn] = useState<string | null>(null);
-  const [selectedRFQ, setSelectedRFQ] = useState<string | null>(null);
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [showCreateRFQ, setShowCreateRFQ] = useState(false);
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [activeTab, setActiveTab] = useState('overview');
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  const buyer = mockBuyers[0]; // Al Rajhi Foods
-  const buyerTransactions = mockTransactions.filter(t => t.buyerId === buyer.id);
-  const activeTxns = buyerTransactions.filter(t => !['COMPLETED', 'SETTLED', 'CANCELLED'].includes(t.status));
-  const completedTxns = buyerTransactions.filter(t => ['COMPLETED', 'SETTLED'].includes(t.status));
-  const totalSpend = buyerTransactions.reduce((sum, t) => sum + t.contractValue, 0);
-  const unreadNotifs = mockNotifications.filter(n => !n.read);
+  // Fetch buyer dashboard data
+  const fetchDashboardData = useCallback(async () => {
+    try {
+      const response = await fetch('/api/v1/buyer/dashboard');
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          setData(result.data);
+          setLastUpdated(new Date());
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch buyer dashboard:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const role = localStorage.getItem('masar-role');
-    if (!role) { router.push('/auth'); return; }
-    setTimeout(() => setLoading(false), 800);
-  }, [router]);
+    fetchDashboardData();
+    const interval = setInterval(fetchDashboardData, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [fetchDashboardData]);
+
+  // Format currency
+  const formatCurrency = (amount: number, currency: string = 'USD') => {
+    const symbols: Record<string, string> = { USD: '$', NGN: '₦', SAR: '﷼', EUR: '€', GBP: '£' };
+    const symbol = symbols[currency] || '$';
+    if (amount >= 1e6) return `${symbol}${(amount / 1e6).toFixed(2)}M`;
+    if (amount >= 1e3) return `${symbol}${(amount / 1e3).toFixed(1)}K`;
+    return `${symbol}${amount.toFixed(2)}`;
+  };
+
+  // Get state color
+  const getStateColor = (state: string) => {
+    if (state === 'COMPLETED') return colors.green;
+    if (state.includes('EXCEPTION') || state.includes('FAILED') || state.includes('DECLINED')) return colors.red;
+    if (state.includes('DELAY') || state.includes('VARIANCE')) return colors.amber;
+    return colors.blue;
+  };
+
+  // Get severity color
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case 'critical': return colors.red;
+      case 'high': return colors.amber;
+      case 'medium': return colors.blue;
+      default: return colors.gray;
+    }
+  };
+
+  // Format state label
+  const formatState = (state: string) => {
+    return state.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+  };
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: colors.navy }}>
+      <div style={{ 
+        minHeight: '100vh', 
+        background: colors.grayLighter,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ position: 'relative', marginBottom: '2rem' }}>
-            <svg width="80" height="80" viewBox="0 0 80 80" style={{ animation: 'spin 2s linear infinite' }}>
-              <circle cx="40" cy="40" r="35" fill="none" stroke="rgba(201,162,74,0.15)" strokeWidth="2" />
-              <circle cx="40" cy="40" r="35" fill="none" stroke={colors.gold} strokeWidth="2" strokeDasharray="180 220" strokeLinecap="round" />
-            </svg>
-            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
-              <svg width="32" height="32" viewBox="0 0 48 48" fill="none"><path d="M8 40V12L24 28L40 12V40" stroke={colors.gold} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /><circle cx="24" cy="36" r="2" fill={colors.gold} /></svg>
-            </div>
-          </div>
-          <span style={{ fontSize: '14px', fontWeight: 700, color: colors.gold, letterSpacing: '0.1em' }}>MASAR BUYER PORTAL</span>
-          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginTop: '0.5rem' }}>Loading your trade desk...</p>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>🛒</div>
+          <h2 style={{ fontSize: '24px', fontWeight: 600, color: colors.navy, margin: 0 }}>
+            Loading Buyer Workspace
+          </h2>
+          <p style={{ fontSize: '14px', color: colors.gray, margin: '8px 0 0 0' }}>
+            Fetching your trade data...
+          </p>
         </div>
-        <style jsx>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div style={{ 
+        minHeight: '100vh', 
+        background: colors.grayLighter,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
+          <h2 style={{ fontSize: '24px', fontWeight: 600, color: colors.navy, margin: 0 }}>
+            Unable to Load Dashboard
+          </h2>
+          <button 
+            onClick={fetchDashboardData}
+            style={{
+              marginTop: '16px',
+              padding: '10px 24px',
+              background: colors.gold,
+              color: colors.navy,
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '14px',
+              fontWeight: 600,
+              cursor: 'pointer'
+            }}
+          >
+            Retry
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: colors.bg, fontFamily: "'Inter', 'IBM Plex Sans Arabic', system-ui, sans-serif", direction: 'ltr', textAlign: 'left' }}>
-      <RoleSidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
-
-      <div style={{ flex: 1, marginLeft: collapsed ? '72px' : '260px', transition: 'margin-left 0.3s ease', display: 'flex', flexDirection: 'column' }}>
-        {/* Top Bar */}
-        <header style={{ ...glass.card, borderRadius: 0, borderBottom: `1px solid ${colors.border}`, padding: '0 24px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 30 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1 }}>
-            <div style={{ position: 'relative', width: '100%', maxWidth: '480px' }}>
-              <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: colors.textMuted }} />
-              <input type="text" placeholder="Search orders, RFQs, documents..." style={{ ...glass.input, width: '100%', padding: '8px 12px 8px 36px', fontSize: '13px', color: colors.text, outline: 'none', textAlign: 'left' }} />
-            </div>
+    <div style={{ minHeight: '100vh', background: colors.grayLighter }}>
+      {/* Buyer Header */}
+      <div style={{ 
+        background: `linear-gradient(135deg, ${colors.navy} 0%, ${colors.navyLight} 100%)`,
+        padding: '24px 32px',
+        color: colors.white,
+        borderBottom: `3px solid ${colors.gold}`
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h1 style={{ fontSize: '28px', fontWeight: 700, margin: '0 0 4px 0' }}>
+              Buyer Workspace
+            </h1>
+            <p style={{ fontSize: '14px', color: colors.gray, margin: 0 }}>
+              Welcome back • {data.accountHealth.verified ? '✓ Verified' : '⚠ Verification Required'}
+              {lastUpdated && ` • Last sync: ${lastUpdated.toLocaleTimeString()}`}
+            </p>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: colors.greenLight, borderRadius: '6px' }}>
-              <div style={{ width: '6px', height: '6px', background: colors.green, borderRadius: '50%' }} />
-              <span style={{ fontSize: '11px', fontWeight: 600, color: colors.green }}>ACTIVE</span>
-            </div>
-            <div style={{ position: 'relative' }}>
-              <button onClick={() => setNotificationsOpen(!notificationsOpen)} style={{ position: 'relative', padding: '6px', ...glass.btnOutline, borderRadius: '8px' }}>
-                <Bell size={18} color={colors.textSec} />
-                {unreadNotifs.length > 0 && <span style={{ position: 'absolute', top: '-2px', right: '-2px', width: '16px', height: '16px', background: colors.red, borderRadius: '50%', fontSize: '9px', fontWeight: 700, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{unreadNotifs.length}</span>}
-              </button>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 8px', borderRadius: '8px', cursor: 'pointer' }}>
-              <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: `linear-gradient(135deg, ${colors.red}, #F87171)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ fontSize: '11px', fontWeight: 700, color: 'white' }}>AR</span>
-              </div>
-              <div>
-                <p style={{ fontSize: '12px', fontWeight: 600, color: colors.text, margin: 0 }}>Al Rajhi Foods</p>
-                <p style={{ fontSize: '10px', color: colors.textSec, margin: 0 }}>Saudi Arabia</p>
-              </div>
-              <ChevronDown size={14} color={colors.textSec} />
-            </div>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button
+              onClick={() => router.push('/buyer/opportunities')}
+              style={{
+                padding: '10px 20px',
+                background: colors.gold,
+                color: colors.navy,
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '14px',
+                fontWeight: 600,
+                cursor: 'pointer'
+              }}
+            >
+              Browse Opportunities
+            </button>
+            <button
+              onClick={() => router.push('/buyer/requests/new')}
+              style={{
+                padding: '10px 20px',
+                background: 'transparent',
+                color: colors.white,
+                border: `1px solid ${colors.gray}`,
+                borderRadius: '8px',
+                fontSize: '14px',
+                fontWeight: 600,
+                cursor: 'pointer'
+              }}
+            >
+              + Purchase Request
+            </button>
           </div>
-        </header>
-
-        {/* Main Content */}
-        <main style={{ flex: 1, padding: '24px', overflow: 'auto' }}>
-          {/* Header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                <span style={{ fontSize: '18px' }}>🇸🇦</span>
-                <span style={{ fontSize: '10px', fontWeight: 700, color: colors.red, letterSpacing: '0.08em' }}>BUYER PORTAL</span>
-              </div>
-              <h1 style={{ ...typography.h1, marginBottom: '2px' }}>Your Trade Desk</h1>
-              <p style={{ ...typography.small }}>{buyer.tradingName} · {buyer.city}, Saudi Arabia</p>
-            </div>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button style={{ ...glass.btnOutline, padding: '8px 14px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}><RefreshCw size={13} /> Refresh</button>
-              <button onClick={() => setShowCreateRFQ(true)} style={{ ...glass.btnPrimary, padding: '8px 14px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}><Plus size={13} /> Create RFQ</button>
-            </div>
-          </div>
-
-          {/* View Tabs */}
-          <div style={{ display: 'flex', gap: '4px', marginBottom: '20px', padding: '4px', background: '#E5E7EB', borderRadius: '10px', width: 'fit-content', overflowX: 'auto' }}>
-            {([
-              { id: 'overview', label: 'Overview', icon: LayoutDashboard },
-              { id: 'rfqs', label: 'RFQs', icon: MessageSquare },
-              { id: 'transactions', label: 'Transactions', icon: FileText },
-              { id: 'suppliers', label: 'Suppliers', icon: Truck },
-              { id: 'inspections', label: 'Inspections', icon: Search },
-              { id: 'shipments', label: 'Shipments', icon: Ship },
-              { id: 'documents', label: 'Documents', icon: FolderOpen },
-              { id: 'invoices', label: 'Invoices', icon: Receipt },
-              { id: 'payments', label: 'Payments', icon: DollarSign },
-              { id: 'disputes', label: 'Disputes', icon: Scale },
-            ] as const).map(tab => (
-              <button key={tab.id} onClick={() => setActiveView(tab.id as any)} style={{ padding: '8px 14px', borderRadius: '8px', fontSize: '11px', fontWeight: 600, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap', transition: 'all 0.2s', ...(activeView === tab.id ? { background: 'white', color: colors.text, boxShadow: '0 1px 3px rgba(0,0,0,0.08)' } : { background: 'transparent', color: colors.textSec }) }}>
-                <tab.icon size={14} />
-                {tab.label}
-              </button>
-            ))}
-          </div>
-
-          {/* OVERVIEW VIEW */}
-          {activeView === 'overview' && (
-            <>
-              {/* KPI Strip */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '12px', marginBottom: '20px' }}>
-                {[
-                  { label: 'OPEN RFQS', value: String(mockRFQs.filter(r => r.status === 'OPEN' || r.status === 'MATCHED').length), icon: MessageSquare, color: colors.blue, action: () => setActiveView('rfqs') },
-                  { label: 'ACTIVE PURCHASES', value: String(activeTxns.length), icon: Package, color: colors.gold, action: () => setActiveView('transactions') },
-                  { label: 'IN TRANSIT', value: String(buyerTransactions.filter(t => t.status === 'IN_TRANSIT').length), icon: Ship, color: '#8B5CF6', action: () => setActiveView('shipments') },
-                  { label: 'DELIVERED', value: String(completedTxns.length), icon: CheckCircle, color: colors.green, action: () => setActiveView('transactions') },
-                  { label: 'TOTAL PROCUREMENT', value: formatCurrency(totalSpend), icon: DollarSign, color: colors.gold, action: () => setActiveView('invoices') },
-                  { label: 'PENDING ACTIONS', value: '2', icon: Clock, color: colors.amber, action: () => setActiveView('overview') },
-                ].map((kpi, idx) => (
-                  <div key={idx} onClick={kpi.action} style={{ ...glass.card, padding: '14px', cursor: 'pointer' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
-                      <span style={{ ...typography.label }}>{kpi.label}</span>
-                      <div style={{ width: '24px', height: '24px', borderRadius: '5px', background: `${kpi.color}10`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><kpi.icon size={12} color={kpi.color} /></div>
-                    </div>
-                    <div style={{ fontSize: '20px', fontWeight: 800, color: colors.text }}>{kpi.value}</div>
-                  </div>
-                ))}
-              </div>
-
-              {/* What You Need to Know + Recent Activity */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: '16px', marginBottom: '20px' }}>
-                {/* What You Need to Know */}
-                <div style={{ ...glass.card, overflow: 'hidden' }}>
-                  <div style={{ padding: '14px 18px', borderBottom: `1px solid ${colors.border}` }}>
-                    <h3 style={{ ...typography.h3 }}>What You Need to Know</h3>
-                  </div>
-                  <div style={{ padding: '16px' }}>
-                    {[
-                      { q: 'What did I buy?', a: `${activeTxns.length} active purchases across sesame and cashew`, icon: Package, color: colors.blue },
-                      { q: 'Where is it?', a: '1 shipment in transit, ETA Sep 8', icon: Ship, color: '#8B5CF6' },
-                      { q: 'Has it passed inspection?', a: '1 passed, 1 scheduled, 1 pending', icon: Search, color: colors.amber },
-                      { q: 'Is everything compliant?', a: 'Average compliance: 84%', icon: Shield, color: colors.green },
-                      { q: 'What do I need to do?', a: 'No pending actions required', icon: CheckCircle, color: colors.green },
-                    ].map((item, idx) => (
-                      <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', background: '#F9FAFB', borderRadius: '8px', marginBottom: '8px', cursor: 'pointer' }} onClick={() => { if (idx === 0) setActiveView('transactions'); else if (idx === 1) setActiveView('shipments'); else if (idx === 2) setActiveView('inspections'); else if (idx === 3) setActiveView('documents'); }}>
-                        <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: `${item.color}10`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <item.icon size={18} color={item.color} />
-                        </div>
-                        <div style={{ flex: 1 }}>
-                          <p style={{ fontSize: '13px', fontWeight: 600, color: colors.text, margin: 0 }}>{item.q}</p>
-                          <p style={{ fontSize: '12px', color: colors.textSec, margin: '2px 0 0' }}>{item.a}</p>
-                        </div>
-                        <ChevronRight size={14} color={colors.textMuted} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Recent Activity */}
-                <div style={{ ...glass.card, overflow: 'hidden' }}>
-                  <div style={{ padding: '14px 18px', borderBottom: `1px solid ${colors.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h3 style={{ ...typography.h3 }}>Recent Activity</h3>
-                    <button onClick={() => setActiveView('transactions')} style={{ fontSize: '11px', color: colors.gold, cursor: 'pointer', background: 'none', border: 'none', fontWeight: 600 }}>View All →</button>
-                  </div>
-                  <div style={{ padding: '12px' }}>
-                    {[
-                      { time: '2 hours ago', event: 'Inspection report uploaded', txn: 'MASAR-SES-2026-000001', type: 'inspection' },
-                      { time: '5 hours ago', event: 'Finance approved', txn: 'MASAR-SES-2026-000001', type: 'finance' },
-                      { time: '1 day ago', event: 'Compliance pack completed', txn: 'MASAR-SES-2026-000002', type: 'compliance' },
-                      { time: '2 days ago', event: 'Contract executed', txn: 'MASAR-SES-2026-000003', type: 'contract' },
-                      { time: '3 days ago', event: 'Shipment departed', txn: 'MASAR-SES-2026-000001', type: 'shipment' },
-                    ].map((activity, idx) => (
-                      <div key={idx} style={{ display: 'flex', gap: '12px', padding: '10px 0', borderBottom: idx < 4 ? `1px solid ${colors.borderLight}` : 'none', cursor: 'pointer' }} onClick={() => setActiveView('transactions')}>
-                        <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: activity.type === 'inspection' ? colors.blue : activity.type === 'finance' ? colors.green : activity.type === 'compliance' ? colors.amber : activity.type === 'shipment' ? '#8B5CF6' : colors.gold, marginTop: '6px', flexShrink: 0 }} />
-                        <div style={{ flex: 1 }}>
-                          <p style={{ fontSize: '12px', fontWeight: 600, color: colors.text, margin: 0 }}>{activity.event}</p>
-                          <div style={{ display: 'flex', gap: '8px', marginTop: '2px' }}>
-                            <span style={{ fontSize: '10px', color: colors.textMuted, fontFamily: 'monospace' }}>{activity.txn}</span>
-                            <span style={{ fontSize: '10px', color: colors.textMuted }}>· {activity.time}</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Active Purchases */}
-              <div style={{ ...glass.card, overflow: 'hidden' }}>
-                <div style={{ padding: '14px 18px', borderBottom: `1px solid ${colors.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <h3 style={{ ...typography.h3 }}>Active Purchases</h3>
-                  <button onClick={() => setActiveView('transactions')} style={{ fontSize: '11px', color: colors.gold, cursor: 'pointer', background: 'none', border: 'none', fontWeight: 600 }}>View All →</button>
-                </div>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead><tr style={{ background: '#F9FAFB' }}>
-                    {['Transaction', 'Commodity', 'Quantity', 'Value', 'Supplier', 'Stage', 'Compliance', 'Inspection', 'ETA', 'Actions'].map(h => (
-                      <th key={h} style={{ padding: '10px 12px', textAlign: 'left', fontSize: '10px', fontWeight: 700, color: colors.textMuted, letterSpacing: '0.05em', borderBottom: `1px solid ${colors.border}` }}>{h}</th>
-                    ))}
-                  </tr></thead>
-                  <tbody>
-                    {buyerTransactions.map(txn => (
-                      <tr key={txn.id} onClick={() => { setSelectedTxn(txn.id); setActiveView('transactions'); }} style={{ cursor: 'pointer', borderBottom: `1px solid ${colors.border}` }}>
-                        <td style={{ padding: '12px' }}><span style={{ fontSize: '12px', fontWeight: 700, color: colors.text, fontFamily: 'monospace' }}>{txn.masarId}</span></td>
-                        <td style={{ padding: '12px', fontSize: '12px', color: colors.text }}>{txn.commodity}</td>
-                        <td style={{ padding: '12px', fontSize: '12px', color: colors.text }}>{txn.quantity}</td>
-                        <td style={{ padding: '12px', fontSize: '12px', fontWeight: 600 }}>{formatCurrency(txn.contractValue)}</td>
-                        <td style={{ padding: '12px', fontSize: '12px', color: colors.text }}>{txn.exporterName}</td>
-                        <td style={{ padding: '12px' }}><span style={{ ...getBadgeStyle('info'), color: getStatusColor(txn.status) }}>{txn.currentStage}</span></td>
-                        <td style={{ padding: '12px' }}><div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><div style={{ width: '30px', height: '3px', background: '#E5E7EB', borderRadius: '2px', overflow: 'hidden' }}><div style={{ width: `${txn.clearanceScore}%`, height: '100%', background: txn.clearanceScore >= 75 ? colors.green : colors.amber, borderRadius: '2px' }} /></div><span style={{ fontSize: '10px', fontWeight: 600 }}>{txn.clearanceScore}%</span></div></td>
-                        <td style={{ padding: '12px' }}><span style={getBadgeStyle(txn.status === 'IN_TRANSIT' ? 'success' : 'warning')}>{txn.status === 'IN_TRANSIT' ? 'Passed' : 'Pending'}</span></td>
-                        <td style={{ padding: '12px', fontSize: '12px', color: colors.textSec }}>{txn.expectedCompletion}</td>
-                        <td style={{ padding: '12px' }}><button style={{ padding: '4px 8px', ...glass.btnOutline, borderRadius: '4px' }}><Eye size={12} color={colors.textSec} /></button></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </>
-          )}
-
-          {/* RFQS VIEW */}
-          {activeView === 'rfqs' && (
-            <>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: '16px' }}>
-                {mockRFQs.map(rfq => (
-                  <div key={rfq.id} onClick={() => setSelectedRFQ(rfq.id)} style={{ ...glass.card, padding: '20px', cursor: 'pointer', border: selectedRFQ === rfq.id ? `2px solid ${colors.gold}` : undefined }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-                      <div>
-                        <span style={{ fontSize: '13px', fontWeight: 700, color: colors.text, fontFamily: 'monospace' }}>{rfq.masarId}</span>
-                        <p style={{ fontSize: '12px', color: colors.textSec, margin: '2px 0 0' }}>{rfq.commodity}</p>
-                      </div>
-                      <span style={getBadgeStyle(rfq.status === 'MATCHED' ? 'success' : rfq.status === 'OPEN' ? 'info' : 'neutral')}>{rfq.status}</span>
-                    </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '12px' }}>
-                      <div style={{ padding: '8px', background: '#F9FAFB', borderRadius: '6px' }}><span style={{ fontSize: '9px', color: colors.textMuted }}>Quantity</span><p style={{ fontSize: '12px', fontWeight: 600, color: colors.text, margin: 0 }}>{rfq.quantity}</p></div>
-                      <div style={{ padding: '8px', background: '#F9FAFB', borderRadius: '6px' }}><span style={{ fontSize: '9px', color: colors.textMuted }}>Incoterm</span><p style={{ fontSize: '12px', fontWeight: 600, color: colors.text, margin: 0 }}>{rfq.incoterm}</p></div>
-                      <div style={{ padding: '8px', background: '#F9FAFB', borderRadius: '6px' }}><span style={{ fontSize: '9px', color: colors.textMuted }}>Delivery</span><p style={{ fontSize: '12px', fontWeight: 600, color: colors.text, margin: 0 }}>{rfq.deliveryLocation}</p></div>
-                      <div style={{ padding: '8px', background: '#F9FAFB', borderRadius: '6px' }}><span style={{ fontSize: '9px', color: colors.textMuted }}>Required</span><p style={{ fontSize: '12px', fontWeight: 600, color: colors.text, margin: 0 }}>{rfq.requiredDate}</p></div>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '11px', color: colors.textSec }}>{rfq.matchedExporters} exporters matched · {rfq.quotesReceived} quotes</span>
-                      <button style={{ ...glass.btnOutline, padding: '6px 12px', fontSize: '11px' }}>View Details</button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-
-          {/* TRANSACTIONS VIEW */}
-          {activeView === 'transactions' && (
-            <div style={{ ...glass.card, overflow: 'hidden' }}>
-              <div style={{ padding: '14px 18px', borderBottom: `1px solid ${colors.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ ...typography.h3 }}>All Transactions</h3>
-                <div style={{ display: 'flex', gap: '6px' }}>
-                  {['all', 'active', 'completed'].map(f => (
-                    <button key={f} onClick={() => setFilterStatus(f)} style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '11px', fontWeight: 600, border: 'none', cursor: 'pointer', ...(filterStatus === f ? { background: colors.navy, color: 'white' } : { background: '#F3F4F6', color: colors.textSec }) }}>{f.charAt(0).toUpperCase() + f.slice(1)}</button>
-                  ))}
-                </div>
-              </div>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead><tr style={{ background: '#F9FAFB' }}>
-                  {['Transaction', 'Commodity', 'Quantity', 'Value', 'Exporter', 'Stage', 'Risk', 'Clearance', 'Actions'].map(h => (
-                    <th key={h} style={{ padding: '10px 12px', textAlign: 'left', fontSize: '10px', fontWeight: 700, color: colors.textMuted, letterSpacing: '0.05em', borderBottom: `1px solid ${colors.border}` }}>{h}</th>
-                  ))}
-                </tr></thead>
-                <tbody>
-                  {buyerTransactions.map(txn => (
-                    <tr key={txn.id} onClick={() => setSelectedTxn(txn.id)} style={{ cursor: 'pointer', background: selectedTxn === txn.id ? '#FFFBEB' : 'white', borderBottom: `1px solid ${colors.border}` }}>
-                      <td style={{ padding: '12px' }}><span style={{ fontSize: '12px', fontWeight: 700, color: colors.text, fontFamily: 'monospace' }}>{txn.masarId}</span></td>
-                      <td style={{ padding: '12px', fontSize: '12px', color: colors.text }}>{txn.commodity}</td>
-                      <td style={{ padding: '12px', fontSize: '12px', color: colors.text }}>{txn.quantity}</td>
-                      <td style={{ padding: '12px', fontSize: '12px', fontWeight: 600 }}>{formatCurrency(txn.contractValue)}</td>
-                      <td style={{ padding: '12px', fontSize: '12px', color: colors.text }}>{txn.exporterName}</td>
-                      <td style={{ padding: '12px' }}><span style={{ ...getBadgeStyle('info'), color: getStatusColor(txn.status) }}>{txn.currentStage}</span></td>
-                      <td style={{ padding: '12px' }}><span style={getBadgeStyle(txn.riskLevel === 'LOW' ? 'success' : 'warning')}>{txn.riskLevel}</span></td>
-                      <td style={{ padding: '12px' }}><div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><div style={{ width: '30px', height: '3px', background: '#E5E7EB', borderRadius: '2px', overflow: 'hidden' }}><div style={{ width: `${txn.clearanceScore}%`, height: '100%', background: txn.clearanceScore >= 75 ? colors.green : colors.amber, borderRadius: '2px' }} /></div><span style={{ fontSize: '10px', fontWeight: 600 }}>{txn.clearanceScore}</span></div></td>
-                      <td style={{ padding: '12px' }}><button style={{ padding: '4px 8px', ...glass.btnOutline, borderRadius: '4px' }}><Eye size={12} color={colors.textSec} /></button></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {/* DOCUMENTS VIEW */}
-          {activeView === 'documents' && (
-            <div style={{ ...glass.card, overflow: 'hidden' }}>
-              <div style={{ padding: '14px 18px', borderBottom: `1px solid ${colors.border}` }}>
-                <h3 style={{ ...typography.h3 }}>Documents</h3>
-              </div>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead><tr style={{ background: '#F9FAFB' }}>
-                  {['Document', 'Type', 'Transaction', 'Status', 'Upload Date', 'Verified By', 'Actions'].map(h => (
-                    <th key={h} style={{ padding: '10px 12px', textAlign: 'left', fontSize: '10px', fontWeight: 700, color: colors.textMuted, letterSpacing: '0.05em', borderBottom: `1px solid ${colors.border}` }}>{h}</th>
-                  ))}
-                </tr></thead>
-                <tbody>
-                  {mockBuyerDocuments.map(doc => (
-                    <tr key={doc.id} style={{ borderBottom: `1px solid ${colors.border}` }}>
-                      <td style={{ padding: '12px' }}><div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><FileText size={16} color={doc.status === 'verified' ? colors.green : colors.amber} /><span style={{ fontSize: '12px', fontWeight: 600, color: colors.text }}>{doc.name}</span></div></td>
-                      <td style={{ padding: '12px' }}><span style={getBadgeStyle(doc.type === 'Export' ? 'info' : 'warning')}>{doc.type}</span></td>
-                      <td style={{ padding: '12px', fontSize: '11px', fontFamily: 'monospace', color: colors.text }}>{doc.transactionId}</td>
-                      <td style={{ padding: '12px' }}><span style={getBadgeStyle(doc.status === 'verified' ? 'success' : doc.status === 'expired' ? 'danger' : 'warning')}>{doc.status}</span></td>
-                      <td style={{ padding: '12px', fontSize: '12px', color: colors.textSec }}>{doc.uploadDate}</td>
-                      <td style={{ padding: '12px', fontSize: '12px', color: colors.textSec }}>{doc.verifiedBy || '—'}</td>
-                      <td style={{ padding: '12px' }}><button style={{ padding: '4px 8px', ...glass.btnOutline, borderRadius: '4px' }}><Eye size={12} color={colors.textSec} /></button></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {/* INVOICES VIEW */}
-          {activeView === 'invoices' && (
-            <div style={{ ...glass.card, overflow: 'hidden' }}>
-              <div style={{ padding: '14px 18px', borderBottom: `1px solid ${colors.border}` }}>
-                <h3 style={{ ...typography.h3 }}>Invoices</h3>
-              </div>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead><tr style={{ background: '#F9FAFB' }}>
-                  {['Invoice #', 'Transaction', 'Amount', 'Status', 'Issue Date', 'Due Date', 'Paid Date', 'Actions'].map(h => (
-                    <th key={h} style={{ padding: '10px 12px', textAlign: 'left', fontSize: '10px', fontWeight: 700, color: colors.textMuted, letterSpacing: '0.05em', borderBottom: `1px solid ${colors.border}` }}>{h}</th>
-                  ))}
-                </tr></thead>
-                <tbody>
-                  {mockInvoices.map(inv => (
-                    <tr key={inv.id} style={{ borderBottom: `1px solid ${colors.border}` }}>
-                      <td style={{ padding: '12px' }}><span style={{ fontSize: '12px', fontWeight: 700, color: colors.text, fontFamily: 'monospace' }}>{inv.invoiceNumber}</span></td>
-                      <td style={{ padding: '12px', fontSize: '11px', fontFamily: 'monospace', color: colors.text }}>{inv.transactionId}</td>
-                      <td style={{ padding: '12px', fontSize: '12px', fontWeight: 600 }}>{formatCurrency(inv.amount)}</td>
-                      <td style={{ padding: '12px' }}><span style={getBadgeStyle(inv.status === 'paid' ? 'success' : inv.status === 'overdue' ? 'danger' : inv.status === 'sent' ? 'info' : 'neutral')}>{inv.status}</span></td>
-                      <td style={{ padding: '12px', fontSize: '12px', color: colors.textSec }}>{inv.issueDate}</td>
-                      <td style={{ padding: '12px', fontSize: '12px', color: colors.textSec }}>{inv.dueDate}</td>
-                      <td style={{ padding: '12px', fontSize: '12px', color: colors.textSec }}>{inv.paidDate || '—'}</td>
-                      <td style={{ padding: '12px' }}><button style={{ padding: '4px 8px', ...glass.btnOutline, borderRadius: '4px' }}><Eye size={12} color={colors.textSec} /></button></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {/* Other Views */}
-          {!['overview', 'rfqs', 'transactions', 'documents', 'invoices'].includes(activeView) && (
-            <div style={{ ...glass.card, padding: '48px', textAlign: 'center' }}>
-              <div style={{ width: '64px', height: '64px', borderRadius: '16px', background: `${colors.red}10`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-                {activeView === 'suppliers' && <Truck size={28} color={colors.red} />}
-                {activeView === 'inspections' && <Search size={28} color={colors.red} />}
-                {activeView === 'shipments' && <Ship size={28} color={colors.red} />}
-                {activeView === 'payments' && <DollarSign size={28} color={colors.red} />}
-                {activeView === 'disputes' && <Scale size={28} color={colors.red} />}
-              </div>
-              <h2 style={{ fontSize: '18px', fontWeight: 700, color: colors.text, marginBottom: '8px' }}>
-                {activeView === 'suppliers' && 'Suppliers'}
-                {activeView === 'inspections' && 'Inspections'}
-                {activeView === 'shipments' && 'Shipments'}
-                {activeView === 'payments' && 'Payments'}
-                {activeView === 'disputes' && 'Disputes'}
-              </h2>
-              <p style={{ fontSize: '14px', color: colors.textSec, maxWidth: '500px', margin: '0 auto 24px' }}>
-                {activeView === 'suppliers' && 'View and manage your verified supplier network.'}
-                {activeView === 'inspections' && 'Track inspection status and results for your orders.'}
-                {activeView === 'shipments' && 'Monitor shipments from port to destination.'}
-                {activeView === 'payments' && 'View payment history and pending payments.'}
-                {activeView === 'disputes' && 'Manage disputes and resolution workflows.'}
-              </p>
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-                <button onClick={() => setActiveView('overview')} style={{ ...glass.btnPrimary, padding: '10px 20px', fontSize: '13px' }}>Back to Overview</button>
-              </div>
-            </div>
-          )}
-        </main>
-
-        {/* Status Bar */}
-        <footer style={{ background: 'white', borderTop: `1px solid ${colors.border}`, padding: '8px 24px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <span style={{ fontSize: '10px', fontWeight: 700, color: colors.gold, letterSpacing: '0.05em' }}>MASAR V0</span>
-            <span style={{ fontSize: '10px', color: colors.textMuted }}>Buyer Portal · {buyer.tradingName}</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <span style={{ fontSize: '10px', color: colors.textMuted }}>Status: <span style={{ color: colors.green, fontWeight: 600 }}>Active</span></span>
-            <span style={{ fontSize: '10px', color: colors.textMuted }}>Last Sync: {new Date().toLocaleTimeString()}</span>
-          </div>
-        </footer>
+        </div>
       </div>
 
-      {/* Create RFQ Modal */}
-      {showCreateRFQ && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-          <div style={{ background: 'white', borderRadius: '16px', width: '100%', maxWidth: '600px', maxHeight: '90vh', overflow: 'auto' }}>
-            <div style={{ padding: '20px', borderBottom: `1px solid ${colors.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h2 style={{ fontSize: '18px', fontWeight: 700, color: colors.text }}>Create New RFQ</h2>
-              <button onClick={() => setShowCreateRFQ(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={20} color={colors.textSec} /></button>
-            </div>
-            <div style={{ padding: '20px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: colors.textSec, marginBottom: '6px' }}>Commodity</label>
-                  <select style={{ ...glass.input, width: '100%', padding: '10px 12px', fontSize: '13px' }}>
-                    <option>Premium Hulled Sesame</option>
-                    <option>Standard Natural Sesame</option>
-                    <option>Cashew</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: colors.textSec, marginBottom: '6px' }}>Quantity</label>
-                  <input type="text" style={{ ...glass.input, width: '100%', padding: '10px 12px', fontSize: '13px' }} placeholder="e.g., 1,000 MT" />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: colors.textSec, marginBottom: '6px' }}>Incoterm</label>
-                  <select style={{ ...glass.input, width: '100%', padding: '10px 12px', fontSize: '13px' }}>
-                    <option>CIF</option>
-                    <option>CFR</option>
-                    <option>FOB</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: colors.textSec, marginBottom: '6px' }}>Required Date</label>
-                  <input type="date" style={{ ...glass.input, width: '100%', padding: '10px 12px', fontSize: '13px' }} />
-                </div>
+      {/* Account Health Banner */}
+      {data.accountHealth.warnings.length > 0 && (
+        <div style={{ 
+          background: colors.amberLight,
+          padding: '12px 32px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px'
+        }}>
+          <span style={{ fontSize: '20px' }}>⚠️</span>
+          <div style={{ flex: 1 }}>
+            {data.accountHealth.warnings.map((warning, index) => (
+              <span key={index} style={{ 
+                fontSize: '13px', 
+                color: colors.navy,
+                marginRight: '24px'
+              }}>
+                {warning}
+              </span>
+            ))}
+          </div>
+          <button style={{
+            padding: '6px 12px',
+            background: colors.amber,
+            color: colors.white,
+            border: 'none',
+            borderRadius: '4px',
+            fontSize: '12px',
+            fontWeight: 600,
+            cursor: 'pointer'
+          }}>
+            Take Action
+          </button>
+        </div>
+      )}
+
+      {/* Navigation Tabs */}
+      <div style={{ 
+        background: colors.white,
+        borderBottom: `1px solid ${colors.grayLight}`,
+        padding: '0 32px'
+      }}>
+        <div style={{ display: 'flex', gap: '0' }}>
+          {[
+            { id: 'overview', label: 'Overview' },
+            { id: 'transactions', label: 'Transactions' },
+            { id: 'compliance', label: 'Compliance' },
+            { id: 'documents', label: 'Documents' },
+            { id: 'inspections', label: 'Inspections' },
+            { id: 'logistics', label: 'Logistics' },
+            { id: 'finance', label: 'Finance' },
+            { id: 'exceptions', label: 'Exceptions' },
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              style={{
+                padding: '16px 20px',
+                background: 'none',
+                border: 'none',
+                borderBottom: activeTab === tab.id ? `3px solid ${colors.gold}` : '3px solid transparent',
+                color: activeTab === tab.id ? colors.navy : colors.gray,
+                fontSize: '14px',
+                fontWeight: activeTab === tab.id ? 600 : 400,
+                cursor: 'pointer',
+              }}
+            >
+              {tab.label}
+              {tab.id === 'exceptions' && data.exceptions.length > 0 && (
+                <span style={{
+                  marginLeft: '6px',
+                  padding: '2px 6px',
+                  background: colors.red,
+                  color: colors.white,
+                  borderRadius: '10px',
+                  fontSize: '10px',
+                  fontWeight: 600
+                }}>
+                  {data.exceptions.length}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div style={{ padding: '24px 32px' }}>
+        {/* KPI Strip */}
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(4, 1fr)', 
+          gap: '16px',
+          marginBottom: '24px'
+        }}>
+          <KPICard
+            title="Active Transactions"
+            value={data.kpis.activeTransactions.toString()}
+            icon="📊"
+            color={colors.blue}
+          />
+          <KPICard
+            title="Total Purchase Value"
+            value={formatCurrency(data.kpis.totalPurchaseValue)}
+            icon="💰"
+            color={colors.green}
+          />
+          <KPICard
+            title="In-Transit Shipments"
+            value={data.kpis.inTransitShipments.toString()}
+            icon="🚢"
+            color={colors.purple}
+          />
+          <KPICard
+            title="Completion Rate"
+            value={`${data.kpis.completionRate}%`}
+            icon="✅"
+            color={colors.gold}
+          />
+        </div>
+
+        {/* Actions Required & Account Health */}
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px', marginBottom: '24px' }}>
+          {/* Actions Required */}
+          <div style={{ 
+            background: colors.white,
+            borderRadius: '12px',
+            padding: '24px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 600, color: colors.navy, margin: '0 0 16px 0' }}>
+              Action Required
+              {data.actions.length > 0 && (
+                <span style={{
+                  marginLeft: '8px',
+                  padding: '2px 8px',
+                  background: colors.redLight,
+                  color: colors.red,
+                  borderRadius: '10px',
+                  fontSize: '12px',
+                  fontWeight: 600
+                }}>
+                  {data.actions.length}
+                </span>
+              )}
+            </h3>
+            {data.actions.length === 0 ? (
+              <div style={{ 
+                padding: '32px', 
+                textAlign: 'center',
+                background: colors.greenLight,
+                borderRadius: '8px'
+              }}>
+                <span style={{ fontSize: '32px' }}>✓</span>
+                <p style={{ fontSize: '14px', color: colors.green, margin: '8px 0 0 0', fontWeight: 600 }}>
+                  All caught up! No pending actions.
+                </p>
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: colors.textSec, marginBottom: '6px' }}>Quality Specification</label>
-                <textarea style={{ ...glass.input, width: '100%', padding: '10px 12px', fontSize: '13px', resize: 'vertical' }} rows={3} placeholder="Detailed quality requirements..." />
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {data.actions.slice(0, 5).map((action, index) => (
+                  <div key={index} style={{
+                    padding: '16px',
+                    background: colors.grayLighter,
+                    borderRadius: '8px',
+                    borderLeft: `3px solid ${getSeverityColor(action.priority)}`,
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                  }}>
+                    <div>
+                      <p style={{ fontSize: '14px', fontWeight: 600, color: colors.navy, margin: '0 0 4px 0' }}>
+                        {action.title}
+                      </p>
+                      <p style={{ fontSize: '12px', color: colors.gray, margin: 0 }}>
+                        {action.description}
+                        {action.transactionNumber && ` • ${action.transactionNumber}`}
+                      </p>
+                    </div>
+                    <button style={{
+                      padding: '6px 14px',
+                      background: colors.navy,
+                      color: colors.white,
+                      border: 'none',
+                      borderRadius: '6px',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      cursor: 'pointer'
+                    }}>
+                      {action.action}
+                    </button>
+                  </div>
+                ))}
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-                <button onClick={() => setShowCreateRFQ(false)} style={{ ...glass.btnOutline, padding: '10px 20px', fontSize: '13px' }}>Cancel</button>
-                <button onClick={() => { setShowCreateRFQ(false); setActiveView('rfqs'); }} style={{ ...glass.btnPrimary, padding: '10px 20px', fontSize: '13px' }}>Submit RFQ</button>
-              </div>
+            )}
+          </div>
+
+          {/* Account Health */}
+          <div style={{ 
+            background: colors.white,
+            borderRadius: '12px',
+            padding: '24px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 600, color: colors.navy, margin: '0 0 16px 0' }}>
+              Account Health
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <HealthIndicator
+                label="KYB Status"
+                status={data.accountHealth.kybStatus === 'approved' ? 'Verified' : 'Pending'}
+                color={data.accountHealth.kybStatus === 'approved' ? colors.green : colors.amber}
+              />
+              <HealthIndicator
+                label="Documents"
+                status={data.accountHealth.documentIssues === 0 ? 'Complete' : `${data.accountHealth.documentIssues} Issues`}
+                color={data.accountHealth.documentIssues === 0 ? colors.green : colors.amber}
+              />
+              <HealthIndicator
+                label="Account"
+                status={data.accountHealth.verified ? 'Verified' : 'Action Required'}
+                color={data.accountHealth.verified ? colors.green : colors.red}
+              />
             </div>
           </div>
         </div>
-      )}
+
+        {/* Active Transactions */}
+        <div style={{ 
+          background: colors.white,
+          borderRadius: '12px',
+          padding: '24px',
+          marginBottom: '24px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 600, color: colors.navy, margin: 0 }}>
+              Active Transactions
+            </h3>
+            <button
+              onClick={() => router.push('/buyer/transactions')}
+              style={{
+                padding: '6px 12px',
+                background: colors.grayLight,
+                color: colors.navy,
+                border: 'none',
+                borderRadius: '6px',
+                fontSize: '12px',
+                cursor: 'pointer'
+              }}
+            >
+              View All
+            </button>
+          </div>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ borderBottom: `2px solid ${colors.grayLight}` }}>
+                <th style={{ padding: '12px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: colors.gray }}>Transaction</th>
+                <th style={{ padding: '12px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: colors.gray }}>Product</th>
+                <th style={{ padding: '12px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: colors.gray }}>Supplier</th>
+                <th style={{ padding: '12px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: colors.gray }}>Value</th>
+                <th style={{ padding: '12px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: colors.gray }}>Stage</th>
+                <th style={{ padding: '12px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: colors.gray }}>Progress</th>
+                <th style={{ padding: '12px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: colors.gray }}>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.transactions.slice(0, 8).map((tx) => (
+                <tr key={tx.id} style={{ borderBottom: `1px solid ${colors.grayLight}` }}>
+                  <td style={{ padding: '16px 12px' }}>
+                    <span style={{ fontSize: '14px', fontWeight: 600, color: colors.navy }}>
+                      {tx.transactionNumber}
+                    </span>
+                  </td>
+                  <td style={{ padding: '16px 12px', fontSize: '14px', color: colors.navy }}>
+                    {tx.commodity}
+                  </td>
+                  <td style={{ padding: '16px 12px', fontSize: '14px', color: colors.gray }}>
+                    {tx.exporter}
+                  </td>
+                  <td style={{ padding: '16px 12px', fontSize: '14px', fontWeight: 600, color: colors.navy }}>
+                    {formatCurrency(tx.value, tx.currency)}
+                  </td>
+                  <td style={{ padding: '16px 12px' }}>
+                    <span style={{
+                      padding: '4px 8px',
+                      background: getStateColor(tx.currentState) + '20',
+                      color: getStateColor(tx.currentState),
+                      borderRadius: '4px',
+                      fontSize: '11px',
+                      fontWeight: 600
+                    }}>
+                      {formatState(tx.currentState)}
+                    </span>
+                  </td>
+                  <td style={{ padding: '16px 12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ width: '60px', height: '6px', background: colors.grayLight, borderRadius: '3px' }}>
+                        <div style={{ width: `${tx.progress}%`, height: '100%', background: colors.green, borderRadius: '3px' }} />
+                      </div>
+                      <span style={{ fontSize: '12px', color: colors.gray }}>{tx.progress}%</span>
+                    </div>
+                  </td>
+                  <td style={{ padding: '16px 12px' }}>
+                    <button
+                      onClick={() => router.push(`/buyer/transactions/${tx.id}`)}
+                      style={{
+                        padding: '4px 10px',
+                        background: colors.navy,
+                        color: colors.white,
+                        border: 'none',
+                        borderRadius: '4px',
+                        fontSize: '11px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      View
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Two Column Layout */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
+          {/* Upcoming Milestones */}
+          <div style={{ 
+            background: colors.white,
+            borderRadius: '12px',
+            padding: '24px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 600, color: colors.navy, margin: '0 0 16px 0' }}>
+              Upcoming Milestones
+            </h3>
+            {data.milestones.length === 0 ? (
+              <p style={{ fontSize: '14px', color: colors.gray, textAlign: 'center', padding: '24px' }}>
+                No upcoming milestones
+              </p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {data.milestones.slice(0, 6).map((milestone, index) => (
+                  <div key={index} style={{
+                    padding: '12px',
+                    background: colors.grayLighter,
+                    borderRadius: '8px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                  }}>
+                    <div>
+                      <p style={{ fontSize: '13px', fontWeight: 600, color: colors.navy, margin: '0 0 2px 0' }}>
+                        {milestone.title}
+                      </p>
+                      <p style={{ fontSize: '11px', color: colors.gray, margin: 0 }}>
+                        {milestone.description}
+                      </p>
+                    </div>
+                    <span style={{
+                      padding: '4px 8px',
+                      background: milestone.daysUntil <= 3 ? colors.redLight : colors.blueLight,
+                      color: milestone.daysUntil <= 3 ? colors.red : colors.blue,
+                      borderRadius: '4px',
+                      fontSize: '11px',
+                      fontWeight: 600
+                    }}>
+                      {milestone.daysUntil === 0 ? 'Today' : `${milestone.daysUntil}d`}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Exceptions */}
+          <div style={{ 
+            background: colors.white,
+            borderRadius: '12px',
+            padding: '24px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 600, color: colors.navy, margin: '0 0 16px 0' }}>
+              Exceptions
+              {data.exceptions.length > 0 && (
+                <span style={{
+                  marginLeft: '8px',
+                  padding: '2px 8px',
+                  background: colors.redLight,
+                  color: colors.red,
+                  borderRadius: '10px',
+                  fontSize: '12px',
+                  fontWeight: 600
+                }}>
+                  {data.exceptions.length}
+                </span>
+              )}
+            </h3>
+            {data.exceptions.length === 0 ? (
+              <div style={{ 
+                padding: '24px', 
+                textAlign: 'center',
+                background: colors.greenLight,
+                borderRadius: '8px'
+              }}>
+                <span style={{ fontSize: '24px' }}>✓</span>
+                <p style={{ fontSize: '14px', color: colors.green, margin: '8px 0 0 0', fontWeight: 600 }}>
+                  No open exceptions
+                </p>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {data.exceptions.slice(0, 5).map((exception) => (
+                  <div key={exception.id} style={{
+                    padding: '12px',
+                    background: colors.grayLighter,
+                    borderRadius: '8px',
+                    borderLeft: `3px solid ${getSeverityColor(exception.severity)}`
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <span style={{ 
+                        fontSize: '10px', 
+                        fontWeight: 600, 
+                        color: getSeverityColor(exception.severity),
+                        textTransform: 'uppercase'
+                      }}>
+                        {exception.severity}
+                      </span>
+                      <span style={{ fontSize: '11px', color: colors.gray }}>{exception.age}h ago</span>
+                    </div>
+                    <p style={{ fontSize: '13px', color: colors.navy, margin: '0 0 4px 0' }}>
+                      {exception.description}
+                    </p>
+                    <p style={{ fontSize: '11px', color: colors.gray, margin: 0 }}>
+                      {exception.transactionNumber}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Shipment Tracking */}
+        <div style={{ 
+          background: colors.white,
+          borderRadius: '12px',
+          padding: '24px',
+          marginBottom: '24px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+        }}>
+          <h3 style={{ fontSize: '18px', fontWeight: 600, color: colors.navy, margin: '0 0 16px 0' }}>
+            Shipment Tracking
+          </h3>
+          {data.shipments.length === 0 ? (
+            <p style={{ fontSize: '14px', color: colors.gray, textAlign: 'center', padding: '24px' }}>
+              No active shipments
+            </p>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
+              {data.shipments.slice(0, 4).map((shipment) => (
+                <div key={shipment.id} style={{
+                  padding: '16px',
+                  background: colors.grayLighter,
+                  borderRadius: '8px',
+                  cursor: 'pointer'
+                }}
+                onClick={() => router.push(`/buyer/logistics/${shipment.id}`)}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+                    <span style={{ fontSize: '14px', fontWeight: 600, color: colors.navy }}>
+                      {shipment.transactionNumber}
+                    </span>
+                    <span style={{
+                      padding: '2px 8px',
+                      background: shipment.status === 'in_transit' ? colors.blueLight : colors.amberLight,
+                      color: shipment.status === 'in_transit' ? colors.blue : colors.amber,
+                      borderRadius: '4px',
+                      fontSize: '11px',
+                      fontWeight: 600
+                    }}>
+                      {shipment.status.replace(/_/g, ' ')}
+                    </span>
+                  </div>
+                  <p style={{ fontSize: '12px', color: colors.gray, margin: '0 0 8px 0' }}>
+                    {shipment.origin} → {shipment.destination}
+                  </p>
+                  <div style={{ width: '100%', height: '6px', background: colors.grayLight, borderRadius: '3px', marginBottom: '8px' }}>
+                    <div style={{ width: `${shipment.progress}%`, height: '100%', background: colors.green, borderRadius: '3px' }} />
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '11px', color: colors.gray }}>ETA</span>
+                    <span style={{ fontSize: '12px', fontWeight: 600, color: colors.navy }}>
+                      {shipment.eta ? new Date(shipment.eta).toLocaleDateString() : 'TBD'}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Financial Summary & Recent Activity */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+          {/* Financial Summary */}
+          <div style={{ 
+            background: colors.white,
+            borderRadius: '12px',
+            padding: '24px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 600, color: colors.navy, margin: '0 0 16px 0' }}>
+              Financial Summary
+            </h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
+              <FinancialCard label="Total Invoiced" value={formatCurrency(data.finance.totalInvoiced)} />
+              <FinancialCard label="Paid" value={formatCurrency(data.finance.paidAmount)} color={colors.green} />
+              <FinancialCard label="Pending" value={formatCurrency(data.finance.pendingAmount)} color={colors.amber} />
+              <FinancialCard label="Overdue" value={formatCurrency(data.finance.overdueAmount)} color={colors.red} />
+            </div>
+          </div>
+
+          {/* Recent Activity */}
+          <div style={{ 
+            background: colors.white,
+            borderRadius: '12px',
+            padding: '24px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 600, color: colors.navy, margin: '0 0 16px 0' }}>
+              Recent Activity
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '250px', overflowY: 'auto' }}>
+              {data.activity.slice(0, 8).map((event) => (
+                <div key={event.id} style={{ display: 'flex', gap: '12px' }}>
+                  <div style={{ 
+                    width: '8px', 
+                    height: '8px', 
+                    borderRadius: '50%', 
+                    background: colors.blue,
+                    marginTop: '6px',
+                    flexShrink: 0
+                  }} />
+                  <div>
+                    <p style={{ fontSize: '13px', color: colors.navy, margin: 0 }}>
+                      {event.type.replace(/_/g, ' ')}
+                    </p>
+                    <p style={{ fontSize: '11px', color: colors.gray, margin: '2px 0 0 0' }}>
+                      {event.transactionNumber} • {new Date(event.timestamp).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// COMPONENT HELPERS
+// ============================================================
+
+function KPICard({ title, value, icon, color }: {
+  title: string;
+  value: string;
+  icon: string;
+  color: string;
+}) {
+  return (
+    <div style={{
+      background: colors.white,
+      borderRadius: '12px',
+      padding: '20px',
+      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+      borderTop: `3px solid ${color}`
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+        <p style={{ fontSize: '12px', color: colors.gray, margin: 0 }}>{title}</p>
+        <span style={{ fontSize: '24px' }}>{icon}</span>
+      </div>
+      <p style={{ fontSize: '28px', fontWeight: 700, color: colors.navy, margin: 0 }}>
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function HealthIndicator({ label, status, color }: {
+  label: string;
+  status: string;
+  color: string;
+}) {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <span style={{ fontSize: '13px', color: colors.gray }}>{label}</span>
+      <span style={{
+        padding: '4px 10px',
+        background: color + '20',
+        color: color,
+        borderRadius: '4px',
+        fontSize: '12px',
+        fontWeight: 600
+      }}>
+        {status}
+      </span>
+    </div>
+  );
+}
+
+function FinancialCard({ label, value, color }: {
+  label: string;
+  value: string;
+  color?: string;
+}) {
+  return (
+    <div style={{ padding: '16px', background: colors.grayLighter, borderRadius: '8px' }}>
+      <p style={{ fontSize: '12px', color: colors.gray, margin: '0 0 4px 0' }}>{label}</p>
+      <p style={{ fontSize: '20px', fontWeight: 700, color: color || colors.navy, margin: 0 }}>{value}</p>
     </div>
   );
 }

@@ -1,428 +1,836 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  Crown, TrendingUp, DollarSign, Users, Truck, FileText, AlertTriangle, 
-  CheckCircle, Clock, Ship, Shield, Package, ArrowUpRight, ArrowRight,
-  Eye, Banknote, Scale, Target, ChevronRight, BarChart3, ArrowDownRight, 
-  Minus, RefreshCw, Star, Building2, Bell, Search, ChevronDown, LogOut,
-  Languages, Loader2, LayoutDashboard, Activity, Settings, History,
-  MessageSquare, Receipt, Network, FolderOpen, Anchor, Wheat, Flag,
-  Landmark, Award, MapPin, Calendar, KeyRound, Database, Cpu, Server,
-  GitBranch, Unlock, UserPlus, Beaker, Percent, PieChart, Send, Edit,
-  Trash2, Copy, ExternalLink, Info, HelpCircle, ShieldCheck, BadgeCheck,
-  ClipboardCheck, Compass, Navigation, Thermometer, Droplets, Wind, Zap,
-  Camera, Upload, Phone, Download, Filter, Plus, X, Menu
-} from 'lucide-react';
-import { 
-  mockTransactions, mockBuyers, mockExporters, mockTasks, mockNotifications,
-  formatCurrency, getStatusColor, getRiskColor, calculateDashboardStats
-} from '@/lib/store';
-import { colors, glass, typography, getBadgeStyle } from '@/lib/design';
 
-// Role sidebar config for CEO
-const ceoSidebar = [
-  { label: 'EXECUTIVE', items: [
-    { name: 'Executive Overview', href: '/app/executive', icon: 'Crown' },
-    { name: 'Corridor Performance', href: '/app/executive/performance', icon: 'TrendingUp' },
-    { name: 'Transaction Portfolio', href: '/app/executive/portfolio', icon: 'FileText' },
-    { name: 'Risk & Compliance', href: '/app/executive/risk', icon: 'Shield' },
-  ]},
-  { label: 'NETWORK', items: [
-    { name: 'Buyer Network', href: '/app/executive/buyers', icon: 'Users' },
-    { name: 'Exporter Network', href: '/app/executive/exporters', icon: 'Truck' },
-    { name: 'Capital & Financing', href: '/app/executive/finance', icon: 'DollarSign' },
-  ]},
-  { label: 'REPORTING', items: [
-    { name: 'Financial Performance', href: '/app/executive/financial', icon: 'BarChart3' },
-    { name: 'Board Reporting', href: '/app/executive/board', icon: 'FileText' },
-    { name: 'Audit & Governance', href: '/app/executive/audit', icon: 'Scale' },
-  ]},
-];
-
-const iconMap: Record<string, any> = {
-  Crown, TrendingUp, FileText, Shield, Users, Truck, DollarSign, BarChart3, Scale,
-  LayoutDashboard, Activity, Settings, History, MessageSquare, Receipt, Network,
-  FolderOpen, Anchor, Wheat, Flag, Landmark, Award, MapPin, Calendar, KeyRound,
-  Database, Cpu, Server, GitBranch, Unlock, UserPlus, Beaker, Percent, PieChart,
-  Send, Edit, Trash2, Copy, ExternalLink, Info, HelpCircle, ShieldCheck, BadgeCheck,
-  ClipboardCheck, Compass, Navigation, Thermometer, Droplets, Wind, Zap, Camera,
-  Upload, Phone, Download, Filter, Plus, X, Menu, Search, Bell, ChevronDown,
-  LogOut, Languages, Loader2, Eye, Target, Package, CheckCircle, Clock,
-  AlertTriangle, Ship, Banknote, ArrowUpRight, ArrowRight, ArrowDownRight,
-  Minus, RefreshCw, Star, Building2, ChevronRight
+// MASAR Design System Colors
+const colors = {
+  navy: '#0B1F3A',
+  navyLight: '#142235',
+  navyLighter: '#1a2f4a',
+  gold: '#C9A24A',
+  goldLight: '#D4B366',
+  white: '#FFFFFF',
+  gray: '#6B7280',
+  grayLight: '#F3F4F6',
+  grayLighter: '#F9FAFB',
+  green: '#10B981',
+  greenLight: '#D1FAE5',
+  greenDark: '#059669',
+  red: '#EF4444',
+  redLight: '#FEE2E2',
+  amber: '#F59E0B',
+  amberLight: '#FEF3C7',
+  blue: '#3B82F6',
+  blueLight: '#DBEAFE',
+  purple: '#8B5CF6',
+  purpleLight: '#EDE9FE',
 };
 
-export default function ExecutiveDashboard() {
-  const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [collapsed, setCollapsed] = useState(false);
-  const [activeTab, setActiveTab] = useState<'overview' | 'transactions' | 'network' | 'risk'>('overview');
-  const [selectedTxn, setSelectedTxn] = useState<string | null>(null);
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
+// Executive Dashboard Data Interface
+interface ExecutiveData {
+  kpis: {
+    totalTransactionValue: number;
+    activeTransactions: number;
+    completedTransactions: number;
+    pipelineValue: number;
+    expectedSettlement: number;
+    revenue: number;
+    grossMargin: number;
+    atRiskValue: number;
+    blockedValue: number;
+    slaBreaches: number;
+    completionRate: number;
+    averageCycleDays: number;
+    clearanceScore: number;
+    kybAutoClearRate: number;
+  };
+  pipeline: Array<{
+    stage: string;
+    count: number;
+    value: number;
+    blocked: number;
+  }>;
+  alerts: Array<{
+    id: string;
+    type: string;
+    severity: string;
+    title: string;
+    transaction?: string;
+    value?: number;
+    age?: number;
+    action: string;
+  }>;
+  activity: Array<{
+    id: string;
+    type: string;
+    transaction?: string;
+    actor: string;
+    timestamp: string;
+  }>;
+  risk: {
+    total: number;
+    byLevel: Record<string, { count: number; value: number }>;
+    atRiskValue: number;
+  };
+  finance: {
+    funding: { totalRequested: number; totalApproved: number; pending: number };
+    escrow: { totalExpected: number; totalConfirmed: number };
+    settlements: { totalCompleted: number; pending: number; processing: number };
+  };
+  compliance: {
+    kyb: { total: number; approved: number; pending: number; autoClearRate: number };
+    compliance: { total: number; ready: number; inProgress: number; readinessScore: number };
+    documents: { total: number; verified: number; pending: number; expiring: number };
+  };
+  inspection: {
+    total: number;
+    passed: number;
+    failed: number;
+    pending: number;
+    passRate: number;
+  };
+  logistics: {
+    total: number;
+    inTransit: number;
+    arrived: number;
+    delayed: number;
+  };
+  settlement: {
+    total: number;
+    completed: number;
+    pending: number;
+    totalValue: number;
+  };
+  systemHealth: {
+    database: { status: string };
+    api: { status: string };
+    integrations: Array<{ name: string; status: string }>;
+  };
+}
 
-  const stats = calculateDashboardStats(mockTransactions);
-  const activeTxns = mockTransactions.filter(t => !['COMPLETED', 'SETTLED', 'CANCELLED'].includes(t.status));
-  const unreadNotifs = mockNotifications.filter(n => !n.read);
+export default function ExecutiveCommandCenter() {
+  const router = useRouter();
+  const [data, setData] = useState<ExecutiveData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [activeSection, setActiveSection] = useState('overview');
+  const [dateRange, setDateRange] = useState('30d');
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Fetch executive dashboard data
+  const fetchDashboardData = useCallback(async () => {
+    try {
+      setRefreshing(true);
+      const response = await fetch('/api/v1/dashboard/executive');
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          setData(result.data);
+          setLastUpdated(new Date());
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const role = localStorage.getItem('masar-role');
-    if (!role) { router.push('/auth'); return; }
-    setTimeout(() => setLoading(false), 800);
-  }, [router]);
+    fetchDashboardData();
+    
+    // Refresh every 5 minutes
+    const interval = setInterval(fetchDashboardData, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [fetchDashboardData]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('masar-role');
-    localStorage.removeItem('masar-user');
-    router.push('/auth');
+  // Format currency
+  const formatCurrency = (amount: number, currency: string = 'USD') => {
+    if (amount >= 1e9) return `${currency === 'NGN' ? '₦' : '$'}${(amount / 1e9).toFixed(2)}B`;
+    if (amount >= 1e6) return `${currency === 'NGN' ? '₦' : '$'}${(amount / 1e6).toFixed(2)}M`;
+    if (amount >= 1e3) return `${currency === 'NGN' ? '₦' : '$'}${(amount / 1e3).toFixed(1)}K`;
+    return `${currency === 'NGN' ? '₦' : '$'}${amount.toFixed(2)}`;
+  };
+
+  // Format number
+  const formatNumber = (num: number) => {
+    return new Intl.NumberFormat('en-US').format(num);
+  };
+
+  // Get severity color
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case 'critical': return colors.red;
+      case 'high': return colors.amber;
+      case 'medium': return colors.blue;
+      default: return colors.gray;
+    }
+  };
+
+  // Get status color
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'healthy': return colors.green;
+      case 'degraded': return colors.amber;
+      case 'unhealthy': return colors.red;
+      default: return colors.gray;
+    }
   };
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0B1F3A' }}>
+      <div style={{ 
+        minHeight: '100vh', 
+        background: colors.grayLighter,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ position: 'relative', marginBottom: '2rem' }}>
-            <svg width="80" height="80" viewBox="0 0 80 80" style={{ animation: 'spin 2s linear infinite' }}>
-              <circle cx="40" cy="40" r="35" fill="none" stroke="rgba(201,162,74,0.15)" strokeWidth="2" />
-              <circle cx="40" cy="40" r="35" fill="none" stroke="#C9A24A" strokeWidth="2" strokeDasharray="180 220" strokeLinecap="round" />
-            </svg>
-            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
-              <svg width="32" height="32" viewBox="0 0 48 48" fill="none"><path d="M8 40V12L24 28L40 12V40" stroke="#C9A24A" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /><circle cx="24" cy="36" r="2" fill="#C9A24A" /></svg>
-            </div>
-          </div>
-          <span style={{ fontSize: '14px', fontWeight: 700, color: '#C9A24A', letterSpacing: '0.1em' }}>MASAR EXECUTIVE</span>
-          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginTop: '0.5rem' }}>Loading command center...</p>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>📊</div>
+          <h2 style={{ fontSize: '24px', fontWeight: 600, color: colors.navy, margin: 0 }}>
+            Loading Executive Command Center
+          </h2>
+          <p style={{ fontSize: '14px', color: colors.gray, margin: '8px 0 0 0' }}>
+            Aggregating business intelligence...
+          </p>
         </div>
-        <style jsx>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div style={{ 
+        minHeight: '100vh', 
+        background: colors.grayLighter,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
+          <h2 style={{ fontSize: '24px', fontWeight: 600, color: colors.navy, margin: 0 }}>
+            Unable to Load Dashboard
+          </h2>
+          <p style={{ fontSize: '14px', color: colors.gray, margin: '8px 0 16px 0' }}>
+            Please check your connection and try again
+          </p>
+          <button 
+            onClick={fetchDashboardData}
+            style={{
+              padding: '10px 24px',
+              background: colors.gold,
+              color: colors.navy,
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '14px',
+              fontWeight: 600,
+              cursor: 'pointer'
+            }}
+          >
+            Retry
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#F6F8FB', fontFamily: "'Inter', 'IBM Plex Sans Arabic', system-ui, sans-serif" }}>
-      {/* Sidebar */}
-      <aside style={{
-        width: collapsed ? '72px' : '260px',
-        background: 'rgba(11, 31, 58, 0.95)',
-        backdropFilter: 'blur(24px)',
-        borderRight: '1px solid rgba(201, 162, 74, 0.1)',
-        position: 'fixed',
-        top: 0,
-        bottom: 0,
-        zIndex: 50,
-        display: 'flex',
-        flexDirection: 'column',
-        transition: 'width 0.3s ease',
-        overflow: 'hidden',
+    <div style={{ minHeight: '100vh', background: colors.grayLighter }}>
+      {/* Executive Header */}
+      <div style={{ 
+        background: `linear-gradient(135deg, ${colors.navy} 0%, ${colors.navyLight} 100%)`,
+        padding: '20px 32px',
+        color: colors.white,
+        borderBottom: `3px solid ${colors.gold}`
       }}>
-        {/* Logo */}
-        <div style={{ padding: collapsed ? '16px 12px' : '16px 20px', borderBottom: '1px solid rgba(201,162,74,0.1)', display: 'flex', alignItems: 'center', gap: '12px', minHeight: '64px' }}>
-          <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(201,162,74,0.1)', border: '1px solid rgba(201,162,74,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <svg width="18" height="18" viewBox="0 0 48 48" fill="none"><path d="M8 40V12L24 28L40 12V40" stroke="#C9A24A" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /><circle cx="24" cy="36" r="2" fill="#C9A24A" /></svg>
-          </div>
-          {!collapsed && (
-            <div>
-              <span style={{ fontSize: '15px', fontWeight: 800, color: 'white', letterSpacing: '0.06em' }}>MASAR</span>
-              <span style={{ display: 'block', fontSize: '8px', color: 'rgba(201,162,74,0.6)', letterSpacing: '0.12em' }}>EXECUTIVE COMMAND</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px' }}>
+              <h1 style={{ fontSize: '24px', fontWeight: 700, margin: 0 }}>
+                Executive Command Center
+              </h1>
+              <span style={{
+                padding: '4px 10px',
+                background: colors.green,
+                borderRadius: '12px',
+                fontSize: '11px',
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: colors.white }} />
+                LIVE
+              </span>
             </div>
-          )}
+            <p style={{ fontSize: '14px', color: colors.gray, margin: 0 }}>
+              Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, Executive • 
+              {lastUpdated && ` Last sync: ${lastUpdated.toLocaleTimeString()}`}
+            </p>
+          </div>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <select
+              value={dateRange}
+              onChange={(e) => setDateRange(e.target.value)}
+              style={{
+                padding: '8px 12px',
+                background: colors.navyLighter,
+                color: colors.white,
+                border: `1px solid ${colors.gray}`,
+                borderRadius: '6px',
+                fontSize: '13px',
+              }}
+            >
+              <option value="7d">Last 7 Days</option>
+              <option value="30d">Last 30 Days</option>
+              <option value="90d">Last Quarter</option>
+              <option value="ytd">Year to Date</option>
+            </select>
+            <button
+              onClick={fetchDashboardData}
+              disabled={refreshing}
+              style={{
+                padding: '8px 16px',
+                background: refreshing ? colors.gray : colors.gold,
+                color: colors.navy,
+                border: 'none',
+                borderRadius: '6px',
+                fontSize: '13px',
+                fontWeight: 600,
+                cursor: refreshing ? 'not-allowed' : 'pointer'
+              }}
+            >
+              {refreshing ? '⟳ Refreshing...' : '↻ Refresh'}
+            </button>
+            <button style={{
+              padding: '8px 16px',
+              background: 'transparent',
+              color: colors.white,
+              border: `1px solid ${colors.gray}`,
+              borderRadius: '6px',
+              fontSize: '13px',
+              cursor: 'pointer'
+            }}>
+              📥 Export
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div style={{ padding: '24px 32px' }}>
+        {/* KPI Strip */}
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(5, 1fr)', 
+          gap: '16px',
+          marginBottom: '24px'
+        }}>
+          <KPICard
+            title="Transaction Value"
+            value={formatCurrency(data.kpis.totalTransactionValue)}
+            change="+14.8%"
+            changeType="positive"
+            icon="💰"
+          />
+          <KPICard
+            title="Active Transactions"
+            value={formatNumber(data.kpis.activeTransactions)}
+            subtitle={`${data.kpis.completionRate}% completion rate`}
+            icon="📊"
+          />
+          <KPICard
+            title="Revenue"
+            value={formatCurrency(data.kpis.revenue)}
+            change="+12.3%"
+            changeType="positive"
+            icon="📈"
+          />
+          <KPICard
+            title="At-Risk Value"
+            value={formatCurrency(data.kpis.atRiskValue)}
+            changeType={data.kpis.atRiskValue > 0 ? 'warning' : 'positive'}
+            icon="⚠️"
+          />
+          <KPICard
+            title="SLA Breaches"
+            value={formatNumber(data.kpis.slaBreaches)}
+            changeType={data.kpis.slaBreaches > 0 ? 'negative' : 'positive'}
+            icon="⏱️"
+          />
         </div>
 
-        {/* Role Badge */}
-        {!collapsed && (
-          <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(201,162,74,0.1)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 10px', background: 'rgba(201,162,74,0.15)', borderRadius: '8px', border: '1px solid rgba(201,162,74,0.3)' }}>
-              <div style={{ width: '24px', height: '24px', borderRadius: '6px', background: 'rgba(201,162,74,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Crown size={12} color="#C9A24A" />
-              </div>
-              <div>
-                <p style={{ fontSize: '11px', fontWeight: 600, color: 'white', margin: 0 }}>CEO / Corridor Lead</p>
-                <p style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>Executive</p>
-              </div>
+        {/* Alerts Section */}
+        {data.alerts.length > 0 && (
+          <div style={{ 
+            background: colors.white,
+            borderRadius: '12px',
+            padding: '20px',
+            marginBottom: '24px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            borderLeft: `4px solid ${colors.red}`
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h3 style={{ fontSize: '16px', fontWeight: 600, color: colors.navy, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                🔔 Requires Executive Attention
+                <span style={{
+                  padding: '2px 8px',
+                  background: colors.redLight,
+                  color: colors.red,
+                  borderRadius: '10px',
+                  fontSize: '12px',
+                  fontWeight: 600
+                }}>
+                  {data.alerts.length}
+                </span>
+              </h3>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '12px' }}>
+              {data.alerts.slice(0, 6).map((alert) => (
+                <div key={alert.id} style={{
+                  padding: '14px',
+                  background: colors.grayLighter,
+                  borderRadius: '8px',
+                  borderLeft: `3px solid ${getSeverityColor(alert.severity)}`
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                    <span style={{ 
+                      padding: '2px 6px', 
+                      background: getSeverityColor(alert.severity) + '20',
+                      color: getSeverityColor(alert.severity),
+                      borderRadius: '4px',
+                      fontSize: '10px',
+                      fontWeight: 600,
+                      textTransform: 'uppercase'
+                    }}>
+                      {alert.severity}
+                    </span>
+                    {alert.value && (
+                      <span style={{ fontSize: '14px', fontWeight: 600, color: colors.navy }}>
+                        {formatCurrency(alert.value)}
+                      </span>
+                    )}
+                  </div>
+                  <p style={{ fontSize: '13px', color: colors.navy, margin: '0 0 4px 0', fontWeight: 500 }}>
+                    {alert.title}
+                  </p>
+                  {alert.transaction && (
+                    <p style={{ fontSize: '12px', color: colors.gray, margin: '0 0 8px 0' }}>
+                      {alert.transaction} • {alert.age}h ago
+                    </p>
+                  )}
+                  <button style={{
+                    padding: '4px 10px',
+                    background: colors.navy,
+                    color: colors.white,
+                    border: 'none',
+                    borderRadius: '4px',
+                    fontSize: '11px',
+                    cursor: 'pointer'
+                  }}>
+                    {alert.action}
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
         )}
 
-        {/* Navigation */}
-        <nav style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }}>
-          {ceoSidebar.map((section, sIdx) => (
-            <div key={sIdx} style={{ marginBottom: '4px' }}>
-              {!collapsed && (
-                <div style={{ padding: '12px 20px 4px', fontSize: '10px', fontWeight: 700, color: 'rgba(201,162,74,0.4)', letterSpacing: '0.1em' }}>
-                  {section.label}
-                </div>
-              )}
-              {section.items.map((item) => {
-                const Icon = iconMap[item.icon] || FileText;
-                const isActive = false;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '12px',
-                      padding: collapsed ? '10px 0' : '9px 20px',
-                      justifyContent: collapsed ? 'center' : 'flex-start',
-                      textDecoration: 'none',
-                      transition: 'all 0.2s',
-                      background: isActive ? 'rgba(201,162,74,0.1)' : 'transparent',
-                      borderRight: isActive ? '2px solid #C9A24A' : '2px solid transparent',
-                    }}
-                  >
-                    <Icon size={18} color={isActive ? '#C9A24A' : 'rgba(255,255,255,0.4)'} />
-                    {!collapsed && (
-                      <span style={{ fontSize: '13px', fontWeight: isActive ? 600 : 400, color: isActive ? '#C9A24A' : 'rgba(255,255,255,0.5)' }}>
-                        {item.name}
-                      </span>
-                    )}
-                  </Link>
-                );
-              })}
-            </div>
-          ))}
-        </nav>
-
-        {/* User & Logout */}
-        <div style={{ padding: collapsed ? '12px 8px' : '12px 16px', borderTop: '1px solid rgba(201,162,74,0.1)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: collapsed ? 'center' : 'flex-start', marginBottom: '10px' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'linear-gradient(135deg, #C9A24A, #E3C875)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <span style={{ fontSize: '12px', fontWeight: 700, color: '#0B1F3A' }}>MB</span>
-            </div>
-            {!collapsed && (
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: '12px', fontWeight: 600, color: 'white', margin: 0 }}>Mujaheed Baita</p>
-                <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>CEO</p>
+        {/* Transaction Pipeline */}
+        <div style={{ 
+          background: colors.white,
+          borderRadius: '12px',
+          padding: '24px',
+          marginBottom: '24px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+        }}>
+          <h3 style={{ fontSize: '18px', fontWeight: 600, color: colors.navy, margin: '0 0 20px 0' }}>
+            Transaction Protocol Pipeline
+          </h3>
+          <div style={{ display: 'flex', gap: '4px', overflowX: 'auto', paddingBottom: '8px' }}>
+            {data.pipeline.map((stage, index) => (
+              <div 
+                key={stage.stage}
+                style={{
+                  flex: 1,
+                  minWidth: '120px',
+                  padding: '16px 12px',
+                  background: index === data.pipeline.length - 1 ? colors.greenLight : colors.grayLighter,
+                  borderRadius: '8px',
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s',
+                }}
+                onClick={() => router.push(`/dashboard/transactions?state=${stage.stage.toLowerCase()}`)}
+              >
+                <p style={{ fontSize: '11px', color: colors.gray, margin: '0 0 8px 0', fontWeight: 500 }}>
+                  {stage.stage}
+                </p>
+                <p style={{ fontSize: '24px', fontWeight: 700, color: colors.navy, margin: '0 0 4px 0' }}>
+                  {stage.count}
+                </p>
+                <p style={{ fontSize: '11px', color: colors.gray, margin: '0 0 8px 0' }}>
+                  {formatCurrency(stage.value)}
+                </p>
+                {stage.blocked > 0 && (
+                  <span style={{
+                    padding: '2px 6px',
+                    background: colors.redLight,
+                    color: colors.red,
+                    borderRadius: '4px',
+                    fontSize: '10px',
+                    fontWeight: 600
+                  }}>
+                    {stage.blocked} blocked
+                  </span>
+                )}
+                {index < data.pipeline.length - 1 && (
+                  <div style={{ 
+                    position: 'absolute', 
+                    right: '-8px', 
+                    top: '50%', 
+                    transform: 'translateY(-50%)',
+                    color: colors.gray,
+                    fontSize: '16px'
+                  }}>
+                    →
+                  </div>
+                )}
               </div>
-            )}
+            ))}
           </div>
-          <button
-            onClick={handleLogout}
-            style={{
-              width: '100%', display: 'flex', alignItems: 'center', gap: '8px', justifyContent: collapsed ? 'center' : 'flex-start',
-              padding: '8px 12px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)',
-              borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s',
-            }}
-          >
-            <LogOut size={16} color="#EF4444" />
-            {!collapsed && <span style={{ fontSize: '12px', fontWeight: 500, color: '#EF4444' }}>Logout</span>}
-          </button>
         </div>
-      </aside>
 
-      {/* Main Content */}
-      <div style={{ flex: 1, marginLeft: collapsed ? '72px' : '260px', transition: 'margin-left 0.3s ease', display: 'flex', flexDirection: 'column' }}>
-        {/* Top Bar */}
-        <header style={{ background: 'white', borderBottom: '1px solid #E4E7EC', padding: '0 24px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 30 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1 }}>
-            <div style={{ position: 'relative', width: '100%', maxWidth: '480px' }}>
-              <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#98A2B3' }} />
-              <input type="text" placeholder="Search transactions, buyers, exporters..." style={{ width: '100%', padding: '8px 12px 8px 36px', background: '#F9FAFB', border: '1px solid #E4E7EC', borderRadius: '8px', fontSize: '13px', color: '#142235', outline: 'none' }} />
-            </div>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: '#F0FDF4', borderRadius: '6px' }}>
-              <div style={{ width: '6px', height: '6px', background: '#16A34A', borderRadius: '50%' }} />
-              <span style={{ fontSize: '11px', fontWeight: 600, color: '#16A34A' }}>OPERATIONAL</span>
-            </div>
-            <div style={{ padding: '4px 8px', background: 'rgba(201,162,74,0.08)', borderRadius: '4px', border: '1px solid rgba(201,162,74,0.15)' }}>
-              <span style={{ fontSize: '10px', fontWeight: 700, color: '#C9A24A', letterSpacing: '0.05em' }}>V0 CONCIERGE</span>
-            </div>
-            <button style={{ position: 'relative', padding: '6px', background: 'white', border: '1px solid #E4E7EC', borderRadius: '8px', cursor: 'pointer' }}>
-              <Bell size={18} color="#667085" />
-              {unreadNotifs.length > 0 && <span style={{ position: 'absolute', top: '-2px', right: '-2px', width: '16px', height: '16px', background: '#EF4444', borderRadius: '50%', fontSize: '9px', fontWeight: 700, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{unreadNotifs.length}</span>}
-            </button>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 8px', borderRadius: '8px', cursor: 'pointer' }}>
-              <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'linear-gradient(135deg, #C9A24A, #E3C875)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ fontSize: '11px', fontWeight: 700, color: '#0B1F3A' }}>MB</span>
-              </div>
-              <div>
-                <p style={{ fontSize: '12px', fontWeight: 600, color: '#142235', margin: 0 }}>Mujaheed Baita</p>
-                <p style={{ fontSize: '10px', color: '#667085', margin: 0 }}>CEO</p>
-              </div>
-              <ChevronDown size={14} color="#667085" />
-            </div>
-          </div>
-        </header>
-
-        {/* Main Content */}
-        <main style={{ flex: 1, padding: '24px', overflow: 'auto' }}>
-          {/* Header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                <Crown size={18} color="#C9A24A" />
-                <span style={{ fontSize: '10px', fontWeight: 700, color: '#C9A24A', letterSpacing: '0.08em' }}>EXECUTIVE COMMAND CENTER</span>
-              </div>
-              <h1 style={{ fontSize: '22px', fontWeight: 800, color: '#142235', marginBottom: '2px' }}>Corridor Performance Overview</h1>
-              <p style={{ fontSize: '13px', color: '#667085' }}>Nigeria → Saudi Arabia · {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-            </div>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button style={{ padding: '8px 14px', background: 'white', border: '1px solid #E4E7EC', borderRadius: '8px', fontSize: '12px', fontWeight: 500, color: '#667085', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}><RefreshCw size={13} /> Refresh</button>
-              <Link href="/dashboard/transactions" style={{ padding: '8px 14px', background: 'linear-gradient(135deg, #C9A24A, #E3C875)', color: '#0B1F3A', borderRadius: '8px', fontSize: '12px', fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>View All Transactions</Link>
+        {/* Two Column Layout */}
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px', marginBottom: '24px' }}>
+          {/* Financial Intelligence */}
+          <div style={{ 
+            background: colors.white,
+            borderRadius: '12px',
+            padding: '24px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 600, color: colors.navy, margin: '0 0 20px 0' }}>
+              Financial Intelligence
+            </h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
+              <FinancialCard
+                label="Total Funding"
+                value={formatCurrency(data.finance.funding.totalApproved)}
+                detail={`${data.finance.funding.pending} pending requests`}
+                icon="💳"
+              />
+              <FinancialCard
+                label="Escrow Secured"
+                value={formatCurrency(data.finance.escrow.totalConfirmed)}
+                detail={`${formatCurrency(data.finance.escrow.totalExpected)} expected`}
+                icon="🔒"
+              />
+              <FinancialCard
+                label="Settlements"
+                value={formatCurrency(data.settlement.totalValue)}
+                detail={`${data.settlement.completed} completed`}
+                icon="✅"
+              />
+              <FinancialCard
+                label="Gross Margin"
+                value={formatCurrency(data.kpis.grossMargin)}
+                detail={`${((data.kpis.grossMargin / data.kpis.revenue) * 100).toFixed(1)}% margin`}
+                icon="📊"
+              />
             </div>
           </div>
 
-          {/* Tab Navigation */}
-          <div style={{ display: 'flex', gap: '4px', marginBottom: '20px', padding: '4px', background: '#E5E7EB', borderRadius: '10px', width: 'fit-content' }}>
-            {(['overview', 'transactions', 'network', 'risk'] as const).map(tab => (
-              <button key={tab} onClick={() => setActiveTab(tab)} style={{ padding: '8px 16px', borderRadius: '8px', fontSize: '12px', fontWeight: 600, border: 'none', cursor: 'pointer', transition: 'all 0.2s', ...(activeTab === tab ? { background: 'white', color: '#142235', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' } : { background: 'transparent', color: '#667085' }) }}>
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </button>
-            ))}
+          {/* Risk Overview */}
+          <div style={{ 
+            background: colors.white,
+            borderRadius: '12px',
+            padding: '24px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 600, color: colors.navy, margin: '0 0 20px 0' }}>
+              Risk Overview
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <RiskLevelBar level="Critical" count={data.risk.byLevel.critical?.count || 0} value={data.risk.byLevel.critical?.value || 0} color={colors.red} />
+              <RiskLevelBar level="High" count={data.risk.byLevel.high?.count || 0} value={data.risk.byLevel.high?.value || 0} color={colors.amber} />
+              <RiskLevelBar level="Medium" count={data.risk.byLevel.medium?.count || 0} value={data.risk.byLevel.medium?.value || 0} color={colors.blue} />
+              <RiskLevelBar level="Low" count={data.risk.byLevel.low?.count || 0} value={data.risk.byLevel.low?.value || 0} color={colors.green} />
+            </div>
+            <div style={{ 
+              marginTop: '20px', 
+              padding: '16px', 
+              background: data.risk.atRiskValue > 0 ? colors.amberLight : colors.greenLight,
+              borderRadius: '8px',
+              textAlign: 'center'
+            }}>
+              <p style={{ fontSize: '12px', color: colors.gray, margin: '0 0 4px 0' }}>Total At-Risk Value</p>
+              <p style={{ fontSize: '24px', fontWeight: 700, color: data.risk.atRiskValue > 0 ? colors.amber : colors.green, margin: 0 }}>
+                {formatCurrency(data.risk.atRiskValue)}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Operations Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
+          {/* Compliance */}
+          <div style={{ 
+            background: colors.white,
+            borderRadius: '12px',
+            padding: '20px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h4 style={{ fontSize: '14px', fontWeight: 600, color: colors.navy, margin: 0 }}>Compliance</h4>
+              <span style={{ fontSize: '20px' }}>📋</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <MetricRow label="KYB Approved" value={`${data.compliance.kyb.approved}/${data.compliance.kyb.total}`} />
+              <MetricRow label="Auto-Clear Rate" value={`${data.compliance.kyb.autoClearRate}%`} />
+              <MetricRow label="Compliance Ready" value={`${data.compliance.compliance.ready}`} />
+              <MetricRow label="Readiness Score" value={`${data.compliance.compliance.readinessScore}%`} />
+            </div>
           </div>
 
-          {/* Daily Brief */}
-          <div style={{ background: 'linear-gradient(135deg, #0B1F3A, #102A4C)', borderRadius: '12px', padding: '20px', marginBottom: '20px', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', inset: 0, opacity: 0.04, backgroundImage: `linear-gradient(30deg, rgba(201,162,74,0.1) 12%, transparent 12.5%, transparent 87%, rgba(201,162,74,0.1) 87.5%)`, backgroundSize: '60px 100px' }} />
-            <div style={{ position: 'relative', zIndex: 10 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-                <div>
-                  <span style={{ fontSize: '10px', fontWeight: 700, color: '#C9A24A', letterSpacing: '0.08em' }}>DAILY EXECUTIVE BRIEF</span>
-                  <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'white', margin: '4px 0 0' }}>MASAR Daily Brief — {new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</h3>
+          {/* Inspection */}
+          <div style={{ 
+            background: colors.white,
+            borderRadius: '12px',
+            padding: '20px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h4 style={{ fontSize: '14px', fontWeight: 600, color: colors.navy, margin: 0 }}>Inspection</h4>
+              <span style={{ fontSize: '20px' }}>🔍</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <MetricRow label="Pass Rate" value={`${data.inspection.passRate}%`} />
+              <MetricRow label="Passed" value={`${data.inspection.passed}`} />
+              <MetricRow label="Pending" value={`${data.inspection.pending}`} />
+              <MetricRow label="Failed" value={`${data.inspection.failed}`} />
+            </div>
+          </div>
+
+          {/* Logistics */}
+          <div style={{ 
+            background: colors.white,
+            borderRadius: '12px',
+            padding: '20px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h4 style={{ fontSize: '14px', fontWeight: 600, color: colors.navy, margin: 0 }}>Logistics</h4>
+              <span style={{ fontSize: '20px' }}>🚢</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <MetricRow label="In Transit" value={`${data.logistics.inTransit}`} />
+              <MetricRow label="Arrived" value={`${data.logistics.arrived}`} />
+              <MetricRow label="Delayed" value={`${data.logistics.delayed}`} />
+              <MetricRow label="Total Shipments" value={`${data.logistics.total}`} />
+            </div>
+          </div>
+
+          {/* Settlement */}
+          <div style={{ 
+            background: colors.white,
+            borderRadius: '12px',
+            padding: '20px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h4 style={{ fontSize: '14px', fontWeight: 600, color: colors.navy, margin: 0 }}>Settlement</h4>
+              <span style={{ fontSize: '20px' }}>💱</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <MetricRow label="Completed" value={`${data.settlement.completed}`} />
+              <MetricRow label="Pending" value={`${data.settlement.pending}`} />
+              <MetricRow label="Total Value" value={formatCurrency(data.settlement.totalValue)} />
+              <MetricRow label="Avg Cycle" value={`${data.kpis.averageCycleDays.toFixed(1)}d`} />
+            </div>
+          </div>
+        </div>
+
+        {/* Activity Feed & System Health */}
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
+          {/* Activity Feed */}
+          <div style={{ 
+            background: colors.white,
+            borderRadius: '12px',
+            padding: '24px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 600, color: colors.navy, margin: '0 0 20px 0' }}>
+              Recent Strategic Activity
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '300px', overflowY: 'auto' }}>
+              {data.activity.slice(0, 10).map((event) => (
+                <div key={event.id} style={{ 
+                  display: 'flex', 
+                  gap: '12px',
+                  padding: '12px',
+                  background: colors.grayLighter,
+                  borderRadius: '8px'
+                }}>
+                  <div style={{ 
+                    width: '8px', 
+                    height: '8px', 
+                    borderRadius: '50%', 
+                    background: colors.blue,
+                    marginTop: '6px',
+                    flexShrink: 0
+                  }} />
+                  <div>
+                    <p style={{ fontSize: '13px', color: colors.navy, margin: 0, fontWeight: 500 }}>
+                      {event.type.replace(/_/g, ' ')}
+                    </p>
+                    <p style={{ fontSize: '12px', color: colors.gray, margin: '4px 0 0 0' }}>
+                      {event.transaction && `${event.transaction} • `}{event.actor} • {new Date(event.timestamp).toLocaleString()}
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px' }}>
-                {[
-                  { v: String(stats.activeTransactions), l: 'Active Transactions' },
-                  { v: String(stats.atRiskCount), l: 'Require Attention' },
-                  { v: formatCurrency(stats.pipelineGMV), l: 'Pipeline GMV' },
-                  { v: '1', l: 'Shipment Delayed' },
-                  { v: '0', l: 'Compliance Breaches' },
-                  { v: '1', l: 'Buyer Pending' },
-                ].map((item, idx) => (
-                  <div key={idx} style={{ padding: '10px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
-                    <p style={{ fontSize: '20px', fontWeight: 800, color: 'white', margin: 0 }}>{item.v}</p>
-                    <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', margin: 0 }}>{item.l}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* KPI Strip */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '12px', marginBottom: '20px' }}>
-            {[
-              { label: 'GMV', value: formatCurrency(stats.totalGMV), change: '+$420K this month', trend: 'up', icon: TrendingUp, color: '#C9A24A' },
-              { label: 'REVENUE', value: '$142K', change: '+18% vs target', trend: 'up', icon: DollarSign, color: '#16A34A' },
-              { label: 'COMPLETED', value: String(stats.completedTransactions), change: '+3 this month', trend: 'up', icon: CheckCircle, color: '#3B82F6' },
-              { label: 'ACTIVE BUYERS', value: String(buyers.filter(b => b.verificationStatus === 'APPROVED').length), change: '+2 new', trend: 'up', icon: Users, color: '#8B5CF6' },
-              { label: 'REPEAT RATE', value: '67%', change: '+5% QoQ', trend: 'up', icon: Star, color: '#16A34A' },
-              { label: 'DISPUTE RATE', value: '0.8%', change: 'Below 1.5% target', trend: 'up', icon: Scale, color: '#16A34A' },
-              { label: 'TAKE RATE', value: '3.7%', change: 'On target', trend: 'neutral', icon: Target, color: '#3B82F6' },
-              { label: 'FINANCED', value: formatCurrency(stats.financedValue), change: '32% of GMV', trend: 'up', icon: Banknote, color: '#16A34A' },
-            ].map((kpi, idx) => (
-              <div key={idx} style={{ background: 'white', borderRadius: '12px', border: '1px solid #E4E7EC', padding: '14px', cursor: 'pointer', transition: 'all 0.2s' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
-                  <span style={{ fontSize: '10px', fontWeight: 600, color: '#98A2B3', letterSpacing: '0.05em' }}>{kpi.label}</span>
-                  <div style={{ width: '24px', height: '24px', borderRadius: '5px', background: `${kpi.color}10`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><kpi.icon size={12} color={kpi.color} /></div>
-                </div>
-                <div style={{ fontSize: '20px', fontWeight: 800, color: '#142235', lineHeight: 1, marginBottom: '3px' }}>{kpi.value}</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                  {kpi.trend === 'up' ? <ArrowUpRight size={10} color="#16A34A" /> : kpi.trend === 'down' ? <ArrowDownRight size={10} color="#EF4444" /> : <Minus size={10} color="#98A2B3" />}
-                  <span style={{ fontSize: '10px', color: kpi.trend === 'up' ? '#16A34A' : kpi.trend === 'down' ? '#EF4444' : '#98A2B3' }}>{kpi.change}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Strategic Alerts + Corridor Health */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: '16px', marginBottom: '20px' }}>
-            {/* Strategic Alerts */}
-            <div style={{ background: 'white', borderRadius: '12px', border: '1px solid #E4E7EC', overflow: 'hidden' }}>
-              <div style={{ padding: '14px 18px', borderBottom: '1px solid #E4E7EC' }}>
-                <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#142235' }}>Strategic Alerts</h3>
-              </div>
-              <div style={{ padding: '12px' }}>
-                {mockNotifications.filter(n => !n.read).map((n) => (
-                  <div key={n.id} style={{ padding: '12px', borderLeft: `3px solid ${n.type === 'CRITICAL' ? '#EF4444' : n.type === 'WARNING' ? '#F59E0B' : '#3B82F6'}`, background: n.type === 'CRITICAL' ? '#FEF2F2' : n.type === 'WARNING' ? '#FFFBEB' : '#EFF6FF', borderRadius: '0 8px 8px 0', marginBottom: '8px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <div><p style={{ fontSize: '12px', fontWeight: 600, color: '#142235', margin: 0 }}>{n.title}</p><p style={{ fontSize: '11px', color: '#667085', margin: '2px 0 0' }}>{n.description}</p></div>
-                      <Link href="/dashboard/transactions" style={{ padding: '4px 10px', background: 'white', border: '1px solid #E4E7EC', borderRadius: '4px', fontSize: '10px', fontWeight: 600, color: '#667085', textDecoration: 'none' }}>View</Link>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Corridor Health */}
-            <div style={{ background: 'white', borderRadius: '12px', border: '1px solid #E4E7EC', overflow: 'hidden' }}>
-              <div style={{ padding: '14px 18px', borderBottom: '1px solid #E4E7EC' }}>
-                <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#142235' }}>Corridor Health</h3>
-              </div>
-              <div style={{ padding: '12px' }}>
-                {[
-                  { metric: 'Transaction Velocity', value: '42 days avg', status: 'good' },
-                  { metric: 'Inspection Pass Rate', value: '96%', status: 'excellent' },
-                  { metric: 'Compliance Pass Rate', value: '94%', status: 'good' },
-                  { metric: 'Settlement Success', value: '100%', status: 'excellent' },
-                  { metric: 'Dispute Rate', value: '0.8%', status: 'excellent' },
-                  { metric: 'Repeat Buyer Rate', value: '67%', status: 'good' },
-                ].map((item, idx) => (
-                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: idx < 5 ? '1px solid #F3F4F6' : 'none' }}>
-                    <span style={{ fontSize: '12px', color: '#667085' }}>{item.metric}</span>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontSize: '12px', fontWeight: 600, color: '#142235' }}>{item.value}</span>
-                      <span style={{ fontSize: '10px', fontWeight: 600, color: item.status === 'excellent' ? '#16A34A' : '#F59E0B', padding: '2px 6px', background: item.status === 'excellent' ? '#F0FDF4' : '#FFFBEB', borderRadius: '4px' }}>{item.status === 'excellent' ? '● Excellent' : '● Good'}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Top Buyers + Exporters */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: '16px' }}>
-            <div style={{ background: 'white', borderRadius: '12px', border: '1px solid #E4E7EC', overflow: 'hidden' }}>
-              <div style={{ padding: '14px 18px', borderBottom: '1px solid #E4E7EC', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#142235' }}>Top Buyers</h3>
-                <Link href="/dashboard/buyers" style={{ fontSize: '11px', color: '#C9A24A', textDecoration: 'none', fontWeight: 600 }}>View All →</Link>
-              </div>
-              {mockBuyers.filter(b => b.verificationStatus === 'APPROVED').map((buyer, idx) => (
-                <Link key={buyer.id} href="/dashboard/buyers" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 18px', borderBottom: idx < 1 ? '1px solid #E4E7EC' : 'none', textDecoration: 'none', color: 'inherit' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Building2 size={16} color="#3B82F6" /></div>
-                    <div><p style={{ fontSize: '13px', fontWeight: 600, color: '#142235', margin: 0 }}>{buyer.tradingName}</p><p style={{ fontSize: '11px', color: '#98A2B3', margin: 0 }}>{buyer.transactionCount} transactions</p></div>
-                  </div>
-                  <div style={{ textAlign: 'right' }}><p style={{ fontSize: '13px', fontWeight: 700, color: '#142235', margin: 0 }}>{formatCurrency(buyer.totalGMV)}</p><span style={{ fontSize: '10px', color: '#16A34A' }}>Risk: {buyer.riskScore}</span></div>
-                </Link>
-              ))}
-            </div>
-
-            <div style={{ background: 'white', borderRadius: '12px', border: '1px solid #E4E7EC', overflow: 'hidden' }}>
-              <div style={{ padding: '14px 18px', borderBottom: '1px solid #E4E7EC', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#142235' }}>Top Exporters</h3>
-                <Link href="/dashboard/exporters" style={{ fontSize: '11px', color: '#C9A24A', textDecoration: 'none', fontWeight: 600 }}>View All →</Link>
-              </div>
-              {mockExporters.filter(e => e.verificationStatus === 'APPROVED').map((exp, idx) => (
-                <Link key={exp.id} href="/dashboard/exporters" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 18px', borderBottom: idx < 1 ? '1px solid #E4E7EC' : 'none', textDecoration: 'none', color: 'inherit' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#F0FDF4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Truck size={16} color="#16A34A" /></div>
-                    <div><p style={{ fontSize: '13px', fontWeight: 600, color: '#142235', margin: 0 }}>{exp.tradingName}</p><p style={{ fontSize: '11px', color: '#98A2B3', margin: 0 }}>{exp.completedTransactions} completed</p></div>
-                  </div>
-                  <div style={{ textAlign: 'right' }}><div style={{ display: 'flex', alignItems: 'center', gap: '3px', justifyContent: 'flex-end' }}><Star size={12} color="#C9A24A" fill="#C9A24A" /><span style={{ fontSize: '14px', fontWeight: 700, color: '#142235' }}>{exp.trustScore}</span></div><span style={{ fontSize: '10px', color: '#16A34A' }}>Pass: {exp.inspectionPassRate}%</span></div>
-                </Link>
               ))}
             </div>
           </div>
-        </main>
 
-        {/* Status Bar */}
-        <footer style={{ background: 'white', borderTop: '1px solid #E4E7EC', padding: '8px 24px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <span style={{ fontSize: '10px', fontWeight: 700, color: '#C9A24A', letterSpacing: '0.05em' }}>MASAR V0</span>
-            <span style={{ fontSize: '10px', color: '#98A2B3' }}>Concierge Operations · Human-in-the-loop</span>
+          {/* System Health */}
+          <div style={{ 
+            background: colors.white,
+            borderRadius: '12px',
+            padding: '24px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 600, color: colors.navy, margin: '0 0 20px 0' }}>
+              System Health
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <SystemHealthRow label="Database" status={data.systemHealth.database.status} />
+              <SystemHealthRow label="API" status={data.systemHealth.api.status} />
+              {data.systemHealth.integrations.slice(0, 5).map((integration) => (
+                <SystemHealthRow key={integration.name} label={integration.name} status={integration.status} />
+              ))}
+            </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <span style={{ fontSize: '10px', color: '#98A2B3' }}>Operations: <span style={{ color: '#16A34A', fontWeight: 600 }}>Operational</span></span>
-            <span style={{ fontSize: '10px', color: '#98A2B3' }}>Settlement: <span style={{ color: '#C9A24A', fontWeight: 600 }}>Licensed Partner</span></span>
-          </div>
-        </footer>
+        </div>
       </div>
+    </div>
+  );
+}
+
+// ============================================================
+// COMPONENT HELPERS
+// ============================================================
+
+function KPICard({ title, value, change, changeType, subtitle, icon }: {
+  title: string;
+  value: string;
+  change?: string;
+  changeType?: 'positive' | 'negative' | 'warning';
+  subtitle?: string;
+  icon: string;
+}) {
+  const changeColor = changeType === 'positive' ? '#10B981' : changeType === 'negative' ? '#EF4444' : '#F59E0B';
+  
+  return (
+    <div style={{
+      background: colors.white,
+      borderRadius: '12px',
+      padding: '20px',
+      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+      borderTop: `3px solid ${changeType === 'negative' || changeType === 'warning' ? changeColor : colors.gold}`
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+        <p style={{ fontSize: '12px', color: colors.gray, margin: 0 }}>{title}</p>
+        <span style={{ fontSize: '20px' }}>{icon}</span>
+      </div>
+      <p style={{ fontSize: '28px', fontWeight: 700, color: colors.navy, margin: '0 0 4px 0' }}>
+        {value}
+      </p>
+      {change && (
+        <p style={{ fontSize: '12px', color: changeColor, margin: 0, fontWeight: 600 }}>
+          {changeType === 'positive' ? '↑' : changeType === 'negative' ? '↓' : '→'} {change}
+        </p>
+      )}
+      {subtitle && (
+        <p style={{ fontSize: '11px', color: colors.gray, margin: '4px 0 0 0' }}>{subtitle}</p>
+      )}
+    </div>
+  );
+}
+
+function FinancialCard({ label, value, detail, icon }: {
+  label: string;
+  value: string;
+  detail: string;
+  icon: string;
+}) {
+  return (
+    <div style={{ padding: '16px', background: colors.grayLighter, borderRadius: '8px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+        <p style={{ fontSize: '12px', color: colors.gray, margin: 0 }}>{label}</p>
+        <span style={{ fontSize: '16px' }}>{icon}</span>
+      </div>
+      <p style={{ fontSize: '22px', fontWeight: 700, color: colors.navy, margin: '0 0 4px 0' }}>{value}</p>
+      <p style={{ fontSize: '11px', color: colors.gray, margin: 0 }}>{detail}</p>
+    </div>
+  );
+}
+
+function RiskLevelBar({ level, count, value, color }: {
+  level: string;
+  count: number;
+  value: number;
+  color: string;
+}) {
+  const maxValue = 10000000; // $10M scale
+  const percentage = Math.min((value / maxValue) * 100, 100);
+  
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+        <span style={{ fontSize: '13px', color: colors.navy, fontWeight: 500 }}>{level}</span>
+        <span style={{ fontSize: '12px', color: colors.gray }}>{count} transactions</span>
+      </div>
+      <div style={{ height: '8px', background: colors.grayLight, borderRadius: '4px', overflow: 'hidden' }}>
+        <div style={{ width: `${percentage}%`, height: '100%', background: color, borderRadius: '4px' }} />
+      </div>
+      <p style={{ fontSize: '11px', color: colors.gray, margin: '2px 0 0 0', textAlign: 'right' }}>
+        {value > 0 ? `$${(value / 1e6).toFixed(1)}M` : '$0'}
+      </p>
+    </div>
+  );
+}
+
+function MetricRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <span style={{ fontSize: '12px', color: colors.gray }}>{label}</span>
+      <span style={{ fontSize: '13px', fontWeight: 600, color: colors.navy }}>{value}</span>
+    </div>
+  );
+}
+
+function SystemHealthRow({ label, status }: { label: string; status: string }) {
+  const statusColor = status === 'healthy' || status === 'active' ? colors.green : 
+                      status === 'degraded' ? colors.amber : colors.red;
+  
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px', background: colors.grayLighter, borderRadius: '6px' }}>
+      <span style={{ fontSize: '13px', color: colors.navy }}>{label}</span>
+      <span style={{ 
+        padding: '2px 8px',
+        background: statusColor + '20',
+        color: statusColor,
+        borderRadius: '4px',
+        fontSize: '11px',
+        fontWeight: 600
+      }}>
+        {status}
+      </span>
     </div>
   );
 }

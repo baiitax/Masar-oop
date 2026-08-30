@@ -1,0 +1,343 @@
+{
+  "meta": {
+    "title": "MASAR | مسار — Infrastructure Commerciale de Confiance pour l'Afrique–Arabie Saoudite",
+    "description": "MASAR connecte les exportateurs vérifiés et les acheteurs saoudiens via un rail de transaction unique pour la conformité, l'inspection, le règlement et le financement commercial."
+  },
+  "nav": {
+    "platform": "Plateforme",
+    "howItWorks": "Comment ça marche",
+    "forBuyers": "Pour les Acheteurs",
+    "forExporters": "Pour les Exportateurs",
+    "trustCompliance": "Confiance & Conformité",
+    "about": "À propos",
+    "contact": "Contact",
+    "startTrade": "Commencer un Commerce",
+    "signIn": "Se Connecter",
+    "register": "S'inscrire",
+    "operationsCenter": "Centre d'Opérations"
+  },
+  "hero": {
+    "badge": "Le Corridor Commercial Arabie Saoudite–Afrique",
+    "title": "Le chemin de confiance entre",
+    "titleHighlight": "l'offre africaine",
+    "titleAnd": "et",
+    "titleHighlight2": "la demande saoudienne",
+    "subtitle": "MASAR connecte les exportateurs vérifiés et les acheteurs saoudiens via un rail de transaction unique pour la conformité, l'inspection, le règlement et le financement commercial.",
+    "ctaPrimary": "Commencer un Commerce",
+    "ctaSecondary": "Explorer le Rail MASAR",
+    "poweredBy": "Propulsé par",
+    "kgm": "KGM Limited",
+    "kgmFull": "Kurra Greenfield Merchants Ltd",
+    "trustStrip": {
+      "counterparties": "Contreparties Vérifiées",
+      "compliance": "Conformité",
+      "inspection": "Inspection Indépendante",
+      "settlement": "Règlement Sécurisé",
+      "finance": "Financement Commercial"
+    }
+  },
+  "trustBar": {
+    "backedBy": "SOUTENU PAR KGM LIMITED",
+    "cac": "Enregistré CAC",
+    "cacSub": "RC 1539036",
+    "bpp": "Conforme BPP",
+    "bppSub": "Bureau Fédéral",
+    "scuml": "Certifié SCUML",
+    "scumlSub": "CBN AML",
+    "misa": "MISA Arabie Saoudite",
+    "misaSub": "Ministère de l'Investissement"
+  },
+  "leadership": {
+    "title": "Vision du Leadership",
+    "subtitle": "Écoutez les dirigeants qui construisent MASAR — l'infrastructure de confiance pour le commerce Afrique–Arabie Saoudite.",
+    "ceoQuote": "Notre parcours chez MASAR est alimenté par un engagement envers l'innovation et le succès client. En comblant le fossé entre la politique nationale et l'exécution de base, nous ne construisons pas seulement des infrastructures ; nous construisons l'avenir de l'économie numérique africaine.",
+    "ceoName": "Lukman Kura",
+    "ceoRole": "Fondateur & PDG, MASAR",
+    "ceoTags": ["Vision Stratégique", "Développement de Corridor", "Construction de Partenariats"],
+    "ctoQuote": "Chez MASAR, nous construisons plus que des logiciels — nous intégrons la confiance dans chaque transaction transfrontalière.",
+    "ctoName": "Mujahid Baita",
+    "ctoRole": "Directeur de la Technologie",
+    "ctoTags": ["Architecture de Protocole", "Ingénierie de Confiance", "Automatisation de Conformité"],
+    "ctoVideoTitle": "Briefing CTO — La Vision Technologique MASAR",
+    "ctoVideoFormat": "9:16 Portrait"
+  },
+  "market": {
+    "title": "Le corridor existe déjà.",
+    "titleLine2": "L'infrastructure n'existe pas.",
+    "subtitle": "L'Arabie Saoudite dépend fortement des importations alimentaires et agricoles, tandis que les exportateurs africains possèdent une offre agricole importante.",
+    "stats": [
+      { "value": "+20 Mds$", "label": "Importations alimentaires et agricoles saoudiennes annuelles" },
+      { "value": "70–80%", "label": "Dépendance alimentaire approximative" },
+      { "value": "+11 Mds$", "label": "Estimation des importations saoudiennes d'Afrique" },
+      { "value": "817 M$", "label": "Exportations de sésame du Nigeria (2024)" }
+    ],
+    "footnote": "Les chiffres du marché sont basés sur des sources documentées dans le Plan Commercial MASAR."
+  },
+  "sesame": {
+    "title": "Nigeria → Arabie Saoudite",
+    "subtitle": "La Première Voie de Produit MASAR",
+    "description": "Sésame nigérian premium — vérifié, inspecté et réglé via un rail de transaction contrôlé.",
+    "commodity": "Sésame Non-OGM",
+    "origin": "Nigeria",
+    "destination": "Arabie Saoudite",
+    "verification": "Indépendante",
+    "compliance": "Gérée",
+    "settlement": "Contrôlée"
+  },
+  "howItWorks": {
+    "title": "Un rail. Chaque condition critique.",
+    "subtitle": "Six étapes de la vérification de la contrepartie au règlement.",
+    "steps": [
+      { "num": "01", "title": "VÉRIFIER", "desc": "KYB acheteur et exportateur — identité, propriété, sanctions, historique commercial." },
+      { "num": "02", "title": "CONTRAT", "desc": "Conditions de transaction numériques — produit, qualité, Incoterms, conditions de libération." },
+      { "num": "03", "title": "CONFORMITÉ", "desc": "Construire le pack de conformité — documents d'exportation, SFDA, phytosanitaire, COA." },
+      { "num": "04", "title": "INSPECTER", "desc": "Inspection indépendante et preuves de laboratoire contre les spécifications du contrat." },
+      { "num": "05", "title": "SÉCURISER", "desc": "Fonds coordonnés via des partenaires financiers agréés — séquestre, pas garde." },
+      { "num": "06", "title": "LIBÉRER", "desc": "Le règlement se produit lorsque les conditions prédéfinies sont satisfaites." }
+    ]
+  },
+  "forBuyers": {
+    "badge": "POUR LES ACHETEURS SAOUDIENS",
+    "title": "Sourcer avec confiance.",
+    "subtitle": "Les acheteurs saoudiens obtiennent un environnement de transaction structuré où les fournisseurs, la documentation, l'inspection et le statut sont coordonnés.",
+    "cta": "Devenir Acheteur MASAR",
+    "features": [
+      { "title": "Fournisseurs vérifiés", "desc": "Sachez de qui vous achetez." },
+      { "title": "Preuves de qualité", "desc": "Inspection indépendante et résultats de laboratoire." },
+      { "title": "Visibilité de conformité", "desc": "Sachez ce qui est complet avant l'expédition." },
+      { "title": "Visibilité de transaction", "desc": "Suivez toute l'affaire en temps réel." },
+      { "title": "Accès au capital", "desc": "Activez le financement fournisseur éligible." }
+    ]
+  },
+  "forExporters": {
+    "badge": "POUR LES EXPORTATEURS AFRICAINS",
+    "title": "Transformez l'offre vérifiée en accès au marché.",
+    "subtitle": "MASAR aide les exportateurs africains qualifiés à atteindre les acheteurs institutionnels saoudiens tout en réduisant les frictions.",
+    "cta": "Rejoindre le Réseau d'Exportateurs",
+    "features": [
+      { "label": "Accès aux acheteurs" },
+      { "label": "Vérification KYB" },
+      { "label": "Support de conformité" },
+      { "label": "Coordination d'inspection" },
+      { "label": "Documentation" },
+      { "label": "Voie de financement" },
+      { "label": "Coordination de règlement" },
+      { "label": "Historique de performance" }
+    ]
+  },
+  "team": {
+    "title": "Construit par des opérateurs qui comprennent le commerce.",
+    "subtitle": "Notre équipe combine une expertise approfondie dans les marchés de matières premières africaines, les cadres réglementaires saoudiens et la technologie.",
+    "stats": [
+      { "value": "7+", "label": "Années d'Impact" },
+      { "value": "31+", "label": "Projets Complétés" },
+      { "value": "15", "label": "Prix et Reconnaissance" },
+      { "value": "10k+", "label": "Transactions Quotidiennes" }
+    ]
+  },
+  "roadmap": {
+    "title": "Du premier commerce à l'infrastructure du corridor.",
+    "phases": [
+      { "phase": "V0 — 2026", "title": "Pilote Concierge", "desc": "Vraies transactions. Vraie inspection. Vrai règlement.", "active": true },
+      { "phase": "V1 — 2027", "title": "Automatisation du Protocole", "desc": "Automatisation KYB, moteur de conformité, intégration inspection." },
+      { "phase": "2027+", "title": "Finance Intégrée", "desc": "Jusqu'à 80% d'avance via des partenaires capitalistes." },
+      { "phase": "2028+", "title": "Densité du Réseau", "desc": "Plus d'acheteurs. Plus d'exportateurs. Plus de voies." },
+      { "phase": "2029+", "title": "OS du Corridor", "desc": "Multiples origines africaines. Multiples destinations GCC." },
+      { "phase": "2030", "title": "Couche Financière", "desc": "FX, finance structurée et licences institutionnelles." }
+    ]
+  },
+  "cta": {
+    "title": "Construisez le prochain corridor commercial avec MASAR.",
+    "subtitle": "Que vous soyez un acheteur saoudien, un exportateur africain, une institution financière ou un partenaire stratégique, MASAR construit le rail de transaction.",
+    "primary": "Commencer un Commerce",
+    "secondary": "Parler à MASAR"
+  },
+  "footer": {
+    "description": "L'infrastructure de transaction de confiance pour le corridor commercial Arabie Saoudite–Afrique.",
+    "poweredBy": "Propulsé par",
+    "platform": "PLATEFORME",
+    "offices": "BUREAUX",
+    "contact": "CONTACT",
+    "legal": "LÉGAL",
+    "copyright": "© 2026 MASAR — مسار. Un produit de Kurra Greenfield Merchants Limited (CAC RC 1539036). Tous droits réservés.",
+    "tagline": "Construction d'infrastructure de confiance pour le commerce Arabie Saoudite–Afrique."
+  },
+  "floating": {
+    "chatGreeting": "Bienvenue sur MASAR ! 👋\n\nJe suis votre assistant virtuel. Comment puis-je vous aider ?\n\n• Demande d'information\n• Demande de devis\n• Partenariats\n• Support technique",
+    "chatPlaceholder": "Tapez votre message...",
+    "quickReplies": ["Je veux un devis", "En savoir plus", "Partenariats", "Support"],
+    "whatsapp": "Discuter sur WhatsApp",
+    "online": "En ligne"
+  },
+  "auth": {
+    "welcomeBack": "Bon Retour",
+    "signInSubtitle": "Connectez-vous pour accéder à votre espace MASAR",
+    "emailPassword": "Email & Mot de passe",
+    "magicLink": "Lien Magique",
+    "emailAddress": "Adresse Email",
+    "password": "Mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "rememberMe": "Se souvenir de moi",
+    "signIn": "Se Connecter",
+    "attemptsRemaining": "tentatives restantes",
+    "locked": "Verrouillé",
+    "quickDemoAccess": "Accès Démo Rapide",
+    "demoPassword": "Mot de passe démo",
+    "dontHaveAccount": "Pas de compte ?",
+    "createAccount": "Créer un Compte",
+    "magicLinkSent": "Lien magique envoyé ! Vérifiez votre email.",
+    "passwordResetSent": "Email de réinitialisation envoyé !",
+    "tooManyAttempts": "Trop de tentatives échouées. Compte verrouillé 30 secondes.",
+    "invalidCredentials": "Email ou mot de passe invalide"
+  },
+  "register": {
+    "createYourAccount": "Créez Votre Compte",
+    "joinMasar": "Rejoignez l'infrastructure commerciale de confiance MASAR",
+    "fullName": "Nom Complet",
+    "email": "Adresse Email",
+    "phone": "Numéro de Téléphone",
+    "password": "Mot de Passe",
+    "confirmPassword": "Confirmer le Mot de Passe",
+    "agreeTerms": "J'accepte les",
+    "termsOfService": "Conditions d'Utilisation",
+    "and": "et",
+    "privacyPolicy": "Politique de Confidentialité",
+    "continue": "Continuer",
+    "creatingAccount": "Création du compte...",
+    "organizationDetails": "Détails de l'Organisation",
+    "tellAboutOrg": "Parlez-nous de votre organisation",
+    "organizationType": "Type d'Organisation",
+    "legalName": "Nom Légal",
+    "registrationNumber": "Numéro d'Enregistrement",
+    "country": "Pays",
+    "city": "Ville",
+    "verifyEmail": "Vérifiez Votre Email",
+    "verificationSent": "Nous avons envoyé un lien de vérification à",
+    "clickLinkToVerify": "Cliquez sur le lien dans votre email pour vérifier. Expire dans 24 heures.",
+    "iveVerified": "J'ai Vérifié Mon Email",
+    "resendVerification": "Renvoyer l'Email de Vérification",
+    "identityVerification": "Vérification d'Identité (KYC)",
+    "uploadDocuments": "Téléchargez les documents pour vérifier votre identité",
+    "idType": "Type de Pièce d'Identité",
+    "idFront": "Recto de la Pièce",
+    "idBack": "Verso de la Pièce",
+    "certificateOfIncorporation": "Certificat d'Incorporation",
+    "submitForReview": "Soumettre pour Révision",
+    "skipForNow": "Passer pour l'Instant",
+    "registrationComplete": "Inscription Terminée !",
+    "welcomeToMasar": "Bienvenue sur MASAR",
+    "whatsNext": "Et Maintenant ?",
+    "verifyEmailStep": "Vérifiez votre email",
+    "completeKYC": "Complétez la vérification KYC",
+    "setupOrg": "Configurez votre profil organisation",
+    "startTrading": "Commencez à trader sur MASAR",
+    "goToLogin": "Aller à la Connexion"
+  },
+  "dashboard": {
+    "executive": {
+      "title": "Centre de Commandement Exécutif",
+      "subtitle": "Centre de Commandement MASAR — V1",
+      "lastSync": "Dernière synchronisation",
+      "systemStatus": "État du système",
+      "operational": "Opérationnel",
+      "refresh": "Actualiser",
+      "exportReport": "Exporter le Rapport",
+      "kpis": {
+        "transactionValue": "Valeur des Transactions",
+        "activeTransactions": "Transactions Actives",
+        "completedTransactions": "Transactions Complétées",
+        "pipelineValue": "Valeur du Pipeline",
+        "expectedSettlement": "Règlement Attendu",
+        "revenue": "Revenus",
+        "grossMargin": "Marge Brute",
+        "atRiskValue": "Valeur à Risque",
+        "blockedValue": "Valeur Bloquée",
+        "slaBreaches": "Violations SLA"
+      }
+    },
+    "buyer": {
+      "title": "Espace Acheteur",
+      "welcome": "Bon retour",
+      "activeTransactions": "Transactions Actives",
+      "totalPurchaseValue": "Valeur Totale des Achats",
+      "pendingRequests": "Demandes en Attente",
+      "committedValue": "Valeur Engagée",
+      "pendingPayments": "Paiements en Attente",
+      "inTransitShipments": "Expéditions en Transit",
+      "completedPurchases": "Achats Complétés",
+      "openExceptions": "Exceptions Ouvertes"
+    },
+    "exporter": {
+      "title": "Espace Exportateur",
+      "welcome": "Bon retour",
+      "activeExportOrders": "Commandes d'Export Actives",
+      "totalExportValue": "Valeur Totale des Exportations",
+      "confirmedOrders": "Commandes Confirmées",
+      "pipelineValue": "Valeur du Pipeline",
+      "goodsInTransit": "Marchandises en Transit",
+      "pendingDocumentation": "Documentation en Attente",
+      "outstandingReceivables": "Créances en Cours",
+      "expectedSettlement": "Règlement Attendu"
+    }
+  },
+  "protocol": {
+    "commandCenter": "Centre de Commandement du Protocole",
+    "ruleEngine": "Moteur de Règles de Workflow",
+    "sandbox": "Bac à Sable du Protocole",
+    "transactionStates": {
+      "DRAFT": "Brouillon",
+      "RFQ": "Demande de Devis",
+      "BUYER_VERIFIED": "Acheteur Vérifié",
+      "EXPORTER_VERIFIED": "Exportateur Vérifié",
+      "COMMERCIAL_MATCH": "Correspondance Commerciale",
+      "CONTRACTED": "Sous Contrat",
+      "COMPLIANCE_REVIEW": "Révision de Conformité",
+      "COMPLIANCE_READY": "Conformité Prête",
+      "INSPECTION_PENDING": "Inspection en Attente",
+      "INSPECTION_IN_PROGRESS": "Inspection en Cours",
+      "INSPECTION_PASSED": "Inspection Réussie",
+      "FINANCE_PENDING": "Finance en Attente",
+      "FINANCE_APPROVED": "Finance Approuvée",
+      "FUNDS_SECURED": "Fonds Sécurisés",
+      "SHIPMENT_READY": "Expédition Prête",
+      "IN_TRANSIT": "En Transit",
+      "ARRIVED": "Arrivé",
+      "PORT_VERIFIED": "Port Vérifié",
+      "RELEASE_ELIGIBLE": "Éligible à la Libération",
+      "RELEASE_APPROVAL": "Approbation de Libération",
+      "SETTLEMENT": "Règlement",
+      "COMPLETED": "Complété"
+    }
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue",
+    "retry": "Réessayer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "view": "Voir",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "export": "Exporter",
+    "import": "Importer",
+    "refresh": "Actualiser",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "submit": "Soumettre",
+    "approve": "Approuver",
+    "reject": "Rejeter",
+    "yes": "Oui",
+    "no": "Non",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "pending": "En attente",
+    "completed": "Complété",
+    "failed": "Échoué",
+    "online": "En ligne",
+    "offline": "Hors ligne"
+  }
+}
